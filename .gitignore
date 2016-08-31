@@ -1,0 +1,8 @@
+# Compiled objects
+*.o
+
+# Build folder
+build/
+
+# OS specific
+.DS_Store
