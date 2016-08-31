@@ -41,7 +41,7 @@ bool Stranded::init(const std::vector<std::string>& arguments)
 		return false;
 	}
 
-	
+	// initialize all the modules here
 
 	return true;
 }

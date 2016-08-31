@@ -5,14 +5,14 @@
 
 int main(int argc, char* argv[])
 {
-	std::vector<std::string> args;
+	std::vector<std::string> arguments;
 	for (int i = 1; i < argc; ++i)
 	{
-		args.push_back(std::string(argv[i]));
+		arguments.push_back(std::string(argv[i]));
 	}
 
 	Stranded game;
-	if (game.init(args))
+	if (game.init(arguments))
 	{
 		game.run();
 	}

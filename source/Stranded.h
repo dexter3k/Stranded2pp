@@ -23,9 +23,9 @@ public:
 private:
 	bool parseArguments(const std::vector<std::string>& arguments);
 private:
-	std::string modification;
+	std::string modification; // Todo
 
-	bool isFullscreen;
+	bool isFullscreen; // Todo
 
 	std::shared_ptr<Window>		window;
 	std::shared_ptr<Input>		input;
