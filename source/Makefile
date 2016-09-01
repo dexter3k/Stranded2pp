@@ -22,6 +22,7 @@ endif
 
 MAIN_OBJECTS = main.o \
 	Stranded.o \
+	Cfg.o \
 	Engine.o \
 	FileSystem.o \
 	Graphics.o \
@@ -59,8 +60,8 @@ Stranded.o: Stranded.cpp Stranded.h \
 		window/Window.h
 	$(CXX) $(CXXFLAGS) -c Stranded.cpp
 
-FileSystem.o: common/FileSystem.cpp common/FileSystem.h
-	$(CXX) $(CXXFLAGS) -c common/FileSystem.cpp
+Cfg.o: common/Cfg.cpp common/Cfg.h
+	$(CXX) $(CXXFLAGS) -c common/Cfg.cpp
 
 Engine.o: engine/Engine.cpp engine/Engine.h \
 		graphics/Graphics.h \
@@ -69,6 +70,9 @@ Engine.o: engine/Engine.cpp engine/Engine.h \
 		network/Network.h \
 		sound/Sound.h
 	$(CXX) $(CXXFLAGS) -c engine/Engine.cpp
+
+FileSystem.o: common/FileSystem.cpp common/FileSystem.h
+	$(CXX) $(CXXFLAGS) -c common/FileSystem.cpp
 
 Graphics.o: graphics/Graphics.cpp graphics/Graphics.h \
 		input/Input.h
@@ -83,6 +87,7 @@ Input.o: input/Input.cpp input/Input.h \
 	$(CXX) $(CXXFLAGS) -c input/Input.cpp
 
 Modification.o: common/Modification.cpp common/Modification.h \
+		common/Cfg.h \
 		common/FileSystem.h
 	$(CXX) $(CXXFLAGS) -c common/Modification.cpp
 

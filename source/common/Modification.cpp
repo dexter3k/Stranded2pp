@@ -2,7 +2,9 @@
 
 #include <cassert>
 #include <iostream>
+#include <vector>
 
+#include "common/Cfg.h"
 #include "common/FileSystem.h"
 
 const std::string Modification::defaultModificationPath = "mods/";
@@ -31,7 +33,15 @@ bool Modification::init()
 		return false;
 	}
 
+	std::vector<std::vector<char>> data;
+	if (!cfg::readFile(getPath() + "sys/settingz.cfg", data))
+	{
+		return false;
+	}
+
 	isInitialized = true;
+
+	std::cout << "Mod init finished" << std::endl;
 
 	return true;
 }
@@ -50,5 +60,5 @@ std::string Modification::getName() const
 
 std::string Modification::getPath() const
 {
-	return defaultModificationPath + modificationName;
+	return defaultModificationPath + modificationName + "/";
 }
