@@ -1,6 +1,7 @@
 #include "Window.h"
 
-Window::Window()
+Window::Window() :
+	shouldStartInWindowedMode(false)
 {}
 
 Window::~Window()
@@ -9,4 +10,9 @@ Window::~Window()
 bool Window::init()
 {
 	return true;
+}
+
+void Window::startInWindowedMode(bool value)
+{
+	shouldStartInWindowedMode = value;
 }

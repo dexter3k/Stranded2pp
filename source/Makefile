@@ -27,6 +27,7 @@ MAIN_OBJECTS = main.o \
 	Graphics.o \
 	Gui.o \
 	Input.o \
+	Modification.o \
 	Network.o \
 	Sound.o \
 	Window.o
@@ -48,6 +49,7 @@ main.o: main.cpp \
 
 Stranded.o: Stranded.cpp Stranded.h \
 		common/FileSystem.h \
+		common/Modification.h \
 		engine/Engine.h \
 		graphics/Graphics.h \
 		gui/Gui.h \
@@ -79,6 +81,10 @@ Gui.o: gui/Gui.cpp gui/Gui.h \
 Input.o: input/Input.cpp input/Input.h \
 		window/Window.h
 	$(CXX) $(CXXFLAGS) -c input/Input.cpp
+
+Modification.o: common/Modification.cpp common/Modification.h \
+		common/FileSystem.h
+	$(CXX) $(CXXFLAGS) -c common/Modification.cpp
 
 Network.o: network/Network.cpp network/Network.h
 	$(CXX) $(CXXFLAGS) -c network/Network.cpp

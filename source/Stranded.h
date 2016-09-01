@@ -8,6 +8,7 @@ class Engine;
 class Graphics;
 class Gui;
 class Input;
+class Modification;
 class Network;
 class Sound;
 class Window;
@@ -23,9 +24,9 @@ public:
 private:
 	bool parseArguments(const std::vector<std::string>& arguments);
 private:
-	std::string modification; // Todo
+	static const std::string defaultModificationName;
 
-	bool isFullscreen; // Todo
+	std::shared_ptr<Modification> modification;
 
 	std::shared_ptr<Window>		window;
 	std::shared_ptr<Input>		input;

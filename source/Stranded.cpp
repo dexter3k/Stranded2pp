@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "common/FileSystem.h"
+#include "common/Modification.h"
 #include "engine/Engine.h"
 #include "graphics/Graphics.h"
 #include "gui/Gui.h"
@@ -11,9 +11,10 @@
 #include "sound/Sound.h"
 #include "window/Window.h"
 
+const std::string Stranded::defaultModificationName = "Stranded II";
+
 Stranded::Stranded() :
-	modification("Stranded II"),
-	isFullscreen(false),
+	modification(new Modification(defaultModificationName)),
 	window(new Window()),
 	input(new Input(window)),
 	graphics(new Graphics(input)),
@@ -33,15 +34,10 @@ bool Stranded::init(const std::vector<std::string>& arguments)
 		return false;
 	}
 
-	// Check mod path
-	if (!fs::checkFolderExists(std::string("mods/") + modification))
+	if (!modification->init())
 	{
-		std::cout << "Error: mod '" << modification <<
-			"' is missing from 'mods' folder!" << std::endl;
 		return false;
 	}
-
-	// initialize all the modules here
 
 	return true;
 }
@@ -56,13 +52,13 @@ bool Stranded::parseArguments(const std::vector<std::string>& arguments)
 	{
 		if (arguments[i] == "-win")
 		{
-			isFullscreen = false;
+			window->startInWindowedMode(true);
 		}
 		else if (arguments[i] == "-mod")
 		{
 			if (++i != argumentCount)
 			{
-				modification = arguments[i];
+				modification->setName(arguments[i]);
 			}
 			else
 			{
