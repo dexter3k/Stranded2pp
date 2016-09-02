@@ -5,6 +5,8 @@
 #include <iostream>
 #include <memory>
 
+#include "common/RingBuffer.h"
+
 namespace cfg
 {
 	static const std::string defaultExtension = ".cfg";
@@ -12,6 +14,13 @@ namespace cfg
 	bool readFile(const std::string& filename,
 		std::vector<std::vector<char>>& tokens)
 	{
+		RingBuffer buffer(8);
+		char temp[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+		buffer.write(temp, 3);
+		buffer.write(temp, 7);
+		buffer.write(temp, 0);
+		buffer.write(temp, 2);
+		buffer.debug();
 #if 0
 		// Check extension
 		assert(filename.rfind(defaultExtension,

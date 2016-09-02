@@ -30,6 +30,7 @@ MAIN_OBJECTS = main.o \
 	Input.o \
 	Modification.o \
 	Network.o \
+	RingBuffer.o \
 	Sound.o \
 	Window.o
 
@@ -60,7 +61,8 @@ Stranded.o: Stranded.cpp Stranded.h \
 		window/Window.h
 	$(CXX) $(CXXFLAGS) -c Stranded.cpp
 
-Cfg.o: common/Cfg.cpp common/Cfg.h
+Cfg.o: common/Cfg.cpp common/Cfg.h \
+		common/RingBuffer.h
 	$(CXX) $(CXXFLAGS) -c common/Cfg.cpp
 
 Engine.o: engine/Engine.cpp engine/Engine.h \
@@ -93,6 +95,9 @@ Modification.o: common/Modification.cpp common/Modification.h \
 
 Network.o: network/Network.cpp network/Network.h
 	$(CXX) $(CXXFLAGS) -c network/Network.cpp
+
+RingBuffer.o: common/RingBuffer.cpp common/RingBuffer.h
+	$(CXX) $(CXXFLAGS) -c common/RingBuffer.cpp
 
 Sound.o: sound/Sound.cpp sound/Sound.h
 	$(CXX) $(CXXFLAGS) -c sound/Sound.cpp
