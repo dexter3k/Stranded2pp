@@ -19,7 +19,12 @@ namespace cfg
 		buffer.write(temp, 3);
 		buffer.write(temp, 7);
 		buffer.write(temp, 0);
-		buffer.write(temp, 2);
+		buffer.write(temp, 4);
+		buffer.debug();
+
+		char temp2[8];
+		buffer.read(temp2, 7);
+		buffer.write(temp, 8);
 		buffer.debug();
 #if 0
 		// Check extension

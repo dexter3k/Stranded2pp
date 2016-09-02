@@ -2,6 +2,8 @@
 
 #include <cstdio> //size_t
 
+// TODO: improve for readability
+
 class RingBuffer
 {
 public:
