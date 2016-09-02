@@ -21,6 +21,10 @@ public:
 
 	size_t getFreeSpace() const;
 
+	bool readBool(bool& value);
+	bool readUint16(uint16_t& value);
+	bool readFloat(float& value);
+
 	bool readNewlineTerminatedString(std::string& string);
 
 	void debug() const;

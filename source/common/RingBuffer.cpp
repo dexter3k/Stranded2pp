@@ -124,6 +124,21 @@ size_t RingBuffer::getFreeSpace() const
 	return bufferSize - dataSize;
 }
 
+bool RingBuffer::readBool(bool& value)
+{
+	return read(&value, 1);
+}
+
+bool RingBuffer::readUint16(uint16_t& value)
+{
+	return read(&value, 2);
+}
+
+bool RingBuffer::readFloat(float& value)
+{
+	return read(&value, 4);
+}
+
 bool RingBuffer::readNewlineTerminatedString(std::string& string)
 {
 	string.clear();
