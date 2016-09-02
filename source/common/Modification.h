@@ -17,6 +17,11 @@ public:
 	std::string getPath() const;
 private:
 	static const std::string defaultModificationPath;
+
+	static const size_t configurationBufferSize;
+	static const std::string settingsConfigPath;
+private:
+	bool loadConfiguration();
 private:
 	std::string modificationName;
 

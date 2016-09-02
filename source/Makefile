@@ -22,7 +22,6 @@ endif
 
 MAIN_OBJECTS = main.o \
 	Stranded.o \
-	Cfg.o \
 	Engine.o \
 	FileSystem.o \
 	Graphics.o \
@@ -61,10 +60,6 @@ Stranded.o: Stranded.cpp Stranded.h \
 		window/Window.h
 	$(CXX) $(CXXFLAGS) -c Stranded.cpp
 
-Cfg.o: common/Cfg.cpp common/Cfg.h \
-		common/RingBuffer.h
-	$(CXX) $(CXXFLAGS) -c common/Cfg.cpp
-
 Engine.o: engine/Engine.cpp engine/Engine.h \
 		graphics/Graphics.h \
 		gui/Gui.h \
@@ -89,7 +84,6 @@ Input.o: input/Input.cpp input/Input.h \
 	$(CXX) $(CXXFLAGS) -c input/Input.cpp
 
 Modification.o: common/Modification.cpp common/Modification.h \
-		common/Cfg.h \
 		common/FileSystem.h
 	$(CXX) $(CXXFLAGS) -c common/Modification.cpp
 

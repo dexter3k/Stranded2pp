@@ -4,10 +4,13 @@
 #include <iostream>
 #include <vector>
 
-#include "common/Cfg.h"
 #include "common/FileSystem.h"
+#include "common/RingBuffer.h"
 
 const std::string Modification::defaultModificationPath = "mods/";
+
+const size_t Modification::configurationBufferSize = 4096;
+const std::string Modification::settingsConfigPath = "sys/settings.cfg";
 
 Modification::Modification() :
 	modificationName(),
@@ -33,8 +36,7 @@ bool Modification::init()
 		return false;
 	}
 
-	std::vector<std::vector<char>> data;
-	if (!cfg::readFile(getPath() + "sys/settingz.cfg", data))
+	if (!loadConfiguration())
 	{
 		return false;
 	}
@@ -61,4 +63,48 @@ std::string Modification::getName() const
 std::string Modification::getPath() const
 {
 	return defaultModificationPath + modificationName + "/";
+}
+
+bool Modification::loadConfiguration()
+{
+	RingBuffer buffer(configurationBufferSize);
+
+	if (!fs::loadFile(getPath() + settingsConfigPath, buffer))
+	{
+		return false;
+	}
+
+	std::string tempString = "";
+
+	// First string with warnign
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+
+	// Screen width
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	// Screen height
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	// Bits per pixel
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+
+
+	std::cout << "Config loaded!" << std::endl;
+	return true;
 }

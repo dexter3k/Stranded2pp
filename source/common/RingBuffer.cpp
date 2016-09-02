@@ -124,6 +124,51 @@ size_t RingBuffer::getFreeSpace() const
 	return bufferSize - dataSize;
 }
 
+bool RingBuffer::readNewlineTerminatedString(std::string& string)
+{
+	string.clear();
+
+	if (dataSize == 0)
+	{
+		std::cout << "No data" << std::endl;
+
+		return false;
+	}
+
+	size_t silentReadPointer = readPosition;
+
+	char currentByte = 0;
+	do
+	{
+		if (!silentRead(&currentByte, 1, silentReadPointer))
+		{
+			return false;
+		}
+
+		if (currentByte == '\r')
+		{
+			// Skip carriage return
+			continue;
+		}
+		else if (currentByte != '\n')
+		{
+			string.push_back(currentByte);
+		}
+		else
+		{
+			break;
+		}
+	}
+	while(true);
+
+	readPosition = silentReadPointer;
+	dataSize -= string.size();
+
+	std::cout << "Newline string read: '" << string << "'" << std::endl;
+
+	return true;
+}
+
 void RingBuffer::debug() const
 {
 	for (size_t i = 0; i < bufferSize; ++i)
@@ -131,4 +176,51 @@ void RingBuffer::debug() const
 		std::cout << static_cast<int>(buffer[i]) << " ";
 	}
 	std::cout << std::endl;
+}
+
+bool RingBuffer::silentRead(void* buffer, size_t toRead, size_t& readPointer)
+	const
+{
+	assert(readPointer < bufferSize);
+
+	if (toRead > dataSize)
+	{
+		std::cout << "toRead > dataSize" << std::endl;
+
+		return false;
+	}
+
+	// Check for overlap
+	if ((readPointer + toRead) <= bufferSize)
+	{
+		// No.
+
+		memcpy(buffer, this->buffer + readPointer, toRead);
+
+		readPointer += toRead;
+
+		assert(readPointer <= bufferSize);
+		if (readPointer == bufferSize)
+		{
+			readPointer = 0;
+		}
+	}
+	else
+	{
+		// Yes.
+
+		size_t leadingPartSize = bufferSize - readPointer;
+		assert(leadingPartSize < toRead);
+
+		memcpy(buffer, this->buffer + readPointer, leadingPartSize);
+
+		// Read remaining data
+		memcpy(static_cast<char*>(buffer) + leadingPartSize, this->buffer,
+			toRead - leadingPartSize);
+		readPointer = toRead - leadingPartSize;
+	}
+
+	std::cout << "Silently readed " << toRead << " bytes" << std::endl;
+
+	return true;
 }
