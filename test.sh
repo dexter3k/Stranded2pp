@@ -2,6 +2,6 @@
 
 cd build/
 
-./stranded2pp
+./stranded2pp -win
 
 cd ../

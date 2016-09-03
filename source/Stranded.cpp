@@ -39,6 +39,11 @@ bool Stranded::init(const std::vector<std::string>& arguments)
 		return false;
 	}
 
+	if (!window->init(modification))
+	{
+		return false;
+	}
+
 	return true;
 }
 
