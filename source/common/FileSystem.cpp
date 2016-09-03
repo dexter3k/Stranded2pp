@@ -43,6 +43,12 @@ namespace fs
 		std::cout << "Opening file '" << pathToFile << "'" << std::endl;
 
 		std::ifstream file(pathToFile, std::ios::in | std::ifstream::binary);
+		if (!file)
+		{
+			std::cout << "Unable to open file!" << std::endl;
+			return false;
+		}
+
 		file.seekg(0, std::ios::end);
 		std::streamsize size = file.tellg();
 		file.seekg(0, std::ios::beg);
