@@ -113,9 +113,9 @@ bool RingBuffer::read(void* buffer, size_t toRead)
 	}
 
 	dataSize -= toRead;
-	/*std::cout << "Readed " << toRead << " bytes. Data size is now: " <<
-		this->dataSize << std::endl;
-	*/
+	//std::cout << "Readed " << toRead << " bytes. Data size is now: " <<
+	//	this->dataSize << std::endl;
+	
 	return true;
 }
 
@@ -177,9 +177,10 @@ bool RingBuffer::readNewlineTerminatedString(std::string& string)
 	while(true);
 
 	readPosition = silentReadPointer;
-	dataSize -= string.size();
+	dataSize -= (string.size() + 2); // 2 bytes for \r and \n
 
 	//std::cout << "Newline string read: '" << string << "'" << std::endl;
+	//std::cout << "ds: " << dataSize << std::endl;
 
 	return true;
 }

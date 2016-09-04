@@ -9,7 +9,7 @@ class Modification
 public:
 	struct Controls
 	{
-		uint16_t inputKeys[22];
+		uint16_t inputKeys[21];
 
 		struct
 		{
@@ -21,7 +21,7 @@ public:
 
 	struct ScriptControls
 	{
-		uint16_t inputKeys[22];
+		uint16_t inputKeys[21];
 	};
 
 	struct Settings
