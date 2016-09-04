@@ -66,8 +66,8 @@ bool RingBuffer::write(const void* data, size_t dataSize)
 	}
 
 	this->dataSize += dataSize;
-	std::cout << "Wrote " << dataSize << " bytes. Data size is now: " <<
-		this->dataSize << std::endl;
+	//std::cout << "Wrote " << dataSize << " bytes. Data size is now: " <<
+	//	this->dataSize << std::endl;
 
 	return true;
 }

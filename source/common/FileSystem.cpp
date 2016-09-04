@@ -40,7 +40,7 @@ namespace fs
 
 	bool loadFile(const std::string& pathToFile, RingBuffer& buffer)
 	{
-		std::cout << "Opening file '" << pathToFile << "'" << std::endl;
+		//std::cout << "Opening file '" << pathToFile << "'" << std::endl;
 
 		std::ifstream file(pathToFile, std::ios::in | std::ifstream::binary);
 		if (!file)

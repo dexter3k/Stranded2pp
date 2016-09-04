@@ -27,7 +27,9 @@ MAIN_OBJECTS = main.o \
 	Graphics.o \
 	Gui.o \
 	Input.o \
+	Keyboard.o \
 	Modification.o \
+	Mouse.o \
 	Network.o \
 	RingBuffer.o \
 	Sound.o \
@@ -64,6 +66,8 @@ Engine.o: engine/Engine.cpp engine/Engine.h \
 		graphics/Graphics.h \
 		gui/Gui.h \
 		input/Input.h \
+		input/Keyboard.h \
+		input/Mouse.h \
 		network/Network.h \
 		sound/Sound.h
 	$(CXX) $(CXXFLAGS) -c engine/Engine.cpp
@@ -72,20 +76,32 @@ FileSystem.o: common/FileSystem.cpp common/FileSystem.h
 	$(CXX) $(CXXFLAGS) -c common/FileSystem.cpp
 
 Graphics.o: graphics/Graphics.cpp graphics/Graphics.h \
-		input/Input.h
+		input/Input.h \
+		input/Keyboard.h \
+		input/Mouse.h
 	$(CXX) $(CXXFLAGS) -c graphics/Graphics.cpp
 
 Gui.o: gui/Gui.cpp gui/Gui.h \
-		input/Input.h
+		input/Input.h \
+		input/Keyboard.h \
+		input/Mouse.h
 	$(CXX) $(CXXFLAGS) -c gui/Gui.cpp
 
 Input.o: input/Input.cpp input/Input.h \
+		input/Keyboard.h \
+		input/Mouse.h \
 		window/Window.h
 	$(CXX) $(CXXFLAGS) -c input/Input.cpp
+
+Keyboard.o: input/Keyboard.cpp input/Keyboard.h
+	$(CXX) $(CXXFLAGS) -c input/Keyboard.cpp
 
 Modification.o: common/Modification.cpp common/Modification.h \
 		common/FileSystem.h
 	$(CXX) $(CXXFLAGS) -c common/Modification.cpp
+
+Mouse.o: input/Mouse.cpp input/Mouse.h
+	$(CXX) $(CXXFLAGS) -c input/Mouse.cpp
 
 Network.o: network/Network.cpp network/Network.h
 	$(CXX) $(CXXFLAGS) -c network/Network.cpp

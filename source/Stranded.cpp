@@ -44,6 +44,11 @@ bool Stranded::init(const std::vector<std::string>& arguments)
 		return false;
 	}
 
+	if (!input->init(modification))
+	{
+		return false;
+	}
+
 	return true;
 }
 

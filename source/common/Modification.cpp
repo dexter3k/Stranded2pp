@@ -50,7 +50,7 @@ bool Modification::init()
 
 	isInitialized = true;
 
-	std::cout << "Mod init finished" << std::endl;
+	//std::cout << "Mod init finished" << std::endl;
 
 	return true;
 }
