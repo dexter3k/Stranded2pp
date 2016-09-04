@@ -7,14 +7,17 @@
 #include "common/Modification.h"
 #include "window/Window.h"
 
+#include "Stranded.h"
+
 const std::string Input::keyNameInfoPath = "sys/keys.inf";
+const std::string Input::defaultName = "null";
 
 Input::Input(const std::shared_ptr<Window>& window) :
 	window(window),
-	mouseButtonNames(6, "null"),
-	mouseWheelUpName("null"),
-	mouseWheelDownName("null"),
-	keyNames(256, "null")
+	mouseButtonNames(6, defaultName),
+	mouseWheelUpName(defaultName),
+	mouseWheelDownName(defaultName),
+	keyNames(256, defaultName)
 {}
 
 Input::~Input()
@@ -30,11 +33,16 @@ bool Input::init(const std::shared_ptr<const Modification>& modification)
 	return true;
 }
 
+void Input::update(float deltaTime)
+{
+	window->pollEvents();
+}
+
 std::string Input::getMouseButtonName(uint8_t button) const
 {
-	if (button > 5)
+	if (button >= mouseButtonNames.size())
 	{
-		return "";
+		return defaultName;
 	}
 
 	return mouseButtonNames[button];
@@ -54,6 +62,12 @@ std::string Input::getMouseWheelDownName() const
 std::string Input::getKeyName(uint8_t key) const
 {
 	return keyNames[key];
+}
+
+void Input::onRawEventClosed()
+{
+	std::cout << "Raw closed" << std::endl;
+	Stranded::debug_stop();
 }
 
 bool Input::loadKeyNames(const std::string& modificationPath)

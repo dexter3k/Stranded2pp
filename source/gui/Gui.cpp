@@ -13,3 +13,8 @@ bool Gui::init()
 {
 	return true;
 }
+
+void Gui::update(float deltaTime)
+{
+	
+}

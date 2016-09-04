@@ -13,3 +13,8 @@ bool Graphics::init()
 {
 	return true;
 }
+
+void Graphics::update(float deltaTime)
+{
+	
+}

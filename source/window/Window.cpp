@@ -1,12 +1,15 @@
 #include "Window.h"
 
+#include <cassert>
 #include <iostream>
 
 #include "common/Modification.h"
+#include "input/Input.h"
 
 Window::Window() :
 	window(),
-	shouldStartInWindowedMode(false)
+	shouldStartInWindowedMode(false),
+	input(nullptr)
 {}
 
 Window::~Window()
@@ -64,7 +67,32 @@ bool Window::init(const std::shared_ptr<const Modification>& modification)
 	return true;
 }
 
+void Window::display()
+{
+	window.display();
+}
+
+void Window::pollEvents()
+{
+	sf::Event event;
+	while (window.pollEvent(event))
+	{
+		switch (event.type)
+		{
+			case sf::Event::Closed: input->onRawEventClosed();
+			default: continue;
+		}
+	}
+}
+
 void Window::startInWindowedMode(bool value)
 {
 	shouldStartInWindowedMode = value;
+}
+
+void Window::registerInput(const std::shared_ptr<Input>& input)
+{
+	assert(this->input.get() == nullptr);
+	
+	this->input = input;
 }

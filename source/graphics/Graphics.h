@@ -11,6 +11,7 @@ public:
 	~Graphics();
 
 	bool init();
+	void update(float deltaTime);
 private:
 	std::shared_ptr<Input>	input;
 };

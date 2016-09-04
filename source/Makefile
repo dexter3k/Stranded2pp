@@ -113,7 +113,8 @@ Sound.o: sound/Sound.cpp sound/Sound.h
 	$(CXX) $(CXXFLAGS) -c sound/Sound.cpp
 
 Window.o: window/Window.cpp window/Window.h \
-		common/Modification.h
+		common/Modification.h \
+		input/Input.h
 	$(CXX) $(CXXFLAGS) -c window/Window.cpp
 
 clean:

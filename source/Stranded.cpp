@@ -13,6 +13,8 @@
 
 const std::string Stranded::defaultModificationName = "Stranded II";
 
+bool Stranded::isRunning = false;
+
 Stranded::Stranded() :
 	modification(new Modification(defaultModificationName)),
 	window(new Window()),
@@ -49,11 +51,34 @@ bool Stranded::init(const std::vector<std::string>& arguments)
 		return false;
 	}
 
+	window->registerInput(input);
+
 	return true;
 }
 
 void Stranded::run()
-{}
+{
+	float deltaTime = 0.0f;
+
+	isRunning = true;
+	while (isRunning)
+	{
+		input->update(deltaTime);
+
+		engine->update(deltaTime);
+
+		graphics->update(deltaTime);
+
+		gui->update(deltaTime);
+
+		window->display();
+	}
+}
+
+void Stranded::debug_stop()
+{
+	isRunning = false;
+}
 
 bool Stranded::parseArguments(const std::vector<std::string>& arguments)
 {

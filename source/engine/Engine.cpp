@@ -19,3 +19,8 @@ bool Engine::init()
 {
 	return true;
 }
+
+void Engine::update(float deltaTime)
+{
+	
+}
