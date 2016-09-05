@@ -2,7 +2,7 @@
 
 namespace mouse
 {
-	uint8_t sfmlToBlitzButton(const sf::Mouse::Button& button)
+	uint8_t sfmlToBlitz(const sf::Mouse::Button& button)
 	{
 		switch (button)
 		{

@@ -13,8 +13,6 @@
 
 const std::string Stranded::defaultModificationName = "Stranded II";
 
-bool Stranded::isRunning = false;
-
 Stranded::Stranded() :
 	modification(new Modification(defaultModificationName)),
 	window(new Window()),
@@ -23,7 +21,8 @@ Stranded::Stranded() :
 	gui(new Gui(input)),
 	network(new Network()),
 	sound(new Sound()),
-	engine(new Engine(input, graphics, gui, network, sound))
+	engine(new Engine(input, graphics, gui, network, sound)),
+	isRunning(false)
 {}
 
 Stranded::~Stranded()
@@ -75,8 +74,9 @@ void Stranded::run()
 	}
 }
 
-void Stranded::debug_stop()
+void Stranded::stop()
 {
+	std::cout << "Stopping" << std::endl;
 	isRunning = false;
 }
 

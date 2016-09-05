@@ -22,8 +22,7 @@ public:
 	bool init(const std::vector<std::string>& arguments);
 	void run();
 
-	// Note: proof of concept
-	static void debug_stop();
+	void stop();
 private:
 	bool parseArguments(const std::vector<std::string>& arguments);
 private:
@@ -39,5 +38,5 @@ private:
 	std::shared_ptr<Sound>		sound;
 	std::shared_ptr<Engine>		engine;
 
-	static bool isRunning;
+	bool isRunning;
 };

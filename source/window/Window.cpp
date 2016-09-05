@@ -5,6 +5,7 @@
 
 #include "common/Modification.h"
 #include "input/Input.h"
+#include "input/Keyboard.h"
 
 Window::Window() :
 	window(),
@@ -79,8 +80,95 @@ void Window::pollEvents()
 	{
 		switch (event.type)
 		{
-			case sf::Event::Closed: input->onRawEventClosed();
-			default: continue;
+			case sf::Event::Closed:
+			{
+				input->onRawEventClosed();
+				break;
+			}
+			case sf::Event::Resized:
+			{
+				input->onRawEventResized(event.size.width, event.size.height);
+				break;
+			}
+			case sf::Event::LostFocus:
+			{
+				input->onRawEventLostFocus();
+				break;
+			}
+			case sf::Event::GainedFocus:
+			{
+				input->onRawEventGainedFocus();
+				break;
+			}
+			case sf::Event::TextEntered:
+			{
+				input->onRawEventTextEntered(event.text.unicode);
+				break;
+			}
+			case sf::Event::KeyPressed:
+			{
+				input->onRawEventKeyPressed(
+					kb::sfmlToBlitz(event.key.code), event.key.alt,
+						event.key.control, event.key.shift, event.key.system);
+				break;
+			}
+			case sf::Event::KeyReleased:
+			{
+				input->onRawEventKeyReleased(
+					kb::sfmlToBlitz(event.key.code), event.key.alt,
+						event.key.control, event.key.shift, event.key.system);
+				break;
+			}
+			case sf::Event::MouseWheelScrolled:
+			{
+				if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
+				{
+					input->onRawEventMouseWheelScrolled(
+						event.mouseWheelScroll.delta, event.mouseWheelScroll.x,
+						event.mouseWheelScroll.y);
+				}
+				break;
+			}
+			case sf::Event::MouseButtonPressed:
+			{
+				input->onRawEventMouseButtonPressed(
+					mouse::sfmlToBlitz(event.mouseButton.button),
+					event.mouseButton.x, event.mouseButton.y);
+				break;
+			}
+			case sf::Event::MouseButtonReleased:
+			{
+				input->onRawEventMouseButtonReleased(
+					mouse::sfmlToBlitz(event.mouseButton.button),
+					event.mouseButton.x, event.mouseButton.y);
+				break;
+			}
+			case sf::Event::MouseMoved:
+			{
+				input->onRawEventMouseMoved(event.mouseMove.x,
+					event.mouseMove.y);
+				break;
+			}
+			case sf::Event::MouseEntered:
+			{
+				input->onRawEventMouseEntered();
+				break;
+			}
+			case sf::Event::MouseLeft:
+			{
+				input->onRawEventMouseLeft();
+				break;
+			}
+			case sf::Event::JoystickButtonPressed:
+			case sf::Event::JoystickButtonReleased:
+			case sf::Event::JoystickMoved:
+			case sf::Event::JoystickConnected:
+			case sf::Event::JoystickDisconnected:
+			case sf::Event::TouchBegan:
+			case sf::Event::TouchMoved:
+			case sf::Event::TouchEnded:
+			case sf::Event::SensorChanged:
+			default: break;
 		}
 	}
 }

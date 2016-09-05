@@ -27,6 +27,20 @@ public:
 
 	// Raw (directly from Window) input events
 	void onRawEventClosed();
+	void onRawEventResized(unsigned newWidth, unsigned newHeight);
+	void onRawEventLostFocus();
+	void onRawEventGainedFocus();
+	void onRawEventTextEntered(uint32_t symbol);
+	void onRawEventKeyPressed(uint8_t key, bool alt, bool control, bool shift,
+		bool super);
+	void onRawEventKeyReleased(uint8_t key, bool alt, bool control, bool shift,
+		bool super);
+	void onRawEventMouseWheelScrolled(float delta, int x, int y);
+	void onRawEventMouseButtonPressed(uint8_t button, int x, int y);
+	void onRawEventMouseButtonReleased(uint8_t button, int x, int y);
+	void onRawEventMouseMoved(int x, int y);
+	void onRawEventMouseEntered();
+	void onRawEventMouseLeft();
 private:
 	static const std::string keyNameInfoPath;
 	static const std::string defaultName;

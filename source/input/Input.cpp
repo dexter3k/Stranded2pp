@@ -66,8 +66,70 @@ std::string Input::getKeyName(uint8_t key) const
 
 void Input::onRawEventClosed()
 {
-	std::cout << "Raw closed" << std::endl;
-	Stranded::debug_stop();
+	//std::cout << "Raw closed" << std::endl;
+	//Stranded::debug_stop();
+}
+
+void Input::onRawEventResized(unsigned newWidth, unsigned newHeight)
+{
+
+}
+
+void Input::onRawEventLostFocus()
+{
+
+}
+
+void Input::onRawEventGainedFocus()
+{
+
+}
+
+void Input::onRawEventTextEntered(uint32_t symbol)
+{
+
+}
+
+void Input::onRawEventKeyPressed(uint8_t key, bool alt, bool control,
+	bool shift, bool super)
+{
+	std::cout << "Raw key press: " << getKeyName(key) << std::endl;
+}
+
+void Input::onRawEventKeyReleased(uint8_t key, bool alt, bool control,
+	bool shift, bool super)
+{
+
+}
+
+void Input::onRawEventMouseWheelScrolled(float delta, int x, int y)
+{
+
+}
+
+void Input::onRawEventMouseButtonPressed(uint8_t button, int x, int y)
+{
+
+}
+
+void Input::onRawEventMouseButtonReleased(uint8_t button, int x, int y)
+{
+
+}
+
+void Input::onRawEventMouseMoved(int x, int y)
+{
+
+}
+
+void Input::onRawEventMouseEntered()
+{
+
+}
+
+void Input::onRawEventMouseLeft()
+{
+
 }
 
 bool Input::loadKeyNames(const std::string& modificationPath)
