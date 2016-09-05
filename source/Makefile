@@ -31,6 +31,7 @@ MAIN_OBJECTS = main.o \
 	Modification.o \
 	Mouse.o \
 	Network.o \
+	RawInputHandler.o \
 	RingBuffer.o \
 	Sound.o \
 	Window.o
@@ -105,6 +106,9 @@ Mouse.o: input/Mouse.cpp input/Mouse.h
 
 Network.o: network/Network.cpp network/Network.h
 	$(CXX) $(CXXFLAGS) -c network/Network.cpp
+
+RawInputHandler.o: input/RawInputHandler.cpp input/RawInputHandler.h
+	$(CXX) $(CXXFLAGS) -c input/RawInputHandler.cpp
 
 RingBuffer.o: common/RingBuffer.cpp common/RingBuffer.h
 	$(CXX) $(CXXFLAGS) -c common/RingBuffer.cpp

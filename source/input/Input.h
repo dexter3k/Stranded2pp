@@ -8,11 +8,14 @@
 #include "Keyboard.h"
 #include "Mouse.h"
 
+
 class Modification;
+class RawInputHandler;
 class Window;
 
 class Input
 {
+	friend class RawInputHandler;
 public:
 	Input(const std::shared_ptr<Window>& window);
 	~Input();
@@ -45,6 +48,9 @@ private:
 	static const std::string keyNameInfoPath;
 	static const std::string defaultName;
 private:
+	void addRawInputHandler(RawInputHandler* rawInputHandler);
+	void removeRawInputHandler(RawInputHandler* rawInputHandler);
+
 	bool loadKeyNames(const std::string& modificationPath);
 private:
 	std::shared_ptr<Window>	window;
@@ -53,4 +59,6 @@ private:
 	std::string mouseWheelUpName;
 	std::string mouseWheelDownName;
 	std::vector<std::string> keyNames;
+
+	std::vector<RawInputHandler*> rawInputHandlers;
 };

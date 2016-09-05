@@ -4,6 +4,8 @@
 #include <fstream>
 #include <iostream>
 
+#include "RawInputHandler.h"
+
 #include "common/Modification.h"
 #include "window/Window.h"
 
@@ -17,7 +19,8 @@ Input::Input(const std::shared_ptr<Window>& window) :
 	mouseButtonNames(6, defaultName),
 	mouseWheelUpName(defaultName),
 	mouseWheelDownName(defaultName),
-	keyNames(256, defaultName)
+	keyNames(256, defaultName),
+	rawInputHandlers()
 {}
 
 Input::~Input()
@@ -66,70 +69,138 @@ std::string Input::getKeyName(uint8_t key) const
 
 void Input::onRawEventClosed()
 {
-	//std::cout << "Raw closed" << std::endl;
-	//Stranded::debug_stop();
+	for (auto& handler : rawInputHandlers)
+	{
+		handler->onClosed();
+	}
 }
 
 void Input::onRawEventResized(unsigned newWidth, unsigned newHeight)
 {
-
+	for (auto& handler : rawInputHandlers)
+	{
+		handler->onResized(newWidth, newHeight);
+	}
 }
 
 void Input::onRawEventLostFocus()
 {
-
+	for (auto& handler : rawInputHandlers)
+	{
+		handler->onLostFocus();
+	}
 }
 
 void Input::onRawEventGainedFocus()
 {
-
+	for (auto& handler : rawInputHandlers)
+	{
+		handler->onGainedFocus();
+	}
 }
 
 void Input::onRawEventTextEntered(uint32_t symbol)
 {
-
+	for (auto& handler : rawInputHandlers)
+	{
+		handler->onTextEntered(symbol);
+	}
 }
 
 void Input::onRawEventKeyPressed(uint8_t key, bool alt, bool control,
 	bool shift, bool super)
 {
-	std::cout << "Raw key press: " << getKeyName(key) << std::endl;
+	for (auto& handler : rawInputHandlers)
+	{
+		handler->onKeyPressed(key, alt, control, shift, super);
+	}
 }
 
 void Input::onRawEventKeyReleased(uint8_t key, bool alt, bool control,
 	bool shift, bool super)
 {
-
+	for (auto& handler : rawInputHandlers)
+	{
+		handler->onKeyReleased(key, alt, control, shift, super);
+	}
 }
 
 void Input::onRawEventMouseWheelScrolled(float delta, int x, int y)
 {
-
+	for (auto& handler : rawInputHandlers)
+	{
+		handler->onMouseWheelScrolled(delta, x, y);
+	}
 }
 
 void Input::onRawEventMouseButtonPressed(uint8_t button, int x, int y)
 {
-
+	for (auto& handler : rawInputHandlers)
+	{
+		handler->onMouseButtonPressed(button, x, y);
+	}
 }
 
 void Input::onRawEventMouseButtonReleased(uint8_t button, int x, int y)
 {
-
+	for (auto& handler : rawInputHandlers)
+	{
+		handler->onMouseButtonReleased(button, x, y);
+	}
 }
 
 void Input::onRawEventMouseMoved(int x, int y)
 {
-
+	for (auto& handler : rawInputHandlers)
+	{
+		handler->onMouseMoved(x, y);
+	}
 }
 
 void Input::onRawEventMouseEntered()
 {
-
+	for (auto& handler : rawInputHandlers)
+	{
+		handler->onMouseEntered();
+	}
 }
 
 void Input::onRawEventMouseLeft()
 {
+	for (auto& handler : rawInputHandlers)
+	{
+		handler->onMouseLeft();
+	}
+}
 
+void Input::addRawInputHandler(RawInputHandler* rawInputHandler)
+{
+	assert(rawInputHandler != nullptr);
+
+	unsigned size = rawInputHandlers.size();
+	for (unsigned i = 0; i < size; ++i)
+	{
+		assert(rawInputHandlers[i] != rawInputHandler);
+	}
+
+	rawInputHandlers.push_back(rawInputHandler);
+}
+
+void Input::removeRawInputHandler(RawInputHandler* rawInputHandler)
+{
+	assert(rawInputHandler != nullptr);
+
+	unsigned size = rawInputHandlers.size();
+	for (unsigned i = 0; i < size; ++i)
+	{
+		if (rawInputHandlers[i] == rawInputHandler)
+		{
+			rawInputHandlers.erase(rawInputHandlers.begin() + i);
+			return;
+		}
+	}
+
+	assert(false);
 }
 
 bool Input::loadKeyNames(const std::string& modificationPath)

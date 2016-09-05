@@ -3,6 +3,9 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <iostream>
+
+#include "input/RawInputHandler.h"
 
 class Engine;
 class Graphics;
@@ -15,15 +18,35 @@ class Window;
 
 class Stranded
 {
+	class QuitEventHandler : public RawInputHandler
+	{
+		typedef RawInputHandler super;
+	public:
+		QuitEventHandler(const std::shared_ptr<Input>& input,
+			Stranded* stranded) :
+			super(input),
+			stranded(stranded)
+		{}
+
+		bool onClosed() override
+		{
+			stranded->stop();
+
+			return false;
+		}
+	private:
+		Stranded* stranded;
+	};
+	friend class QuitEventHandler;
 public:
 	Stranded();
 	~Stranded();
 
 	bool init(const std::vector<std::string>& arguments);
 	void run();
-
-	void stop();
 private:
+	void stop();
+
 	bool parseArguments(const std::vector<std::string>& arguments);
 private:
 	static const std::string defaultModificationName;
@@ -37,6 +60,8 @@ private:
 	std::shared_ptr<Network>	network;
 	std::shared_ptr<Sound>		sound;
 	std::shared_ptr<Engine>		engine;
+
+	std::shared_ptr<QuitEventHandler> quitEventHandler;
 
 	bool isRunning;
 };

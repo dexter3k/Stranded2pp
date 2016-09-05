@@ -22,6 +22,7 @@ Stranded::Stranded() :
 	network(new Network()),
 	sound(new Sound()),
 	engine(new Engine(input, graphics, gui, network, sound)),
+	quitEventHandler(nullptr),
 	isRunning(false)
 {}
 
@@ -52,6 +53,8 @@ bool Stranded::init(const std::vector<std::string>& arguments)
 
 	window->registerInput(input);
 
+	quitEventHandler.reset(new QuitEventHandler(input, this));
+
 	return true;
 }
 
@@ -76,7 +79,6 @@ void Stranded::run()
 
 void Stranded::stop()
 {
-	std::cout << "Stopping" << std::endl;
 	isRunning = false;
 }
 
