@@ -178,9 +178,10 @@ void Window::startInWindowedMode(bool value)
 	shouldStartInWindowedMode = value;
 }
 
-void Window::registerInput(const std::shared_ptr<Input>& input)
+void Window::registerInput(Input* input)
 {
-	assert(this->input.get() == nullptr);
+	assert(this->input == nullptr);
+	assert(input != nullptr);
 	
 	this->input = input;
 }

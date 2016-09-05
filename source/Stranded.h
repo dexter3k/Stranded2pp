@@ -22,8 +22,7 @@ class Stranded
 	{
 		typedef RawInputHandler super;
 	public:
-		QuitEventHandler(const std::shared_ptr<Input>& input,
-			Stranded* stranded) :
+		QuitEventHandler(Input* input, Stranded* stranded) :
 			super(input),
 			stranded(stranded)
 		{}

@@ -22,7 +22,7 @@ Stranded::Stranded() :
 	network(new Network()),
 	sound(new Sound()),
 	engine(new Engine(input, graphics, gui, network, sound)),
-	quitEventHandler(nullptr),
+	quitEventHandler(new QuitEventHandler(input.get(), this)),
 	isRunning(false)
 {}
 
@@ -51,9 +51,7 @@ bool Stranded::init(const std::vector<std::string>& arguments)
 		return false;
 	}
 
-	window->registerInput(input);
-
-	quitEventHandler.reset(new QuitEventHandler(input, this));
+	quitEventHandler->init();
 
 	return true;
 }

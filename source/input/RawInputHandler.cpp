@@ -2,15 +2,18 @@
 
 #include "Input.h"
 
-RawInputHandler::RawInputHandler(const std::shared_ptr<Input>& input) :
+RawInputHandler::RawInputHandler(Input* input) :
 	input(input)
-{
-	input->addRawInputHandler(this);
-}
+{}
 
 RawInputHandler::~RawInputHandler()
 {
 	input->removeRawInputHandler(this);
+}
+
+void RawInputHandler::init()
+{
+	input->addRawInputHandler(this);
 }
 
 bool RawInputHandler::onClosed()

@@ -33,6 +33,8 @@ bool Input::init(const std::shared_ptr<const Modification>& modification)
 		return false;
 	}
 
+	window->registerInput(this);
+
 	return true;
 }
 
@@ -60,7 +62,6 @@ std::string Input::getMouseWheelDownName() const
 {
 	return mouseWheelDownName;
 }
-
 
 std::string Input::getKeyName(uint8_t key) const
 {
@@ -237,16 +238,16 @@ bool Input::loadKeyNames(const std::string& modificationPath)
 				}
 				catch (std::exception& exception)
 				{
-					std::cout << keyNameInfoPath << ":" << lineCounter << ": " <<
-						"Unknown key" << std::endl;
+					std::cout << keyNameInfoPath << ":" << lineCounter << ": "
+						<< "Unknown key" << std::endl;
 
 					return false;
 				}
 
 				if (key >= 6)
 				{
-					std::cout << keyNameInfoPath << ":" << lineCounter << ": " <<
-						"Key is out of bounds" << std::endl;
+					std::cout << keyNameInfoPath << ":" << lineCounter << ": "
+						<< "Key is out of bounds" << std::endl;
 
 					return false;
 				}
@@ -279,16 +280,16 @@ bool Input::loadKeyNames(const std::string& modificationPath)
 				}
 				catch (std::exception& exception)
 				{
-					std::cout << keyNameInfoPath << ":" << lineCounter << ": " <<
-						"Unknown key" << std::endl;
+					std::cout << keyNameInfoPath << ":" << lineCounter << ": "
+						<< "Unknown key" << std::endl;
 
 					return false;
 				}
 
 				if (key >= 256)
 				{
-					std::cout << keyNameInfoPath << ":" << lineCounter << ": " <<
-						"Key is out of bounds" << std::endl;
+					std::cout << keyNameInfoPath << ":" << lineCounter << ": "
+						<< "Key is out of bounds" << std::endl;
 
 					return false;
 				}

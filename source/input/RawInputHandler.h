@@ -7,8 +7,10 @@ class Input;
 class RawInputHandler
 {
 public:
-	RawInputHandler(const std::shared_ptr<Input>& input);
+	RawInputHandler(Input* input);
 	virtual ~RawInputHandler();
+
+	void init();
 
 	virtual bool onClosed();
 	virtual bool onResized(unsigned newWidth, unsigned newHeight);
@@ -26,5 +28,5 @@ public:
 	virtual bool onMouseEntered();
 	virtual bool onMouseLeft();
 private:
-	std::shared_ptr<Input> input;
+	Input* input;
 };

@@ -22,11 +22,11 @@ public:
 	// Ignore config value and force start in windowed mode?
 	void startInWindowedMode(bool value);
 
-	void registerInput(const std::shared_ptr<Input>& input);
+	void registerInput(Input* input);
 private:
 	sf::Window window;
 
 	bool shouldStartInWindowedMode;
 
-	std::shared_ptr<Input> input;
+	Input* input;
 };
