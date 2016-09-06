@@ -53,14 +53,19 @@ private:
 	std::shared_ptr<Modification> modification;
 
 	std::shared_ptr<Window>		window;
-	std::shared_ptr<Input>		input;
-	std::shared_ptr<Graphics>	graphics;
-	std::shared_ptr<Gui>		gui;
-	std::shared_ptr<Network>	network;
-	std::shared_ptr<Sound>		sound;
-	std::shared_ptr<Engine>		engine;
 
+	std::shared_ptr<Input>		input;
 	std::shared_ptr<QuitEventHandler> quitEventHandler;
+
+	std::shared_ptr<Graphics>	graphics;
+
+	std::shared_ptr<Gui>		gui;
+
+	std::shared_ptr<Network>	network;
+
+	std::shared_ptr<Sound>		sound;
+
+	std::shared_ptr<Engine>		engine;
 
 	bool isRunning;
 };

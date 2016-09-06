@@ -11,6 +11,7 @@ public:
 	virtual ~RawInputHandler();
 
 	void init();
+	void remove();
 
 	virtual bool onClosed();
 	virtual bool onResized(unsigned newWidth, unsigned newHeight);
@@ -29,4 +30,6 @@ public:
 	virtual bool onMouseLeft();
 private:
 	Input* input;
+
+	bool isRegistered;
 };

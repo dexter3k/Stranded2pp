@@ -17,12 +17,12 @@ Stranded::Stranded() :
 	modification(new Modification(defaultModificationName)),
 	window(new Window()),
 	input(new Input(window)),
+	quitEventHandler(new QuitEventHandler(input.get(), this)),
 	graphics(new Graphics(input)),
 	gui(new Gui(input)),
 	network(new Network()),
 	sound(new Sound()),
 	engine(new Engine(input, graphics, gui, network, sound)),
-	quitEventHandler(new QuitEventHandler(input.get(), this)),
 	isRunning(false)
 {}
 
@@ -52,6 +52,31 @@ bool Stranded::init(const std::vector<std::string>& arguments)
 	}
 
 	quitEventHandler->init();
+
+	if (!graphics->init(modification))
+	{
+		return false;
+	}
+
+	if (!gui->init(modification))
+	{
+		return false;
+	}
+
+	if (!network->init(modification))
+	{
+		return false;
+	}
+
+	if (!sound->init(modification))
+	{
+		return false;
+	}
+
+	if (!engine->init(modification))
+	{
+		return false;
+	}
 
 	return true;
 }

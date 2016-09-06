@@ -1,19 +1,36 @@
 #include "RawInputHandler.h"
 
+#include <cassert>
+
 #include "Input.h"
 
 RawInputHandler::RawInputHandler(Input* input) :
-	input(input)
+	input(input),
+	isRegistered(false)
 {}
 
 RawInputHandler::~RawInputHandler()
 {
-	input->removeRawInputHandler(this);
+	if (isRegistered)
+	{
+		input->removeRawInputHandler(this);
+	}
 }
 
 void RawInputHandler::init()
 {
 	input->addRawInputHandler(this);
+
+	isRegistered = true;
+}
+
+void RawInputHandler::remove()
+{
+	assert(isRegistered);
+
+	input->removeRawInputHandler(this);
+
+	isRegistered = false;
 }
 
 bool RawInputHandler::onClosed()

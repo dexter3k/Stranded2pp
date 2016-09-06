@@ -27,12 +27,15 @@ MAIN_OBJECTS = main.o \
 	Graphics.o \
 	Gui.o \
 	Input.o \
+	IntroScreen.o \
 	Keyboard.o \
+	MainMenuScreen.o \
 	Modification.o \
 	Mouse.o \
 	Network.o \
 	RawInputHandler.o \
 	RingBuffer.o \
+	Screen.o \
 	Sound.o \
 	Window.o
 
@@ -83,6 +86,8 @@ Graphics.o: graphics/Graphics.cpp graphics/Graphics.h \
 	$(CXX) $(CXXFLAGS) -c graphics/Graphics.cpp
 
 Gui.o: gui/Gui.cpp gui/Gui.h \
+		gui/screen/Screen.h \
+		gui/screen/IntroScreen.h \
 		input/Input.h \
 		input/Keyboard.h \
 		input/Mouse.h
@@ -94,8 +99,18 @@ Input.o: input/Input.cpp input/Input.h \
 		window/Window.h
 	$(CXX) $(CXXFLAGS) -c input/Input.cpp
 
+IntroScreen.o: gui/screen/IntroScreen.cpp gui/screen/IntroScreen.h \
+		gui/Gui.h \
+		gui/screen/Screen.h
+	$(CXX) $(CXXFLAGS) -c gui/screen/IntroScreen.cpp
+
 Keyboard.o: input/Keyboard.cpp input/Keyboard.h
 	$(CXX) $(CXXFLAGS) -c input/Keyboard.cpp
+
+MainMenuScreen.o: gui/screen/MainMenuScreen.cpp gui/screen/MainMenuScreen.h \
+		gui/Gui.h \
+		gui/screen/Screen.h
+	$(CXX) $(CXXFLAGS) -c gui/screen/MainMenuScreen.cpp
 
 Modification.o: common/Modification.cpp common/Modification.h \
 		common/FileSystem.h
@@ -112,6 +127,10 @@ RawInputHandler.o: input/RawInputHandler.cpp input/RawInputHandler.h
 
 RingBuffer.o: common/RingBuffer.cpp common/RingBuffer.h
 	$(CXX) $(CXXFLAGS) -c common/RingBuffer.cpp
+
+Screen.o: gui/screen/Screen.cpp gui/screen/Screen.h \
+		gui/Gui.h
+	$(CXX) $(CXXFLAGS) -c gui/screen/Screen.cpp
 
 Sound.o: sound/Sound.cpp sound/Sound.h
 	$(CXX) $(CXXFLAGS) -c sound/Sound.cpp
