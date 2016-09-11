@@ -10,5 +10,5 @@ public:
 	Sound();
 	~Sound();
 
-	bool init(const std::shared_ptr<const Modification>& modification);
+	bool init(const Modification& modification);
 };

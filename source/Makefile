@@ -22,21 +22,35 @@ endif
 
 MAIN_OBJECTS = main.o \
 	Stranded.o \
+	Color.o \
+	Device.o \
 	Engine.o \
 	FileSystem.o \
 	Graphics.o \
 	Gui.o \
+	Image.o \
 	Input.o \
 	IntroScreen.o \
 	Keyboard.o \
+	Light.o \
 	MainMenuScreen.o \
+	Material.o \
+	Matrix4.o \
+	Mesh.o \
+	MeshBuffer.o \
+	MeshNode.o \
 	Modification.o \
 	Mouse.o \
 	Network.o \
+	Node.o \
+	OpenGLDevice.o \
 	RawInputHandler.o \
 	RingBuffer.o \
+	Scene.o \
 	Screen.o \
 	Sound.o \
+	Texture.o \
+	Vertex3D.o \
 	Window.o
 
 all: debug
@@ -66,6 +80,12 @@ Stranded.o: Stranded.cpp Stranded.h \
 		window/Window.h
 	$(CXX) $(CXXFLAGS) -c Stranded.cpp
 
+Color.o: graphics/Color.cpp graphics/Color.h
+	$(CXX) $(CXXFLAGS) -c graphics/Color.cpp
+
+Device.o: graphics/device/Device.cpp graphics/device/Device.h
+	$(CXX) $(CXXFLAGS) -c graphics/device/Device.cpp
+
 Engine.o: engine/Engine.cpp engine/Engine.h \
 		graphics/Graphics.h \
 		gui/Gui.h \
@@ -80,6 +100,9 @@ FileSystem.o: common/FileSystem.cpp common/FileSystem.h
 	$(CXX) $(CXXFLAGS) -c common/FileSystem.cpp
 
 Graphics.o: graphics/Graphics.cpp graphics/Graphics.h \
+		graphics/device/Device.h \
+		graphics/device/OpenGLDevice.h \
+		graphics/scene/Scene.h \
 		input/Input.h \
 		input/Keyboard.h \
 		input/Mouse.h
@@ -92,6 +115,9 @@ Gui.o: gui/Gui.cpp gui/Gui.h \
 		input/Keyboard.h \
 		input/Mouse.h
 	$(CXX) $(CXXFLAGS) -c gui/Gui.cpp
+
+Image.o: graphics/Image.cpp graphics/Image.h
+	$(CXX) $(CXXFLAGS) -c graphics/Image.cpp
 
 Input.o: input/Input.cpp input/Input.h \
 		input/Keyboard.h \
@@ -107,10 +133,31 @@ IntroScreen.o: gui/screen/IntroScreen.cpp gui/screen/IntroScreen.h \
 Keyboard.o: input/Keyboard.cpp input/Keyboard.h
 	$(CXX) $(CXXFLAGS) -c input/Keyboard.cpp
 
+Light.o: graphics/Light.cpp graphics/Light.h
+	$(CXX) $(CXXFLAGS) -c graphics/Light.cpp
+
 MainMenuScreen.o: gui/screen/MainMenuScreen.cpp gui/screen/MainMenuScreen.h \
 		gui/Gui.h \
 		gui/screen/Screen.h
 	$(CXX) $(CXXFLAGS) -c gui/screen/MainMenuScreen.cpp
+
+Material.o: graphics/Material.cpp graphics/Material.h
+	$(CXX) $(CXXFLAGS) -c graphics/Material.cpp
+
+Matrix4.o: common/math/Matrix4.cpp common/math/Matrix4.h
+	$(CXX) $(CXXFLAGS) -c common/math/Matrix4.cpp
+
+Mesh.o: graphics/scene/Mesh.cpp graphics/scene/Mesh.h \
+		graphics/scene/MeshBuffer.h
+	$(CXX) $(CXXFLAGS) -c graphics/scene/Mesh.cpp
+
+MeshBuffer.o: graphics/scene/MeshBuffer.cpp graphics/scene/MeshBuffer.h
+	$(CXX) $(CXXFLAGS) -c graphics/scene/MeshBuffer.cpp
+
+MeshNode.o: graphics/scene/MeshNode.cpp graphics/scene/MeshNode.h \
+		graphics/scene/Mesh.h \
+		graphics/scene/Node.h
+	$(CXX) $(CXXFLAGS) -c graphics/scene/MeshNode.cpp
 
 Modification.o: common/Modification.cpp common/Modification.h \
 		common/FileSystem.h
@@ -122,11 +169,22 @@ Mouse.o: input/Mouse.cpp input/Mouse.h
 Network.o: network/Network.cpp network/Network.h
 	$(CXX) $(CXXFLAGS) -c network/Network.cpp
 
+Node.o: graphics/scene/Node.cpp graphics/scene/Node.h \
+		common/math/Vector3.h
+	$(CXX) $(CXXFLAGS) -c graphics/scene/Node.cpp
+
+OpenGLDevice.o: graphics/device/OpenGLDevice.cpp graphics/device/OpenGLDevice.h
+	$(CXX) $(CXXFLAGS) -c graphics/device/OpenGLDevice.cpp
+
 RawInputHandler.o: input/RawInputHandler.cpp input/RawInputHandler.h
 	$(CXX) $(CXXFLAGS) -c input/RawInputHandler.cpp
 
 RingBuffer.o: common/RingBuffer.cpp common/RingBuffer.h
 	$(CXX) $(CXXFLAGS) -c common/RingBuffer.cpp
+
+Scene.o: graphics/scene/Scene.cpp graphics/scene/Scene.h \
+		graphics/Graphics.h
+	$(CXX) $(CXXFLAGS) -c graphics/scene/Scene.cpp
 
 Screen.o: gui/screen/Screen.cpp gui/screen/Screen.h \
 		gui/Gui.h
@@ -134,6 +192,15 @@ Screen.o: gui/screen/Screen.cpp gui/screen/Screen.h \
 
 Sound.o: sound/Sound.cpp sound/Sound.h
 	$(CXX) $(CXXFLAGS) -c sound/Sound.cpp
+
+Texture.o: graphics/Texture.cpp graphics/Texture.h
+	$(CXX) $(CXXFLAGS) -c graphics/Texture.cpp
+
+Vertex3D.o: graphics/Vertex3D.cpp graphics/Vertex3D.h \
+		common/math/Vector2.h \
+		common/math/Vector3.h \
+		graphics/Color.h
+	$(CXX) $(CXXFLAGS) -c graphics/Vertex3D.cpp
 
 Window.o: window/Window.cpp window/Window.h \
 		common/Modification.h \

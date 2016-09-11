@@ -12,15 +12,15 @@ class Modification;
 class Gui
 {
 public:
-	Gui(const std::shared_ptr<Input>& input);
+	Gui(Input& input);
 	~Gui();
 
-	bool init(const std::shared_ptr<const Modification>& modification);
+	bool init(const Modification& modification);
 	void update(float deltaTime);
 
 	void setScreen(Screen::Screens screen);
 private:
-	std::shared_ptr<Input> input;
+	Input& input;
 
 	Screen* currentScreen;
 	std::shared_ptr<IntroScreen> introScreen;

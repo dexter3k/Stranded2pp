@@ -4,7 +4,7 @@
 
 #include "../Gui.h"
 
-Screen::Screen(Gui* gui) :
+Screen::Screen(Gui& gui) :
 	gui(gui),
 	isCreated(false)
 {}

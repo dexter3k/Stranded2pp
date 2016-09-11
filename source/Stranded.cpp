@@ -16,13 +16,13 @@ const std::string Stranded::defaultModificationName = "Stranded II";
 Stranded::Stranded() :
 	modification(new Modification(defaultModificationName)),
 	window(new Window()),
-	input(new Input(window)),
-	quitEventHandler(new QuitEventHandler(input.get(), this)),
-	graphics(new Graphics(input)),
-	gui(new Gui(input)),
+	input(new Input(*window)),
+	quitEventHandler(new QuitEventHandler(input.get(), *this)),
+	graphics(new gfx::Graphics(*input)),
+	gui(new Gui(*input)),
 	network(new Network()),
 	sound(new Sound()),
-	engine(new Engine(input, graphics, gui, network, sound)),
+	engine(new Engine(*input, *graphics, *gui, *network, *sound)),
 	isRunning(false)
 {}
 
@@ -41,39 +41,39 @@ bool Stranded::init(const std::vector<std::string>& arguments)
 		return false;
 	}
 
-	if (!window->init(modification))
+	if (!window->init(*modification))
 	{
 		return false;
 	}
 
-	if (!input->init(modification))
+	if (!input->init(*modification))
 	{
 		return false;
 	}
 
 	quitEventHandler->init();
 
-	if (!graphics->init(modification))
+	if (!graphics->init(*modification))
 	{
 		return false;
 	}
 
-	if (!gui->init(modification))
+	if (!gui->init(*modification))
 	{
 		return false;
 	}
 
-	if (!network->init(modification))
+	if (!network->init(*modification))
 	{
 		return false;
 	}
 
-	if (!sound->init(modification))
+	if (!sound->init(*modification))
 	{
 		return false;
 	}
 
-	if (!engine->init(modification))
+	if (!engine->init(*modification))
 	{
 		return false;
 	}
@@ -95,6 +95,8 @@ void Stranded::run()
 		graphics->update(deltaTime);
 
 		gui->update(deltaTime);
+
+		graphics->drawAll();
 
 		window->display();
 	}

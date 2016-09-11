@@ -17,10 +17,10 @@ class Input
 {
 	friend class RawInputHandler;
 public:
-	Input(const std::shared_ptr<Window>& window);
+	Input(Window& window);
 	~Input();
 
-	bool init(const std::shared_ptr<const Modification>& modification);
+	bool init(const Modification& modification);
 	void update(float deltaTime);
 
 	std::string getMouseButtonName(uint8_t button) const;
@@ -53,7 +53,7 @@ private:
 
 	bool loadKeyNames(const std::string& modificationPath);
 private:
-	std::shared_ptr<Window>	window;
+	Window&	window;
 
 	std::vector<std::string> mouseButtonNames;
 	std::string mouseWheelUpName;

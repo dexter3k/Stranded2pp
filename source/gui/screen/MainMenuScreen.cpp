@@ -12,9 +12,9 @@ bool MainMenuScreen::InputHandler::onMouseButtonPressed(uint8_t button, int x,
 	return false;
 }
 
-MainMenuScreen::MainMenuScreen(Gui* gui, Input* input) :
+MainMenuScreen::MainMenuScreen(Gui& gui, Input& input) :
 	super(gui),
-	inputHandler(new InputHandler(input, this))
+	inputHandler(new InputHandler(input, *this))
 {}
 
 MainMenuScreen::~MainMenuScreen()

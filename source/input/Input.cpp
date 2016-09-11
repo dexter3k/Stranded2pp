@@ -14,7 +14,7 @@
 const std::string Input::keyNameInfoPath = "sys/keys.inf";
 const std::string Input::defaultName = "null";
 
-Input::Input(const std::shared_ptr<Window>& window) :
+Input::Input(Window& window) :
 	window(window),
 	mouseButtonNames(6, defaultName),
 	mouseWheelUpName(defaultName),
@@ -26,21 +26,21 @@ Input::Input(const std::shared_ptr<Window>& window) :
 Input::~Input()
 {}
 
-bool Input::init(const std::shared_ptr<const Modification>& modification)
+bool Input::init(const Modification& modification)
 {
-	if (!loadKeyNames(modification->getPath()))
+	if (!loadKeyNames(modification.getPath()))
 	{
 		return false;
 	}
 
-	window->registerInput(this);
+	window.registerInput(this);
 
 	return true;
 }
 
 void Input::update(float deltaTime)
 {
-	window->pollEvents();
+	window.pollEvents();
 }
 
 std::string Input::getMouseButtonName(uint8_t button) const

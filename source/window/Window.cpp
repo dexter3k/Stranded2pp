@@ -16,9 +16,9 @@ Window::Window() :
 Window::~Window()
 {}
 
-bool Window::init(const std::shared_ptr<const Modification>& modification)
+bool Window::init(const Modification& modification)
 {
-	auto& gameSettings = modification->getSettings();
+	auto& gameSettings = modification.getSettings();
 
 	// GL context settings
 	sf::ContextSettings contextSettings;
@@ -45,7 +45,7 @@ bool Window::init(const std::shared_ptr<const Modification>& modification)
 	}
 
 	std::string title = "S2++ '";
-	title += modification->getName() + "' mod";
+	title += modification.getName() + "' mod";
 
 	// Create window
 	window.create(videoMode, title,
@@ -62,7 +62,7 @@ bool Window::init(const std::shared_ptr<const Modification>& modification)
 	}
 	else
 	{
-		window.setFramerateLimit(60);
+		window.setFramerateLimit(300);
 	}
 
 	return true;

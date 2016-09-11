@@ -14,8 +14,8 @@ class IntroScreen : public Screen
 	{
 		typedef RawInputHandler super;
 	public:
-		InputHandler(Input* input, IntroScreen* introScreen) :
-			super(input),
+		InputHandler(Input& input, IntroScreen& introScreen) :
+			super(&input),
 			introScreen(introScreen)
 		{}
 
@@ -23,11 +23,11 @@ class IntroScreen : public Screen
 			bool super) override;
 		bool onMouseButtonPressed(uint8_t button, int x, int y) override;
 	private:
-		IntroScreen* introScreen;
+		IntroScreen& introScreen;
 	};
 	friend class InputHandler;
 public:
-	IntroScreen(Gui* gui, Input* input);
+	IntroScreen(Gui& gui, Input& input);
 	~IntroScreen();
 
 	void create() override;

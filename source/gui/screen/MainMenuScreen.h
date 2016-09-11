@@ -14,18 +14,18 @@ class MainMenuScreen : public Screen
 	{
 		typedef RawInputHandler super;
 	public:
-		InputHandler(Input* input, MainMenuScreen* mainMenuScreen) :
-			super(input),
+		InputHandler(Input& input, MainMenuScreen& mainMenuScreen) :
+			super(&input),
 			mainMenuScreen(mainMenuScreen)
 		{}
 
 		bool onMouseButtonPressed(uint8_t button, int x, int y) override;
 	private:
-		MainMenuScreen* mainMenuScreen;
+		MainMenuScreen& mainMenuScreen;
 	};
 	friend class InputHandler;
 public:
-	MainMenuScreen(Gui* gui, Input* input);
+	MainMenuScreen(Gui& gui, Input& input);
 	~MainMenuScreen();
 
 	void create() override;

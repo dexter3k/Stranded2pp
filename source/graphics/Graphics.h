@@ -5,14 +5,39 @@
 class Input;
 class Modification;
 
+namespace gfx
+{
+
+namespace device
+{
+
+	class Device;
+
+} // namespace device
+
+
+namespace scene
+{
+
+	class Scene;
+
+} // namespace scene
+
 class Graphics
 {
 public:
-	Graphics(const std::shared_ptr<Input>& input);
+	Graphics(Input& input);
 	~Graphics();
 
-	bool init(const std::shared_ptr<const Modification>& modification);
+	bool init(const Modification& modification);
 	void update(float deltaTime);
+
+	void drawAll();
 private:
-	std::shared_ptr<Input>	input;
+	Input& input;
+
+	std::shared_ptr<device::Device> device;
+	std::shared_ptr<scene::Scene> scene;
 };
+
+} // namespace gfx

@@ -8,7 +8,7 @@ Network::Network()
 Network::~Network()
 {}
 
-bool Network::init(const std::shared_ptr<const Modification>& modification)
+bool Network::init(const Modification& modification)
 {
 	return true;
 }

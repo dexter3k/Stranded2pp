@@ -12,7 +12,7 @@ public:
 		Inventory
 	};
 public:
-	Screen(Gui* gui);
+	Screen(Gui& gui);
 	virtual ~Screen();
 
 	virtual void create();
@@ -20,7 +20,7 @@ public:
 
 	virtual void update(float deltaTime);
 protected:
-	Gui* gui;
+	Gui& gui;
 
 	bool isCreated;
 };

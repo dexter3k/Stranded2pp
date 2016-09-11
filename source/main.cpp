@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "Stranded.h"
 
@@ -16,6 +17,6 @@ int main(int argc, char* argv[])
 	{
 		game.run();
 	}
-
+	
 	return 0;
 }

@@ -8,7 +8,7 @@ Sound::Sound()
 Sound::~Sound()
 {}
 
-bool Sound::init(const std::shared_ptr<const Modification>& modification)
+bool Sound::init(const Modification& modification)
 {
 	return true;
 }

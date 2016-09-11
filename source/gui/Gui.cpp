@@ -6,11 +6,11 @@
 #include "common/Modification.h"
 #include "input/Input.h"
 
-Gui::Gui(const std::shared_ptr<Input>& input) :
+Gui::Gui(Input& input) :
 	input(input),
 	currentScreen(nullptr),
-	introScreen(new IntroScreen(this, input.get())),
-	mainMenuScreen(new MainMenuScreen(this, input.get()))
+	introScreen(new IntroScreen(*this, input)),
+	mainMenuScreen(new MainMenuScreen(*this, input))
 {}
 
 Gui::~Gui()
@@ -21,7 +21,7 @@ Gui::~Gui()
 	}
 }
 
-bool Gui::init(const std::shared_ptr<const Modification>& modification)
+bool Gui::init(const Modification& modification)
 {
 	setScreen(Screen::Intro);
 
