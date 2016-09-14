@@ -52,18 +52,22 @@ public:
 	virtual void setTransform(TransformationState state,
 		const math::Matrix4& matrix) = 0;
 
+	virtual Texture* loadTextureFromFile(const std::string& name) = 0;
+	virtual Texture* loadTextureFromImage(const std::string& name,
+		const Image& image) = 0;
+
 	virtual void drawPixel(unsigned x, unsigned y, const Color& color) = 0;
 
-	virtual void draw2DImage(const Texture& texture,
+	virtual void draw2DImage(const Texture* texture,
 		const math::Vector2i& destination) = 0;
 
-	virtual void draw2DImage(const Texture& texture,
+	virtual void draw2DImage(const Texture* texture,
 		const math::Vector2i& destination, const math::Recti& sourceRect,
 		const math::Recti* clipRect = 0,
 		const Color& color = Color(255, 255, 255, 255),
 		bool useAlphaChannel = false) = 0;
 
-	virtual void draw2DImage(const Texture& texture,
+	virtual void draw2DImage(const Texture* texture,
 		const math::Recti& destination, const math::Recti& sourceRect,
 		const math::Recti* clipRect = nullptr,
 		const Color* colors = nullptr, bool useAlphaChannel = false) = 0;

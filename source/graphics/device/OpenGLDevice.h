@@ -35,18 +35,21 @@ public:
 	void setTransform(TransformationState state, const math::Matrix4& matrix)
 		override;
 
+	Texture* loadTextureFromFile(const std::string& name);
+	Texture* loadTextureFromImage(const std::string& name, const Image& image);
+
 	void drawPixel(unsigned x, unsigned y, const Color& color) override;
 
-	void draw2DImage(const Texture& texture,
+	void draw2DImage(const Texture* texture,
 		const math::Vector2i& destination) override;
 
-	void draw2DImage(const Texture& texture,
+	void draw2DImage(const Texture* texture,
 		const math::Vector2i& destination, const math::Recti& sourceRect,
 		const math::Recti* clipRect = 0,
 		const Color& color = Color(255, 255, 255, 255),
 		bool useAlphaChannel = false) override;
 
-	void draw2DImage(const Texture& texture,
+	void draw2DImage(const Texture* texture,
 		const math::Recti& destination, const math::Recti& sourceRect,
 		const math::Recti* clipRect = nullptr,
 		const Color* colors = nullptr, bool useAlphaChannel = false) override;

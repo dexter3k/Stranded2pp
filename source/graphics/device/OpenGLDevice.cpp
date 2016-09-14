@@ -287,6 +287,17 @@ void OpenGLDevice::setTransform(TransformationState state,
 	}
 }
 
+Texture* OpenGLDevice::loadTextureFromFile(const std::string& name)
+{
+	return nullptr;
+}
+
+Texture* OpenGLDevice::loadTextureFromImage(const std::string& name,
+	const Image& image)
+{
+	return nullptr;
+}
+
 void OpenGLDevice::drawPixel(unsigned x, unsigned y, const Color& color)
 {
 	math::Vector2u renderTargetSize = screenSize;
@@ -313,20 +324,36 @@ void OpenGLDevice::drawPixel(unsigned x, unsigned y, const Color& color)
 	glDrawArrays(GL_POINTS, 0, 1);
 }
 
-void OpenGLDevice::draw2DImage(const Texture& texture,
+void OpenGLDevice::draw2DImage(const Texture* texture,
 	const math::Vector2i& destination)
 {
+	if (!texture)
+	{
+		return;
+	}
 
+	draw2DImage(texture, destination,
+		math::Recti(math::Vector2i(0, 0), texture->getOriginalSize()));
 }
 
-void OpenGLDevice::draw2DImage(const Texture& texture,
+void OpenGLDevice::draw2DImage(const Texture* texture,
 	const math::Vector2i& destination, const math::Recti& sourceRect,
 	const math::Recti* clipRect, const Color& color, bool useAlphaChannel)
 {
+	if (!texture)
+	{
+		return;
+	}
 
+	if (!sourceRect.isValid())
+	{
+		return;
+	}
+
+	
 }
 
-void OpenGLDevice::draw2DImage(const Texture& texture,
+void OpenGLDevice::draw2DImage(const Texture* texture,
 	const math::Recti& destination, const math::Recti& sourceRect,
 	const math::Recti* clipRect, const Color* colors, bool useAlphaChannel)
 {
