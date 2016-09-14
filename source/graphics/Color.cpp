@@ -14,6 +14,15 @@ Color::Color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) :
 Color::~Color()
 {}
 
+uint32_t Color::getAsRGBA32() const
+{
+	// Convert from ABGR32
+	uint32_t rgba = (getRed() << 24) | (getGreen() << 16) | (getBlue() << 8) |
+		getAlpha();
+
+	return rgba;
+}
+
 uint8_t Color::getRed() const
 {
 	return (color) & 0xff;

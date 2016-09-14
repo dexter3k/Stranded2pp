@@ -6,6 +6,7 @@
 #include <SFML/OpenGL.hpp>
 
 #include "common/math/MathUtility.h"
+#include "common/FileSystem.h"
 
 namespace gfx
 {
@@ -28,13 +29,17 @@ OpenGLDevice::OpenGLDevice() :
 	clientStateVertex(false),
 	clientStateNormal(false),
 	clientStateColor(false),
-	clientStateTexCoord0(false)
+	clientStateTexCoord0(false),
+	loadedTextures(),
+	currentTextures()
 {
 	deviceName = "OpenGL";
 }
 
 OpenGLDevice::~OpenGLDevice()
-{}
+{
+	unloadAllTextures();
+}
 
 bool OpenGLDevice::init()
 {
@@ -188,6 +193,7 @@ void OpenGLDevice::set2DRenderMode(bool transparent, bool textured, bool alphaCh
 		{
 			glMatrixMode(GL_PROJECTION);
 
+			// TODO
 			math::Vector2u renderTargetSize = screenSize;
 			math::Matrix4 matrix;
 			matrix.buildProjectionMatrixOrtho(
@@ -287,15 +293,113 @@ void OpenGLDevice::setTransform(TransformationState state,
 	}
 }
 
-Texture* OpenGLDevice::loadTextureFromFile(const std::string& name)
+void OpenGLDevice::bindTexture(unsigned textureLayer, const Texture* texture)
 {
-	return nullptr;
+	assert(textureLayer < maxTextures);
+
+	if (currentTextures[textureLayer] == texture)
+	{
+		return;
+	}
+
+	glActiveTexture(GL_TEXTURE0 + textureLayer);
+
+	if (texture == nullptr)
+	{
+		glBindTexture(GL_TEXTURE_2D, 0);
+		return;
+	}
+
+	glBindTexture(GL_TEXTURE_2D, texture->getGlTextureName());
 }
 
-Texture* OpenGLDevice::loadTextureFromImage(const std::string& name,
-	const Image& image)
+Texture* OpenGLDevice::getBindedTexture(unsigned textureLayer) const
 {
-	return nullptr;
+	assert(textureLayer < maxTextures);
+
+	return currentTextures[textureLayer];
+}
+
+Texture* OpenGLDevice::findTexture(const std::string& name) const
+{
+	auto it = loadedTextures.find(name);
+	if (it == loadedTextures.end())
+	{
+		return nullptr;
+	}
+
+	return it->second;
+}
+
+Texture* OpenGLDevice::getTexture(const std::string& name) const
+{
+	return findTexture(name);
+}
+
+Texture* OpenGLDevice::loadTextureFromFile(const std::string& name)
+{
+	Texture* texture = findTexture(name);
+	if (texture != nullptr)
+	{
+		std::cout << "Texture with name '" << name << "' is already loaded!" <<
+			std::endl;
+
+		return texture;
+	}
+
+	if (!fs::checkFileExists(name))
+	{
+		std::cout << "Unable to load texture: file '" << name <<
+			"' is not found!" << std::endl;
+
+		return nullptr;
+	}
+
+	Image image;
+	if (!image.loadFromFile(name))
+	{
+		// Create solid pink image;
+		image.create(math::Vector2u(16, 16));
+	}
+
+	if (image.getSize().x == 0 ||
+		image.getSize().y == 0)
+	{
+		return nullptr;
+	}
+
+	texture = new Texture(name, image, *this);
+
+	if (texture != nullptr)
+	{
+		loadedTextures[name] = texture;
+	}
+
+	return texture;
+}
+
+void OpenGLDevice::unloadAllTextures()
+{
+	for (auto&& texture : loadedTextures)
+	{
+		std::cout << "Deleting '" << texture.first << "'" << std::endl;
+		delete texture.second;
+	}
+
+	loadedTextures.clear();
+
+	for (unsigned i = 0; i < maxTextures; ++i)
+	{
+		bindTexture(i, nullptr);
+	}
+}
+
+void OpenGLDevice::disableTextures(unsigned fromLayer)
+{
+	for (unsigned i = fromLayer; i < maxTextures; ++i)
+	{
+		bindTexture(i, nullptr);
+	}
 }
 
 void OpenGLDevice::drawPixel(unsigned x, unsigned y, const Color& color)
@@ -332,8 +436,11 @@ void OpenGLDevice::draw2DImage(const Texture* texture,
 		return;
 	}
 
+	auto originalSize = texture->getSize();
+
 	draw2DImage(texture, destination,
-		math::Recti(math::Vector2i(0, 0), texture->getOriginalSize()));
+		math::Recti(0, 0, static_cast<int>(originalSize.x),
+			static_cast<int>(originalSize.y)));
 }
 
 void OpenGLDevice::draw2DImage(const Texture* texture,
@@ -350,7 +457,116 @@ void OpenGLDevice::draw2DImage(const Texture* texture,
 		return;
 	}
 
-	
+	math::Vector2i targetPosition = destination;
+	math::Vector2i sourcePosition = sourceRect.upperLeft;
+
+	math::Vector2i sourceSize = sourceRect.getSize();
+	if (clipRect)
+	{
+
+	}
+
+	if (targetPosition.x < 0)
+	{
+		sourceSize.x += targetPosition.x;
+		if (sourceSize.x <= 0)
+		{
+			return;
+		}
+
+		sourcePosition.x -= targetPosition.x;
+		targetPosition.x = 0;
+	}
+
+	// TODO
+	const math::Vector2u& renderTargetSize = screenSize;
+
+	if (targetPosition.x + sourceSize.x > static_cast<int>(renderTargetSize.x))
+	{
+		sourceSize.x -= (targetPosition.x + sourceSize.x) - renderTargetSize.x;
+		if (sourceSize.x <= 0)
+		{
+			return;
+		}
+	}
+
+	if (targetPosition.y < 0)
+	{
+		sourceSize.y += targetPosition.y;
+		if (sourceSize.y <= 0)
+		{
+			return;
+		}
+
+		sourcePosition.y -= targetPosition.y;
+		targetPosition.y = 0;
+	}
+
+	if (targetPosition.y + sourceSize.y > static_cast<int>(renderTargetSize.y))
+	{
+		sourceSize.y -= (targetPosition.y + sourceSize.y) - renderTargetSize.y;
+		if (sourceSize.y <= 0)
+		{
+			return;
+		}
+	}
+
+	const math::Vector2u& textureSize = texture->getSize();
+	float invertedWidth = 1.0f / static_cast<float>(textureSize.x);
+	float invertedHeight = 1.0f / static_cast<float>(textureSize.y);
+
+	math::Rectf textureCoords(
+		sourcePosition.x * invertedWidth,
+		sourcePosition.y * invertedHeight,
+		(sourcePosition.x + sourceSize.x) * invertedWidth,
+		(sourcePosition.y + sourceSize.y) * invertedHeight);
+
+	math::Recti poss(targetPosition, sourceSize);
+
+	disableTextures(1);
+	bindTexture(0, texture);
+
+	set2DRenderMode(color.getAlpha() < 255, true, useAlphaChannel);
+
+	quad2DVertices[0].color = color;
+	quad2DVertices[1].color = color;
+	quad2DVertices[2].color = color;
+	quad2DVertices[3].color = color;
+
+	quad2DVertices[0].position = math::Vector3f(
+		static_cast<float>(poss.upperLeft.x),
+		static_cast<float>(poss.upperLeft.y), 0.0f);
+	quad2DVertices[1].position = math::Vector3f(
+		static_cast<float>(poss.lowerRight.x),
+		static_cast<float>(poss.upperLeft.y), 0.0f);
+	quad2DVertices[2].position = math::Vector3f(
+		static_cast<float>(poss.lowerRight.x),
+		static_cast<float>(poss.lowerRight.y), 0.0f);
+	quad2DVertices[3].position = math::Vector3f(
+		static_cast<float>(poss.upperLeft.x),
+		static_cast<float>(poss.lowerRight.y), 0.0f);
+
+	quad2DVertices[0].textureCoords = math::Vector2f(textureCoords.upperLeft.x,
+		textureCoords.upperLeft.y);
+	quad2DVertices[1].textureCoords = math::Vector2f(textureCoords.lowerRight.x,
+		textureCoords.upperLeft.y);
+	quad2DVertices[2].textureCoords = math::Vector2f(textureCoords.lowerRight.x,
+		textureCoords.lowerRight.y);
+	quad2DVertices[3].textureCoords = math::Vector2f(textureCoords.upperLeft.x,
+		textureCoords.lowerRight.y);
+
+	setClientState(true, false, false, true);
+
+	glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D),
+		&((static_cast<const Vertex3D*>(quad2DVertices))[0].textureCoords));
+
+	glVertexPointer(3, GL_FLOAT, sizeof(Vertex3D),
+		&((static_cast<const Vertex3D*>(quad2DVertices))[0].position));
+
+	//glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex3D),
+	//	&((static_cast<const Vertex3D*>(quad2DVertices))[0].color));
+
+	glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, quad2DIndices);
 }
 
 void OpenGLDevice::draw2DImage(const Texture* texture,

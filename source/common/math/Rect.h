@@ -74,8 +74,14 @@ public:
 		return ((lowerRight.x >= upperLeft.x) &&
 			(lowerRight.y >= upperLeft.y));
 	}
+
+	Vector2<T> getSize() const
+	{
+		return lowerRight - upperLeft;
+	}
 };
 
 typedef Rect<int> Recti;
+typedef Rect<float> Rectf;
 
 } // namespace math

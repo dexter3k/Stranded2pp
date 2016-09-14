@@ -3,6 +3,7 @@
 #include <string>
 
 #include "../Color.h"
+#include "../Image.h"
 #include "../Light.h"
 #include "../Material.h"
 #include "../Texture.h"
@@ -52,9 +53,10 @@ public:
 	virtual void setTransform(TransformationState state,
 		const math::Matrix4& matrix) = 0;
 
+	virtual Texture* getTexture(const std::string& name) const = 0;
 	virtual Texture* loadTextureFromFile(const std::string& name) = 0;
-	virtual Texture* loadTextureFromImage(const std::string& name,
-		const Image& image) = 0;
+
+	virtual void unloadAllTextures() = 0;
 
 	virtual void drawPixel(unsigned x, unsigned y, const Color& color) = 0;
 

@@ -23,6 +23,8 @@ namespace scene
 
 } // namespace scene
 
+class Texture;
+
 class Graphics
 {
 public:
@@ -38,6 +40,8 @@ private:
 
 	std::shared_ptr<device::Device> device;
 	std::shared_ptr<scene::Scene> scene;
+
+	Texture* myTexture;
 };
 
 } // namespace gfx

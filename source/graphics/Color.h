@@ -14,6 +14,8 @@ public:
 	Color(uint8_t red, uint8_t green, uint8_t blue, uint8_t aplha = 255);
 	~Color();
 
+	uint32_t getAsRGBA32() const;
+
 	uint8_t getRed() const;
 	uint8_t getGreen() const;
 	uint8_t getBlue() const;

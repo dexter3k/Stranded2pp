@@ -4,6 +4,8 @@
 
 #include "Device.h"
 
+#include <map>
+
 namespace gfx
 {
 
@@ -35,8 +37,15 @@ public:
 	void setTransform(TransformationState state, const math::Matrix4& matrix)
 		override;
 
-	Texture* loadTextureFromFile(const std::string& name);
-	Texture* loadTextureFromImage(const std::string& name, const Image& image);
+	void bindTexture(unsigned textureLayer, const Texture* texture);
+	Texture* getBindedTexture(unsigned textureLayer) const;
+
+	Texture* getTexture(const std::string& name) const override;
+	Texture* loadTextureFromFile(const std::string& name) override;
+
+	void unloadAllTextures() override;
+
+	void disableTextures(unsigned fromLayer = 0);
 
 	void drawPixel(unsigned x, unsigned y, const Color& color) override;
 
@@ -46,7 +55,7 @@ public:
 	void draw2DImage(const Texture* texture,
 		const math::Vector2i& destination, const math::Recti& sourceRect,
 		const math::Recti* clipRect = 0,
-		const Color& color = Color(255, 255, 255, 255),
+		const Color& color = Color(0, 255, 255, 255),
 		bool useAlphaChannel = false) override;
 
 	void draw2DImage(const Texture* texture,
@@ -78,6 +87,8 @@ public:
 
 	void onResize(const math::Vector2u& size) override;
 private:
+	Texture* findTexture(const std::string& name) const;
+private:
 	Color clearColor;
 
 	math::Matrix4 matrices[super::TransformationCount];
@@ -105,6 +116,10 @@ private:
 	bool clientStateNormal;
 	bool clientStateColor;
 	bool clientStateTexCoord0;
+
+	std::map<std::string, Texture*> loadedTextures;
+	static const unsigned maxTextures = 2;
+	Texture* currentTextures[maxTextures];
 };
 
 } // namespace device
