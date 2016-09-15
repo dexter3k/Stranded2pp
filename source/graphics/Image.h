@@ -26,6 +26,8 @@ public:
 
 	void flipVertically();
 	void flipHorizontally();
+
+	void applyStrandedColorKey();
 private:
 	sf::Image image;
 };

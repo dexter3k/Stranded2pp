@@ -26,7 +26,8 @@ bool Graphics::init(const Modification& modification)
 		return false;
 	}
 
-	myTexture = device->loadTextureFromFile(modification.getPath() + "sys/gfx/bigbutton.bmp");
+	myTexture = device->loadTextureFromFile(modification.getPath() + "sys/gfx/bigbutton.bmp", true);
+	myTexture2 = device->loadTextureFromFile(modification.getPath() + "sys/gfx/tutor.bmp", true);
 
 	return true;
 }
@@ -56,6 +57,9 @@ void Graphics::drawAll()
 	device->draw2DRectangleOutline(math::Recti(40, 40, 100, 100), Color(0, 255, 255));
 
 	device->draw2DImage(myTexture, math::Vector2i(100, 100));
+	device->draw2DImage(myTexture2, math::Vector2i(200, 200));
+
+	device->draw2DImage(myTexture2, math::Recti(100, 0, 200, 100));
 
 	device->endScene();
 }

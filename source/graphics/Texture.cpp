@@ -72,9 +72,14 @@ void Texture::uploadTexture(bool initTexture, unsigned mipMapLevel,
 	unsigned height = size.y >> mipMapLevel;
 
 
-	glTexImage2D(GL_TEXTURE_2D, static_cast<GLint>(mipMapLevel), GL_RGBA,
-		static_cast<GLsizei>(width), static_cast<GLsizei>(height), 0, GL_RGBA,
-		GL_UNSIGNED_BYTE, static_cast<const GLvoid*>(data));
+	if (initTexture)
+	{
+		glTexImage2D(GL_TEXTURE_2D, static_cast<GLint>(mipMapLevel), GL_RGBA,
+			static_cast<GLsizei>(width), static_cast<GLsizei>(height), 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, static_cast<const GLvoid*>(data));
+	}
+
+	// TODO
 }
 
 } // namespace gfx

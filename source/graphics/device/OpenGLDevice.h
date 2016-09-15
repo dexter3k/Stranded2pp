@@ -37,11 +37,12 @@ public:
 	void setTransform(TransformationState state, const math::Matrix4& matrix)
 		override;
 
-	void bindTexture(unsigned textureLayer, const Texture* texture);
+	void bindTexture(unsigned textureLayer, Texture* texture);
 	Texture* getBindedTexture(unsigned textureLayer) const;
 
 	Texture* getTexture(const std::string& name) const override;
-	Texture* loadTextureFromFile(const std::string& name) override;
+	Texture* loadTextureFromFile(const std::string& name,
+		bool applyColorKey = false) override;
 
 	void unloadAllTextures() override;
 
@@ -49,19 +50,21 @@ public:
 
 	void drawPixel(unsigned x, unsigned y, const Color& color) override;
 
-	void draw2DImage(const Texture* texture,
-		const math::Vector2i& destination) override;
+	void draw2DImage(Texture* texture, const math::Vector2i& destination)
+		override;
 
-	void draw2DImage(const Texture* texture,
+	void draw2DImage(Texture* texture,
 		const math::Vector2i& destination, const math::Recti& sourceRect,
 		const math::Recti* clipRect = 0,
-		const Color& color = Color(0, 255, 255, 255),
-		bool useAlphaChannel = false) override;
+		const Color& color = Color(255, 255, 255, 255),
+		bool useAlphaChannel = true) override;
 
-	void draw2DImage(const Texture* texture,
+	void draw2DImage(Texture* texture, const math::Recti& destination) override;
+
+	void draw2DImage(Texture* texture,
 		const math::Recti& destination, const math::Recti& sourceRect,
 		const math::Recti* clipRect = nullptr,
-		const Color* colors = nullptr, bool useAlphaChannel = false) override;
+		const Color* colors = nullptr, bool useAlphaChannel = true) override;
 
 	void draw2DLine(const math::Vector2i& start,
 		const math::Vector2i& end,

@@ -42,6 +42,7 @@ private:
 	std::shared_ptr<scene::Scene> scene;
 
 	Texture* myTexture;
+	Texture* myTexture2;
 };
 
 } // namespace gfx

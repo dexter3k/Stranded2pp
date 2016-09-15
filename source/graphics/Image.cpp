@@ -1,5 +1,7 @@
 #include "Image.h"
 
+#include <iostream>
+
 #include <SFML/Graphics/Color.hpp>
 
 namespace gfx
@@ -19,7 +21,7 @@ void Image::create(const math::Vector2u& size, const Color& color)
 
 bool Image::loadFromFile(const std::string& filename)
 {
-	return image.loadFromFile(filename);
+	return image.loadFromFile(filename);;
 }
 
 math::Vector2u Image::getSize() const
@@ -42,6 +44,16 @@ void Image::flipVertically()
 void Image::flipHorizontally()
 {
 	image.flipHorizontally();
+}
+
+void Image::applyStrandedColorKey()
+{
+	sf::Color before = image.getPixel(2, 2);
+	image.createMaskFromColor(sf::Color(255, 0, 255));
+	sf::Color after = image.getPixel(2, 2);
+
+	std::cout << before.toInteger() << std::endl;
+	std::cout << after.toInteger() << std::endl;
 }
 
 } // namespace gfx

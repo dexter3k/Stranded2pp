@@ -239,7 +239,17 @@ void OpenGLDevice::set2DRenderMode(bool transparent, bool textured, bool alphaCh
 
 	if (textured)
 	{
+		setTransform(TransformationTexture0, math::Matrix4());
+		transformation3DChanged = false;
 
+		if (alphaChannel)
+		{
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		}
+		else
+		{
+			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		}
 	}
 
 	currentRenderMode = RenderMode2D;
@@ -293,7 +303,7 @@ void OpenGLDevice::setTransform(TransformationState state,
 	}
 }
 
-void OpenGLDevice::bindTexture(unsigned textureLayer, const Texture* texture)
+void OpenGLDevice::bindTexture(unsigned textureLayer, Texture* texture)
 {
 	assert(textureLayer < maxTextures);
 
@@ -302,14 +312,17 @@ void OpenGLDevice::bindTexture(unsigned textureLayer, const Texture* texture)
 		return;
 	}
 
+	currentTextures[textureLayer] = texture;
 	glActiveTexture(GL_TEXTURE0 + textureLayer);
 
 	if (texture == nullptr)
 	{
 		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisable(GL_TEXTURE_2D);
 		return;
 	}
 
+	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture->getGlTextureName());
 }
 
@@ -336,7 +349,8 @@ Texture* OpenGLDevice::getTexture(const std::string& name) const
 	return findTexture(name);
 }
 
-Texture* OpenGLDevice::loadTextureFromFile(const std::string& name)
+Texture* OpenGLDevice::loadTextureFromFile(const std::string& name,
+	bool applyColorKey)
 {
 	Texture* texture = findTexture(name);
 	if (texture != nullptr)
@@ -366,6 +380,11 @@ Texture* OpenGLDevice::loadTextureFromFile(const std::string& name)
 		image.getSize().y == 0)
 	{
 		return nullptr;
+	}
+
+	if (applyColorKey)
+	{
+		image.applyStrandedColorKey();
 	}
 
 	texture = new Texture(name, image, *this);
@@ -410,7 +429,7 @@ void OpenGLDevice::drawPixel(unsigned x, unsigned y, const Color& color)
 		return;
 	}
 
-	//disableTextures();
+	disableTextures();
 	set2DRenderMode(color.getAlpha() < 255, false, false);
 
 	quad2DVertices[0].color = color;
@@ -428,7 +447,7 @@ void OpenGLDevice::drawPixel(unsigned x, unsigned y, const Color& color)
 	glDrawArrays(GL_POINTS, 0, 1);
 }
 
-void OpenGLDevice::draw2DImage(const Texture* texture,
+void OpenGLDevice::draw2DImage(Texture* texture,
 	const math::Vector2i& destination)
 {
 	if (!texture)
@@ -443,7 +462,7 @@ void OpenGLDevice::draw2DImage(const Texture* texture,
 			static_cast<int>(originalSize.y)));
 }
 
-void OpenGLDevice::draw2DImage(const Texture* texture,
+void OpenGLDevice::draw2DImage(Texture* texture,
 	const math::Vector2i& destination, const math::Recti& sourceRect,
 	const math::Recti* clipRect, const Color& color, bool useAlphaChannel)
 {
@@ -521,7 +540,7 @@ void OpenGLDevice::draw2DImage(const Texture* texture,
 		(sourcePosition.x + sourceSize.x) * invertedWidth,
 		(sourcePosition.y + sourceSize.y) * invertedHeight);
 
-	math::Recti poss(targetPosition, sourceSize);
+	math::Recti poss(targetPosition, targetPosition + sourceSize);
 
 	disableTextures(1);
 	bindTexture(0, texture);
@@ -555,25 +574,128 @@ void OpenGLDevice::draw2DImage(const Texture* texture,
 	quad2DVertices[3].textureCoords = math::Vector2f(textureCoords.upperLeft.x,
 		textureCoords.lowerRight.y);
 
-	setClientState(true, false, false, true);
+	setClientState(true, false, true, true);
 
 	glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D),
 		&((static_cast<const Vertex3D*>(quad2DVertices))[0].textureCoords));
 
-	glVertexPointer(3, GL_FLOAT, sizeof(Vertex3D),
+	glVertexPointer(2, GL_FLOAT, sizeof(Vertex3D),
 		&((static_cast<const Vertex3D*>(quad2DVertices))[0].position));
 
-	//glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex3D),
-	//	&((static_cast<const Vertex3D*>(quad2DVertices))[0].color));
+	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex3D),
+		&((static_cast<const Vertex3D*>(quad2DVertices))[0].color));
 
 	glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, quad2DIndices);
 }
 
-void OpenGLDevice::draw2DImage(const Texture* texture,
+void OpenGLDevice::draw2DImage(Texture* texture, const math::Recti& destination)
+{
+	if (!texture)
+	{
+		return;
+	}
+
+	auto originalSize = texture->getSize();
+
+	draw2DImage(texture, destination,
+		math::Recti(0, 0, static_cast<int>(originalSize.x),
+			static_cast<int>(originalSize.y)));
+}
+
+void OpenGLDevice::draw2DImage(Texture* texture,
 	const math::Recti& destination, const math::Recti& sourceRect,
 	const math::Recti* clipRect, const Color* colors, bool useAlphaChannel)
 {
+	if (texture == nullptr)
+	{
+		return;
+	}
 
+	math::Vector2u textureSize = texture->getSize();
+	float invertedWidth = 1.0f / static_cast<float>(textureSize.x);
+	float invertedHeight = 1.0f / static_cast<float>(textureSize.y);
+
+	math::Rectf textureCoords(
+		sourceRect.upperLeft.x * invertedWidth,
+		sourceRect.upperLeft.y * invertedHeight,
+		sourceRect.lowerRight.x * invertedWidth,
+		sourceRect.lowerRight.y * invertedHeight);
+
+	Color tempColors[4] = {
+		Color(255, 255, 255, 255),
+		Color(255, 255, 255, 255),
+		Color(255, 255, 255, 255),
+		Color(255, 255, 255, 255)
+	};
+
+	const Color* usedColors = colors ? colors : tempColors;
+
+	disableTextures(1);
+	bindTexture(0, texture);
+
+	set2DRenderMode((usedColors[0].getAlpha() < 255) ||
+		(usedColors[1].getAlpha() < 255) ||
+		(usedColors[2].getAlpha() < 255) ||
+		(usedColors[3].getAlpha() < 255), true, useAlphaChannel);
+
+	if (clipRect)
+	{
+		if (!clipRect->isValid())
+		{
+			return;
+		}
+
+		glEnable(GL_SCISSOR_TEST);
+		math::Vector2u renderTargetSize = screenSize;
+		glScissor(clipRect->upperLeft.x,
+			renderTargetSize.y - clipRect->lowerRight.y, clipRect->getWidth(),
+			clipRect->getHeight());
+	}
+
+	quad2DVertices[0].color = usedColors[0];
+	quad2DVertices[1].color = usedColors[3];
+	quad2DVertices[2].color = usedColors[2];
+	quad2DVertices[3].color = usedColors[1];
+
+	quad2DVertices[0].position = math::Vector3f(
+		static_cast<float>(destination.upperLeft.x),
+		static_cast<float>(destination.upperLeft.y), 0.0f);
+	quad2DVertices[1].position = math::Vector3f(
+		static_cast<float>(destination.lowerRight.x),
+		static_cast<float>(destination.upperLeft.y), 0.0f);
+	quad2DVertices[2].position = math::Vector3f(
+		static_cast<float>(destination.lowerRight.x),
+		static_cast<float>(destination.lowerRight.y), 0.0f);
+	quad2DVertices[3].position = math::Vector3f(
+		static_cast<float>(destination.upperLeft.x),
+		static_cast<float>(destination.lowerRight.y), 0.0f);
+
+	quad2DVertices[0].textureCoords = math::Vector2f(textureCoords.upperLeft.x,
+		textureCoords.upperLeft.y);
+	quad2DVertices[1].textureCoords = math::Vector2f(textureCoords.lowerRight.x,
+		textureCoords.upperLeft.y);
+	quad2DVertices[2].textureCoords = math::Vector2f(textureCoords.lowerRight.x,
+		textureCoords.lowerRight.y);
+	quad2DVertices[3].textureCoords = math::Vector2f(textureCoords.upperLeft.x,
+		textureCoords.lowerRight.y);
+
+	setClientState(true, false, true, true);
+
+	glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D),
+		&((static_cast<const Vertex3D*>(quad2DVertices))[0].textureCoords));
+
+	glVertexPointer(2, GL_FLOAT, sizeof(Vertex3D),
+		&((static_cast<const Vertex3D*>(quad2DVertices))[0].position));
+
+	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex3D),
+		&((static_cast<const Vertex3D*>(quad2DVertices))[0].color));
+
+	glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, quad2DIndices);
+
+	if (clipRect)
+	{
+		glDisable(GL_SCISSOR_TEST);
+	}
 }
 
 void OpenGLDevice::draw2DLine(const math::Vector2i& start,
@@ -585,7 +707,7 @@ void OpenGLDevice::draw2DLine(const math::Vector2i& start,
 	}
 	else
 	{
-		//disableTextures();
+		disableTextures();
 		set2DRenderMode(color.getAlpha() < 255, false, false);
 
 		quad2DVertices[0].color = color;
@@ -655,7 +777,7 @@ void OpenGLDevice::draw2DRectangle(const Color& color,
 		return;
 	}
 
-	//disableTextures();
+	disableTextures();
 	set2DRenderMode(color.getAlpha() < 255, false, false);
 
 	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(),
@@ -681,7 +803,7 @@ void OpenGLDevice::draw2DRectangle(const math::Recti& position,
 		return;
 	}
 
-	//disableTextures();
+	disableTextures();
 	set2DRenderMode((colorLeftUp.getAlpha() < 255) ||
 		(colorRightUp.getAlpha() < 255) ||
 		(colorLeftDown.getAlpha() < 255) ||
