@@ -1,10 +1,11 @@
 #pragma once
 
 #include <cstdint>
+#include <map>
+
+#include <SFML/OpenGL.hpp>
 
 #include "Device.h"
-
-#include <map>
 
 namespace gfx
 {
@@ -15,30 +16,15 @@ namespace device
 class OpenGLDevice : public Device
 {
 	typedef Device super;
+
+	friend class gfx::Texture;
 public:
 	OpenGLDevice();
 	~OpenGLDevice();
 
 	bool init() override;
 
-	void beginScene() override;
-	void endScene() override;
-
-	void setClientState(bool vertex, bool normal, bool color, bool texCoord0);
-	void set3DRenderMode();
-	void set2DRenderMode(bool transparent, bool textured, bool alphaChannel);
-
-	void setClearColor(const Color& color) override;
-
-	void clearZBuffer() override;
-
-	const math::Matrix4& getTransform(TransformationState state) const override;
-
-	void setTransform(TransformationState state, const math::Matrix4& matrix)
-		override;
-
-	void bindTexture(unsigned textureLayer, Texture* texture);
-	Texture* getBindedTexture(unsigned textureLayer) const;
+	// Data management
 
 	Texture* getTexture(const std::string& name) const override;
 	Texture* loadTextureFromFile(const std::string& name,
@@ -46,83 +32,143 @@ public:
 
 	void unloadAllTextures() override;
 
-	void disableTextures(unsigned fromLayer = 0);
+	// Rendering utilities
 
-	void drawPixel(unsigned x, unsigned y, const Color& color) override;
+	void beginScene() override;
+	void endScene() override;
 
-	void draw2DImage(Texture* texture, const math::Vector2i& destination)
+	void setClearColor(const Color& color) override;
+
+	void clearZBuffer() override;
+
+	// Rendering properties
+
+	void setTransform(TransformType transformType,
+		const math::Matrix4& transform) override;
+	void resetTransforms() override;
+	void setMaterial(const Material& material) override;
+
+	// 3D Rendering
+
+	void draw3DLine(const math::Vector3f& start, const math::Vector3f& end,
+		const Color& color = Color(255, 255, 255, 255)) override;
+
+	void drawIndexedPrimitiveList(const Vertex3D* vertices,
+		uint32_t vertexCount, const uint16_t* indices, uint32_t primitiveCount)
+		override;
+
+	// 2D Rendering
+
+	void drawPixel(unsigned x, unsigned y,
+		const Color& pixelColor = Color(255, 255, 255, 255)) override;
+
+	void draw2DImage(Texture* texture, const math::Vector2i& imageDestination)
+		override;
+
+	void draw2DImage(Texture* texture, const math::Vector2i& imageDestination,
+		const math::Recti& sourceRectangle,
+		const Color& color = Color(255, 255, 255, 255),
+		const math::Recti* clippingRectangle = nullptr,
+		bool useAlphaChannel = true) override;
+
+	void draw2DImage(Texture* texture, const math::Recti& destinationRectangle)
 		override;
 
 	void draw2DImage(Texture* texture,
-		const math::Vector2i& destination, const math::Recti& sourceRect,
-		const math::Recti* clipRect = 0,
-		const Color& color = Color(255, 255, 255, 255),
+		const math::Recti& destinationRectangle,
+		const math::Recti& sourceRectangle, const Color* colors = nullptr,
+		const math::Recti* clippingRectangle = nullptr,
 		bool useAlphaChannel = true) override;
 
-	void draw2DImage(Texture* texture, const math::Recti& destination) override;
-
-	void draw2DImage(Texture* texture,
-		const math::Recti& destination, const math::Recti& sourceRect,
-		const math::Recti* clipRect = nullptr,
-		const Color* colors = nullptr, bool useAlphaChannel = true) override;
-
-	void draw2DLine(const math::Vector2i& start,
-		const math::Vector2i& end,
+	void draw2DLine(const math::Vector2i& start, const math::Vector2i& end,
 		const Color& color = Color(255, 255, 255, 255)) override;
 
 	void draw2DPolygon(const math::Vector2i& center, float radius,
-		const Color& color = Color(100, 255, 255, 255),
-		unsigned vertexCount = 10) override;
-
-	void draw2DRectangle(const Color& color,
-		const math::Recti& position, const math::Recti* clipRect = nullptr)
-		override;
-
-	void draw2DRectangle(const math::Recti& position,
-		const Color& colorLeftUp, const Color& colorRightUp,
-		const Color& colorLeftDown, const Color& colorRightDown,
-		const math::Recti* clipRect = nullptr) override;
-
-	void draw2DRectangleOutline(const math::Recti& position,
+		unsigned vertexCount = 10,
 		const Color& color = Color(255, 255, 255, 255)) override;
 
-	void setAmbientLight(const Color& color) override;
+	void draw2DRectangle(const math::Recti& destinationRectangle,
+		const Color& color = Color(255, 255, 255, 255),
+		const math::Recti* clippingRectangle = nullptr) override;
+
+	void draw2DRectangle(const math::Recti& destinationRectangle,
+		const Color& colorLeftUp, const Color& colorRightUp,
+		const Color& colorLeftDown, const Color& colorRightDown,
+		const math::Recti* clippingRectangle = nullptr) override;
+
+	void draw2DRectangleOutline(const math::Recti& destinationRectangle,
+		const Color& color = Color(255, 255, 255, 255)) override;
+
+	/*
+		Utility events
+	*/
 
 	void onResize(const math::Vector2u& size) override;
 private:
+
+	/*
+		Private utility functions
+	*/
+
 	Texture* findTexture(const std::string& name) const;
+
+	void bindTexture(unsigned textureLayer, Texture* texture);
+
+	void disableTextures(unsigned fromLayer = 0);
+
+	void setClientStates(bool vertex, bool normal, bool color, bool texCoord0);
+
+	void set2DRenderMode(bool transparent, bool textured, bool alphaChannel);
+	void set3DRenderMode();
+
+	Texture* getBindedTexture(unsigned onLayer);
+
+	/*
+		Material utilities
+	*/
+
+	void onSetMaterial();
+	void onUnsetMaterial();
+
+	void setBasicRenderStates(const Material& currentMaterial,
+		const Material& lastMaterial, bool shouldResetRenderStates);
+	void setTextureRenderStates(const Material& currentMaterial,
+		bool shouldResetRenderStates);
+
+	void toGLTextureMatrix(GLfloat* glMatrix, const math::Matrix4& matrix);
 private:
 	Color clearColor;
 
-	math::Matrix4 matrices[super::TransformationCount];
+	std::map<std::string, Texture*> loadedTextures;
 
-	// Prebuilt 2D quad (2 tris)
+	math::Matrix4 matrices[TransformCount];
+
+	bool transformationChanged;
+
+	math::Vector2u screenSize;
+
 	Vertex3D quad2DVertices[4];
 	const uint16_t quad2DIndices[4];
 
-	enum RenderMode
-	{
-		RenderModeNone = 0,
-		RenderMode2D,
-		RenderMode3D
-	} currentRenderMode;
-
-	bool shouldResetRenderStates;
-	bool transformation3DChanged;
-
-	Material currentMaterial;
-	Material lastMaterial;
-
-	math::Vector2u screenSize;
+	Texture* bindedTextures[maxTextures];
 
 	bool clientStateVertex;
 	bool clientStateNormal;
 	bool clientStateColor;
 	bool clientStateTexCoord0;
 
-	std::map<std::string, Texture*> loadedTextures;
-	static const unsigned maxTextures = 2;
-	Texture* currentTextures[maxTextures];
+	enum RenderMode
+	{
+		RenderModeNone,
+		RenderMode3D,
+		RenderMode2D
+	} currentRenderMode;
+
+	Material currentMaterial; // current !3D! material (rename?)
+	Material lastMaterial;
+	Material material2D;
+
+	bool shouldResetRenderStates;
 };
 
 } // namespace device

@@ -16,24 +16,33 @@ namespace device
 
 OpenGLDevice::OpenGLDevice() :
 	super(),
-	clearColor(0, 0, 0),
+	clearColor(0, 0, 0, 255),
+	loadedTextures(),
 	matrices(),
+	transformationChanged(true),
+	screenSize(800, 600),
 	quad2DVertices(),
 	quad2DIndices{0, 1, 2, 3},
-	currentRenderMode(RenderModeNone),
-	shouldResetRenderStates(false),
-	transformation3DChanged(false),
-	currentMaterial(),
-	lastMaterial(),
-	screenSize(800, 600),
+	bindedTextures(),
 	clientStateVertex(false),
 	clientStateNormal(false),
 	clientStateColor(false),
 	clientStateTexCoord0(false),
-	loadedTextures(),
-	currentTextures()
+	currentRenderMode(RenderModeNone),
+	currentMaterial(),
+	lastMaterial(),
+	material2D(),
+	shouldResetRenderStates(true)
 {
 	deviceName = "OpenGL";
+
+	material2D.lighting = false;
+	material2D.zWriteEnabled = false;
+	material2D.useMipMaps = false;
+	for (unsigned i = 0; i < maxTextures; ++i)
+	{
+		material2D.textureLayers[i].bilinearFilter = false;
+	}
 }
 
 OpenGLDevice::~OpenGLDevice()
@@ -45,19 +54,14 @@ bool OpenGLDevice::init()
 {
 	setClearColor(clearColor);
 
-	for (unsigned i = 0; i < TransformationCount; ++i)
-	{
-		setTransform(static_cast<TransformationState>(i), math::Matrix4());
-	}
-
-	setAmbientLight(Color(0, 0, 0, 0));
-
-	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+	resetTransforms();
 
 	glClearDepth(1.0);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 	glHint(GL_POINT_SMOOTH_HINT, GL_FASTEST);
+
+	glFrontFace(GL_CCW);
 
 	quad2DVertices[0] = Vertex3D(math::Vector3f(-1.0f, 1.0f, 0.0f),
 		math::Vector3f(0.0f, 0.0f, 0.0f),
@@ -78,8 +82,86 @@ bool OpenGLDevice::init()
 
 	set3DRenderMode();
 
+	//setFog();
+
+	shouldResetRenderStates = true;
+
 	return true;
 }
+
+Texture* OpenGLDevice::getTexture(const std::string& name) const
+{
+	return findTexture(name);
+}
+
+Texture* OpenGLDevice::loadTextureFromFile(const std::string& name,
+	bool applyColorKey)
+{
+	Texture* texture = findTexture(name);
+	if (texture != nullptr)
+	{
+		//std::cout << "Warn: texture '" << name << "' is already loaded!" <<
+		//	std::endl;
+
+		return texture;
+	}
+
+	if (!fs::checkFileExists(name))
+	{
+		std::cout << "Error: unable to load texture: file '" << name
+			<< "' not found" << std::endl;
+
+		return nullptr;
+	}
+
+	Image image;
+	if (!image.loadFromFile(name))
+	{
+		image.create(math::Vector2u(16, 16), Color(255, 32, 128));
+	}
+
+	math::Vector2u imageSize = image.getSize();
+	if (imageSize.x == 0 ||
+		imageSize.y == 0)
+	{
+		std::cout << "Incorrect texture size: (" << imageSize.x << "; " <<
+			imageSize.y << ")" << std::endl;
+
+		return nullptr;
+	}
+
+	if (applyColorKey)
+	{
+		image.applyStrandedColorKey();
+	}
+
+	texture = new Texture(name, image, *this);
+	if (texture != nullptr)
+	{
+		loadedTextures[name] = texture;
+	}
+
+	return texture;
+}
+
+void OpenGLDevice::unloadAllTextures()
+{
+	for (unsigned i = 0; i < maxTextures; ++i)
+	{
+		bindTexture(i, nullptr);
+	}
+
+	for (auto&& texture : loadedTextures)
+	{
+		delete texture.second;
+	}
+
+	loadedTextures.clear();
+}
+
+/*
+	Rendering utilities
+*/
 
 void OpenGLDevice::beginScene()
 {
@@ -88,172 +170,6 @@ void OpenGLDevice::beginScene()
 
 void OpenGLDevice::endScene()
 {}
-
-void OpenGLDevice::setClientState(bool vertex, bool normal, bool color,
-	bool texCoord0)
-{
-	if (clientStateVertex != vertex)
-	{
-		if (vertex)
-		{
-			glEnableClientState(GL_VERTEX_ARRAY);
-		}
-		else
-		{
-			glDisableClientState(GL_VERTEX_ARRAY);
-		}
-
-		clientStateVertex = vertex;
-	}
-
-	if (clientStateNormal != normal)
-	{
-		if (normal)
-		{
-			glEnableClientState(GL_NORMAL_ARRAY);
-		}
-		else
-		{
-			glDisableClientState(GL_NORMAL_ARRAY);
-		}
-		clientStateNormal = normal;
-	}
-
-	if (clientStateColor != color)
-	{
-		if (color)
-		{
-			glEnableClientState(GL_COLOR_ARRAY);
-		}
-		else
-		{
-			glDisableClientState(GL_COLOR_ARRAY);
-		}
-
-		clientStateColor = color;
-	}
-
-	if (clientStateTexCoord0 != texCoord0)
-	{
-		if (texCoord0)
-		{
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		}
-		else
-		{
-			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		}
-
-		clientStateTexCoord0 = texCoord0;
-	}
-}
-
-void OpenGLDevice::set3DRenderMode()
-{
-	return;
-	if (currentRenderMode != RenderMode3D)
-	{
-		glDisable(GL_BLEND);
-		glDisable(GL_ALPHA_TEST);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		glMatrixMode(GL_MODELVIEW);
-		//glLoadMatrixf(
-		//	(matrices[TransformationView] *
-		//		matrices[TransformationWorld]).pointer());
-
-		glLoadMatrixf(matrices[TransformationView].pointer());
-
-		glMultMatrixf(matrices[TransformationWorld].pointer());
-
-		glMatrixMode(GL_PROJECTION);
-		glLoadMatrixf(matrices[TransformationProjection].pointer());
-
-		shouldResetRenderStates = true;
-	}
-
-	//if (shouldResetRenderStates || lastMaterial != currentMaterial)
-	{
-		lastMaterial = currentMaterial;
-		shouldResetRenderStates = false;
-	}
-
-	currentRenderMode = RenderMode3D;
-}
-
-void OpenGLDevice::set2DRenderMode(bool transparent, bool textured, bool alphaChannel)
-{
-	if (currentRenderMode != RenderMode2D)
-	{
-		if (currentRenderMode == RenderMode3D || transformation3DChanged)
-		{
-
-		}
-		if (transformation3DChanged)
-		{
-			glMatrixMode(GL_PROJECTION);
-
-			// TODO
-			math::Vector2u renderTargetSize = screenSize;
-			math::Matrix4 matrix;
-			matrix.buildProjectionMatrixOrtho(
-				static_cast<float>(renderTargetSize.x),
-				-(static_cast<float>(renderTargetSize.y)), -1.0f, 1.0f);
-			matrix.setTranslation(math::Vector3f(-1.0f, 1.0f, 0.0f));
-			glLoadMatrixf(matrix.pointer());
-
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-
-			glTranslatef(0.375f, 0.375f, 0.0f);
-
-			transformation3DChanged = false;
-		}
-
-		//if (!overrideMaterial2DEnabled)
-		{
-
-		}
-
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-
-	//if (overrideMaterial2DEnabled)
-	//{
-	//
-	//}
-
-	alphaChannel &= textured;
-
-	if (alphaChannel || transparent)
-	{
-		glEnable(GL_BLEND);
-		glEnable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_GREATER, 0.0f);
-	}
-	else
-	{
-		glDisable(GL_BLEND);
-		glDisable(GL_ALPHA_TEST);
-	}
-
-	if (textured)
-	{
-		setTransform(TransformationTexture0, math::Matrix4());
-		transformation3DChanged = false;
-
-		if (alphaChannel)
-		{
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		}
-		else
-		{
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		}
-	}
-
-	currentRenderMode = RenderMode2D;
-}
 
 void OpenGLDevice::setClearColor(const Color& color)
 {
@@ -268,33 +184,34 @@ void OpenGLDevice::clearZBuffer()
 	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-const math::Matrix4& OpenGLDevice::getTransform(TransformationState state) const
-{
-	return matrices[state];
-}
+/*
+	Rendering properties
+*/
 
-void OpenGLDevice::setTransform(TransformationState state,
-	const math::Matrix4& matrix)
+void OpenGLDevice::setTransform(TransformType transformType,
+	const math::Matrix4& transform)
 {
-	matrices[state] = matrix;
-	transformation3DChanged = true;
+	matrices[transformType] = transform;
+	transformationChanged = true;
 
-	switch (state)
+	switch (transformType)
 	{
-		case TransformationView:
-		case TransformationWorld:
+		case View:
+		case Model:
 		{
 			glMatrixMode(GL_MODELVIEW);
 
-			glLoadMatrixf(matrices[TransformationView].pointer());
+			glLoadMatrixf(matrices[View].pointer());
+			glMultMatrixf(matrices[Model].pointer());
 
-			glMultMatrixf(matrices[TransformationWorld].pointer());
 			break;
 		}
-		case TransformationProjection:
+		case Projection:
 		{
 			glMatrixMode(GL_PROJECTION);
-			glLoadMatrixf(matrix.pointer());
+			glLoadMatrixf(matrices[Projection].pointer());
+
+			break;
 		}
 		default:
 		{
@@ -303,144 +220,105 @@ void OpenGLDevice::setTransform(TransformationState state,
 	}
 }
 
-void OpenGLDevice::bindTexture(unsigned textureLayer, Texture* texture)
+void OpenGLDevice::resetTransforms()
 {
-	assert(textureLayer < maxTextures);
+	for (unsigned i = 0; i < TransformCount; ++i)
+	{
+		setTransform(static_cast<TransformType>(i), math::Matrix4());
+	}
+}
 
-	if (currentTextures[textureLayer] == texture)
+void OpenGLDevice::setMaterial(const Material& material)
+{
+	currentMaterial = material;
+
+	// NOTE: maxTextures and maxTexturesPerMaterial are static consts
+	// We must copy them to a real value
+	unsigned max = math::min(unsigned(maxTextures), unsigned(Material::maxTexturesPerMaterial));
+	for (unsigned i = 0; i < max; ++i)
+	{
+		bindTexture(i, material.textureLayers[i].texture);
+		setTransform(static_cast<TransformType>(Texture0 + i),
+			material.textureLayers[i].textureMatrix);
+	}
+
+	glActiveTexture(GL_TEXTURE0);
+}
+
+/*
+	3D Rendering
+*/
+
+void OpenGLDevice::draw3DLine(const math::Vector3f& start,
+	const math::Vector3f& end, const Color& color)
+{
+	set3DRenderMode();
+
+	quad2DVertices[0].color = color;
+	quad2DVertices[1].color = color;
+
+	quad2DVertices[0].position = start;
+	quad2DVertices[1].position = end;
+
+	setClientStates(true, false, true, false);
+
+	glVertexPointer(3, GL_FLOAT, sizeof(Vertex3D),
+		&((static_cast<const Vertex3D*>(quad2DVertices))[0].position));
+	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex3D),
+		&((static_cast<const Vertex3D*>(quad2DVertices))[0].color));
+
+	glDrawElements(GL_LINES, 2, GL_UNSIGNED_SHORT, quad2DIndices);
+}
+
+void OpenGLDevice::drawIndexedPrimitiveList(const Vertex3D* vertices,
+	uint32_t vertexCount, const uint16_t* indices, uint32_t primitiveCount)
+{
+	if (vertexCount == 0 || primitiveCount == 0)
 	{
 		return;
 	}
 
-	currentTextures[textureLayer] = texture;
-	glActiveTexture(GL_TEXTURE0 + textureLayer);
+	//std::cout << "Drawing indexed primitive list " << vertexCount << " " << primitiveCount << std::endl;
 
-	if (texture == nullptr)
-	{
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glDisable(GL_TEXTURE_2D);
-		return;
-	}
+	set3DRenderMode();
 
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texture->getGlTextureName());
+	setClientStates(true, true, true, true);
+
+	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex3D),
+		&((static_cast<const Vertex3D*>(vertices))[0].color));
+	glVertexPointer(3, GL_FLOAT, sizeof(Vertex3D),
+		&((static_cast<const Vertex3D*>(vertices))[0].position));
+	glNormalPointer(GL_FLOAT, sizeof(Vertex3D),
+		&((static_cast<const Vertex3D*>(vertices))[0].normal));
+	glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D),
+		&((static_cast<const Vertex3D*>(vertices))[0].textureCoords));
+
+	glDrawElements(GL_TRIANGLES, primitiveCount * 3, GL_UNSIGNED_SHORT, indices);
 }
 
-Texture* OpenGLDevice::getBindedTexture(unsigned textureLayer) const
+/*
+	2D Rendering
+*/
+
+void OpenGLDevice::drawPixel(unsigned x, unsigned y, const Color& pixelColor)
 {
-	assert(textureLayer < maxTextures);
-
-	return currentTextures[textureLayer];
-}
-
-Texture* OpenGLDevice::findTexture(const std::string& name) const
-{
-	auto it = loadedTextures.find(name);
-	if (it == loadedTextures.end())
-	{
-		return nullptr;
-	}
-
-	return it->second;
-}
-
-Texture* OpenGLDevice::getTexture(const std::string& name) const
-{
-	return findTexture(name);
-}
-
-Texture* OpenGLDevice::loadTextureFromFile(const std::string& name,
-	bool applyColorKey)
-{
-	Texture* texture = findTexture(name);
-	if (texture != nullptr)
-	{
-		std::cout << "Texture with name '" << name << "' is already loaded!" <<
-			std::endl;
-
-		return texture;
-	}
-
-	if (!fs::checkFileExists(name))
-	{
-		std::cout << "Unable to load texture: file '" << name <<
-			"' is not found!" << std::endl;
-
-		return nullptr;
-	}
-
-	Image image;
-	if (!image.loadFromFile(name))
-	{
-		// Create solid pink image;
-		image.create(math::Vector2u(16, 16));
-	}
-
-	if (image.getSize().x == 0 ||
-		image.getSize().y == 0)
-	{
-		return nullptr;
-	}
-
-	if (applyColorKey)
-	{
-		image.applyStrandedColorKey();
-	}
-
-	texture = new Texture(name, image, *this);
-
-	if (texture != nullptr)
-	{
-		loadedTextures[name] = texture;
-	}
-
-	return texture;
-}
-
-void OpenGLDevice::unloadAllTextures()
-{
-	for (auto&& texture : loadedTextures)
-	{
-		std::cout << "Deleting '" << texture.first << "'" << std::endl;
-		delete texture.second;
-	}
-
-	loadedTextures.clear();
-
-	for (unsigned i = 0; i < maxTextures; ++i)
-	{
-		bindTexture(i, nullptr);
-	}
-}
-
-void OpenGLDevice::disableTextures(unsigned fromLayer)
-{
-	for (unsigned i = fromLayer; i < maxTextures; ++i)
-	{
-		bindTexture(i, nullptr);
-	}
-}
-
-void OpenGLDevice::drawPixel(unsigned x, unsigned y, const Color& color)
-{
-	math::Vector2u renderTargetSize = screenSize;
+	auto renderTargetSize = screenSize;
 	if (x > renderTargetSize.x || y > renderTargetSize.y)
 	{
 		return;
 	}
 
 	disableTextures();
-	set2DRenderMode(color.getAlpha() < 255, false, false);
+	set2DRenderMode(pixelColor.getAlpha() < 255, false, false);
 
-	quad2DVertices[0].color = color;
+	quad2DVertices[0].color = pixelColor;
 	quad2DVertices[0].position = math::Vector3f(static_cast<float>(x),
 		static_cast<float>(x), 0.0f);
 
-	setClientState(true, false, true, false);
+	setClientStates(true, false, true, false);
 
 	glVertexPointer(2, GL_FLOAT, sizeof(Vertex3D),
 		&((static_cast<const Vertex3D*>(quad2DVertices))[0].position));
-
 	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex3D),
 		&((static_cast<const Vertex3D*>(quad2DVertices))[0].color));
 
@@ -448,7 +326,7 @@ void OpenGLDevice::drawPixel(unsigned x, unsigned y, const Color& color)
 }
 
 void OpenGLDevice::draw2DImage(Texture* texture,
-	const math::Vector2i& destination)
+	const math::Vector2i& imageDestination)
 {
 	if (!texture)
 	{
@@ -457,30 +335,32 @@ void OpenGLDevice::draw2DImage(Texture* texture,
 
 	auto originalSize = texture->getSize();
 
-	draw2DImage(texture, destination,
+	draw2DImage(texture, imageDestination,
 		math::Recti(0, 0, static_cast<int>(originalSize.x),
 			static_cast<int>(originalSize.y)));
 }
 
 void OpenGLDevice::draw2DImage(Texture* texture,
-	const math::Vector2i& destination, const math::Recti& sourceRect,
-	const math::Recti* clipRect, const Color& color, bool useAlphaChannel)
+	const math::Vector2i& imageDestination, const math::Recti& sourceRectangle,
+	const Color& color, const math::Recti* clippingRectangle,
+	bool useAlphaChannel)
 {
 	if (!texture)
 	{
 		return;
 	}
 
-	if (!sourceRect.isValid())
+	if (!sourceRectangle.isValid())
 	{
 		return;
 	}
 
-	math::Vector2i targetPosition = destination;
-	math::Vector2i sourcePosition = sourceRect.upperLeft;
+	math::Vector2i targetPosition = imageDestination;
+	math::Vector2i sourcePosition = sourceRectangle.upperLeft;
 
-	math::Vector2i sourceSize = sourceRect.getSize();
-	if (clipRect)
+	math::Vector2i sourceSize = sourceRectangle.getSize();
+	// TODO
+	if (clippingRectangle)
 	{
 
 	}
@@ -555,40 +435,39 @@ void OpenGLDevice::draw2DImage(Texture* texture,
 	quad2DVertices[0].position = math::Vector3f(
 		static_cast<float>(poss.upperLeft.x),
 		static_cast<float>(poss.upperLeft.y), 0.0f);
-	quad2DVertices[1].position = math::Vector3f(
+	quad2DVertices[3].position = math::Vector3f(
 		static_cast<float>(poss.lowerRight.x),
 		static_cast<float>(poss.upperLeft.y), 0.0f);
 	quad2DVertices[2].position = math::Vector3f(
 		static_cast<float>(poss.lowerRight.x),
 		static_cast<float>(poss.lowerRight.y), 0.0f);
-	quad2DVertices[3].position = math::Vector3f(
+	quad2DVertices[1].position = math::Vector3f(
 		static_cast<float>(poss.upperLeft.x),
 		static_cast<float>(poss.lowerRight.y), 0.0f);
 
 	quad2DVertices[0].textureCoords = math::Vector2f(textureCoords.upperLeft.x,
 		textureCoords.upperLeft.y);
-	quad2DVertices[1].textureCoords = math::Vector2f(textureCoords.lowerRight.x,
+	quad2DVertices[3].textureCoords = math::Vector2f(textureCoords.lowerRight.x,
 		textureCoords.upperLeft.y);
 	quad2DVertices[2].textureCoords = math::Vector2f(textureCoords.lowerRight.x,
 		textureCoords.lowerRight.y);
-	quad2DVertices[3].textureCoords = math::Vector2f(textureCoords.upperLeft.x,
+	quad2DVertices[1].textureCoords = math::Vector2f(textureCoords.upperLeft.x,
 		textureCoords.lowerRight.y);
 
-	setClientState(true, false, true, true);
+	setClientStates(true, false, true, true);
 
 	glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D),
 		&((static_cast<const Vertex3D*>(quad2DVertices))[0].textureCoords));
-
 	glVertexPointer(2, GL_FLOAT, sizeof(Vertex3D),
 		&((static_cast<const Vertex3D*>(quad2DVertices))[0].position));
-
 	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex3D),
 		&((static_cast<const Vertex3D*>(quad2DVertices))[0].color));
 
 	glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, quad2DIndices);
 }
 
-void OpenGLDevice::draw2DImage(Texture* texture, const math::Recti& destination)
+void OpenGLDevice::draw2DImage(Texture* texture,
+	const math::Recti& destinationRectangle)
 {
 	if (!texture)
 	{
@@ -597,14 +476,15 @@ void OpenGLDevice::draw2DImage(Texture* texture, const math::Recti& destination)
 
 	auto originalSize = texture->getSize();
 
-	draw2DImage(texture, destination,
+	draw2DImage(texture, destinationRectangle,
 		math::Recti(0, 0, static_cast<int>(originalSize.x),
 			static_cast<int>(originalSize.y)));
 }
 
 void OpenGLDevice::draw2DImage(Texture* texture,
-	const math::Recti& destination, const math::Recti& sourceRect,
-	const math::Recti* clipRect, const Color* colors, bool useAlphaChannel)
+	const math::Recti& destinationRectangle, const math::Recti& sourceRectangle,
+	const Color* colors, const math::Recti* clippingRectangle,
+	bool useAlphaChannel)
 {
 	if (texture == nullptr)
 	{
@@ -616,10 +496,10 @@ void OpenGLDevice::draw2DImage(Texture* texture,
 	float invertedHeight = 1.0f / static_cast<float>(textureSize.y);
 
 	math::Rectf textureCoords(
-		sourceRect.upperLeft.x * invertedWidth,
-		sourceRect.upperLeft.y * invertedHeight,
-		sourceRect.lowerRight.x * invertedWidth,
-		sourceRect.lowerRight.y * invertedHeight);
+		sourceRectangle.upperLeft.x * invertedWidth,
+		sourceRectangle.upperLeft.y * invertedHeight,
+		sourceRectangle.lowerRight.x * invertedWidth,
+		sourceRectangle.lowerRight.y * invertedHeight);
 
 	Color tempColors[4] = {
 		Color(255, 255, 255, 255),
@@ -638,18 +518,18 @@ void OpenGLDevice::draw2DImage(Texture* texture,
 		(usedColors[2].getAlpha() < 255) ||
 		(usedColors[3].getAlpha() < 255), true, useAlphaChannel);
 
-	if (clipRect)
+	if (clippingRectangle)
 	{
-		if (!clipRect->isValid())
+		if (!clippingRectangle->isValid())
 		{
 			return;
 		}
 
 		glEnable(GL_SCISSOR_TEST);
 		math::Vector2u renderTargetSize = screenSize;
-		glScissor(clipRect->upperLeft.x,
-			renderTargetSize.y - clipRect->lowerRight.y, clipRect->getWidth(),
-			clipRect->getHeight());
+		glScissor(clippingRectangle->upperLeft.x,
+			renderTargetSize.y - clippingRectangle->lowerRight.y,
+			clippingRectangle->getWidth(), clippingRectangle->getHeight());
 	}
 
 	quad2DVertices[0].color = usedColors[0];
@@ -658,41 +538,39 @@ void OpenGLDevice::draw2DImage(Texture* texture,
 	quad2DVertices[3].color = usedColors[1];
 
 	quad2DVertices[0].position = math::Vector3f(
-		static_cast<float>(destination.upperLeft.x),
-		static_cast<float>(destination.upperLeft.y), 0.0f);
-	quad2DVertices[1].position = math::Vector3f(
-		static_cast<float>(destination.lowerRight.x),
-		static_cast<float>(destination.upperLeft.y), 0.0f);
-	quad2DVertices[2].position = math::Vector3f(
-		static_cast<float>(destination.lowerRight.x),
-		static_cast<float>(destination.lowerRight.y), 0.0f);
+		static_cast<float>(destinationRectangle.upperLeft.x),
+		static_cast<float>(destinationRectangle.upperLeft.y), 0.0f);
 	quad2DVertices[3].position = math::Vector3f(
-		static_cast<float>(destination.upperLeft.x),
-		static_cast<float>(destination.lowerRight.y), 0.0f);
+		static_cast<float>(destinationRectangle.lowerRight.x),
+		static_cast<float>(destinationRectangle.upperLeft.y), 0.0f);
+	quad2DVertices[2].position = math::Vector3f(
+		static_cast<float>(destinationRectangle.lowerRight.x),
+		static_cast<float>(destinationRectangle.lowerRight.y), 0.0f);
+	quad2DVertices[1].position = math::Vector3f(
+		static_cast<float>(destinationRectangle.upperLeft.x),
+		static_cast<float>(destinationRectangle.lowerRight.y), 0.0f);
 
 	quad2DVertices[0].textureCoords = math::Vector2f(textureCoords.upperLeft.x,
 		textureCoords.upperLeft.y);
-	quad2DVertices[1].textureCoords = math::Vector2f(textureCoords.lowerRight.x,
+	quad2DVertices[3].textureCoords = math::Vector2f(textureCoords.lowerRight.x,
 		textureCoords.upperLeft.y);
 	quad2DVertices[2].textureCoords = math::Vector2f(textureCoords.lowerRight.x,
 		textureCoords.lowerRight.y);
-	quad2DVertices[3].textureCoords = math::Vector2f(textureCoords.upperLeft.x,
+	quad2DVertices[1].textureCoords = math::Vector2f(textureCoords.upperLeft.x,
 		textureCoords.lowerRight.y);
 
-	setClientState(true, false, true, true);
+	setClientStates(true, false, true, true);
 
 	glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D),
 		&((static_cast<const Vertex3D*>(quad2DVertices))[0].textureCoords));
-
 	glVertexPointer(2, GL_FLOAT, sizeof(Vertex3D),
 		&((static_cast<const Vertex3D*>(quad2DVertices))[0].position));
-
 	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex3D),
 		&((static_cast<const Vertex3D*>(quad2DVertices))[0].color));
 
 	glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, quad2DIndices);
 
-	if (clipRect)
+	if (clippingRectangle)
 	{
 		glDisable(GL_SCISSOR_TEST);
 	}
@@ -718,11 +596,10 @@ void OpenGLDevice::draw2DLine(const math::Vector2i& start,
 		quad2DVertices[1].position = math::Vector3f(static_cast<float>(end.x),
 			static_cast<float>(end.y), 0.0f);
 
-		setClientState(true, false, true, false);
+		setClientStates(true, false, true, false);
 
 		glVertexPointer(2, GL_FLOAT, sizeof(Vertex3D),
 			&((static_cast<const Vertex3D*>(quad2DVertices))[0].position));
-
 		glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex3D),
 			&((static_cast<const Vertex3D*>(quad2DVertices))[0].color));
 
@@ -731,7 +608,7 @@ void OpenGLDevice::draw2DLine(const math::Vector2i& start,
 }
 
 void OpenGLDevice::draw2DPolygon(const math::Vector2i& center, float radius,
-	const Color& color, unsigned vertexCount)
+	unsigned vertexCount, const Color& color)
 {
 	if (vertexCount < 2)
 	{
@@ -764,13 +641,13 @@ void OpenGLDevice::draw2DPolygon(const math::Vector2i& center, float radius,
 	draw2DLine(a, first, color);
 }
 
-void OpenGLDevice::draw2DRectangle(const Color& color,
-	const math::Recti& position, const math::Recti* clipRect)
+void OpenGLDevice::draw2DRectangle(const math::Recti& destinationRectangle,
+	const Color& color, const math::Recti* clippingRectangle)
 {
-	math::Recti clipped = position;
-	if (clipRect != nullptr)
+	math::Recti clipped = destinationRectangle;
+	if (clippingRectangle != nullptr)
 	{
-		clipped.clipAgainst(*clipRect);
+		clipped.clipAgainst(*clippingRectangle);
 	}
 	if (!clipped.isValid())
 	{
@@ -782,21 +659,21 @@ void OpenGLDevice::draw2DRectangle(const Color& color,
 
 	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(),
 		color.getAlpha());
-	glRectf(static_cast<GLfloat>(position.upperLeft.x),
-		static_cast<GLfloat>(position.upperLeft.y),
-		static_cast<GLfloat>(position.lowerRight.x),
-		static_cast<GLfloat>(position.lowerRight.y));
+	glRectf(static_cast<GLfloat>(clipped.upperLeft.x),
+		static_cast<GLfloat>(clipped.lowerRight.y),
+		static_cast<GLfloat>(clipped.lowerRight.x),
+		static_cast<GLfloat>(clipped.upperLeft.y));
 }
 
-void OpenGLDevice::draw2DRectangle(const math::Recti& position,
+void OpenGLDevice::draw2DRectangle(const math::Recti& destinationRectangle,
 	const Color& colorLeftUp, const Color& colorRightUp,
 	const Color& colorLeftDown, const Color& colorRightDown,
-	const math::Recti* clipRect)
+	const math::Recti* clippingRectangle)
 {
-	math::Recti clipped = position;
-	if (clipRect != nullptr)
+	math::Recti clipped = destinationRectangle;
+	if (clippingRectangle != nullptr)
 	{
-		clipped.clipAgainst(*clipRect);
+		clipped.clipAgainst(*clippingRectangle);
 	}
 	if (!clipped.isValid())
 	{
@@ -827,36 +704,40 @@ void OpenGLDevice::draw2DRectangle(const math::Recti& position,
 		static_cast<float>(clipped.lowerRight.x),
 		static_cast<float>(clipped.upperLeft.y), 0.0f);
 
-	setClientState(true, false, true, false);
+	setClientStates(true, false, true, false);
 
 	glVertexPointer(2, GL_FLOAT, sizeof(Vertex3D),
 		&((static_cast<const Vertex3D*>(quad2DVertices))[0].position));
-
 	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex3D),
 		&((static_cast<const Vertex3D*>(quad2DVertices))[0].color));
 
 	glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, quad2DIndices);
 }
 
-void OpenGLDevice::draw2DRectangleOutline(const math::Recti& position,
-	const Color& color)
+void OpenGLDevice::draw2DRectangleOutline(
+	const math::Recti& destinationRectangle, const Color& color)
 {
-	draw2DLine(position.upperLeft,
-		math::Vector2i(position.lowerRight.x, position.upperLeft.y), color);
-	draw2DLine(math::Vector2i(position.lowerRight.x, position.upperLeft.y),
-		position.lowerRight, color);
-	draw2DLine(position.lowerRight,
-		math::Vector2i(position.upperLeft.x, position.lowerRight.y), color);
-	draw2DLine(math::Vector2i(position.upperLeft.x, position.lowerRight.y),
-		position.upperLeft, color);
+	draw2DLine(destinationRectangle.upperLeft,
+		math::Vector2i(destinationRectangle.lowerRight.x,
+			destinationRectangle.upperLeft.y),
+		color);
+	draw2DLine(
+		math::Vector2i(destinationRectangle.lowerRight.x,
+			destinationRectangle.upperLeft.y),
+		destinationRectangle.lowerRight, color);
+	draw2DLine(destinationRectangle.lowerRight,
+		math::Vector2i(destinationRectangle.upperLeft.x,
+			destinationRectangle.lowerRight.y),
+		color);
+	draw2DLine(
+		math::Vector2i(destinationRectangle.upperLeft.x,
+			destinationRectangle.lowerRight.y),
+		destinationRectangle.upperLeft, color);
 }
 
-void OpenGLDevice::setAmbientLight(const Color& color)
-{
-	GLfloat data[4] = {color.getClampRed(), color.getClampGreen(),
-		color.getClampBlue(), color.getClampAlpha()};
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, data);
-}
+/*
+	Utility events
+*/
 
 void OpenGLDevice::onResize(const math::Vector2u& size)
 {
@@ -864,7 +745,770 @@ void OpenGLDevice::onResize(const math::Vector2u& size)
 
 	glViewport(0, 0, size.x, size.y);
 
-	transformation3DChanged = true;
+	transformationChanged = true;
+}
+
+/*
+	Private utility functions
+*/
+
+Texture* OpenGLDevice::findTexture(const std::string& name) const
+{
+	auto it = loadedTextures.find(name);
+	if (it == loadedTextures.end())
+	{
+		return nullptr;
+	}
+
+	return it->second;
+}
+
+void OpenGLDevice::bindTexture(unsigned textureLayer, Texture* texture)
+{
+	assert(textureLayer < maxTextures);
+
+	if (bindedTextures[textureLayer] == texture)
+	{
+		return;
+	}
+
+	bindedTextures[textureLayer] = texture;
+	glActiveTexture(GL_TEXTURE0 + textureLayer);
+
+	if (texture == nullptr)
+	{
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisable(GL_TEXTURE_2D);
+
+		return;
+	}
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture->getGlTextureName());
+}
+
+void OpenGLDevice::disableTextures(unsigned fromLayer)
+{
+	for (unsigned i = fromLayer; i < maxTextures; ++i)
+	{
+		bindTexture(i, nullptr);
+	}
+}
+
+void OpenGLDevice::setClientStates(bool vertex, bool normal, bool color,
+	bool texCoord0)
+{
+	if (clientStateVertex != vertex)
+	{
+		if (vertex)
+		{
+			glEnableClientState(GL_VERTEX_ARRAY);
+		}
+		else
+		{
+			glDisableClientState(GL_VERTEX_ARRAY);
+		}
+
+		clientStateVertex = vertex;
+	}
+
+	if (clientStateNormal != normal)
+	{
+		if (normal)
+		{
+			glEnableClientState(GL_NORMAL_ARRAY);
+		}
+		else
+		{
+			glDisableClientState(GL_NORMAL_ARRAY);
+		}
+		clientStateNormal = normal;
+	}
+
+	if (clientStateColor != color)
+	{
+		if (color)
+		{
+			glEnableClientState(GL_COLOR_ARRAY);
+		}
+		else
+		{
+			glDisableClientState(GL_COLOR_ARRAY);
+		}
+
+		clientStateColor = color;
+	}
+
+	if (clientStateTexCoord0 != texCoord0)
+	{
+		if (texCoord0)
+		{
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+		else
+		{
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+
+		clientStateTexCoord0 = texCoord0;
+	}
+}
+
+void OpenGLDevice::set2DRenderMode(bool transparent, bool textured,
+	bool alphaChannel)
+{
+	if (currentRenderMode == RenderMode3D)
+	{
+		onUnsetMaterial();
+	}
+
+	if (currentRenderMode != RenderMode2D || transformationChanged)
+	{
+		math::Vector2u renderTargetSize = screenSize;
+		math::Matrix4 projection;
+		projection.buildProjectionMatrixOrtho(
+			static_cast<float>(renderTargetSize.x),
+			-(static_cast<float>(renderTargetSize.y)), -1.0f, 1.0f);
+		projection.setTranslation(math::Vector3f(-1.0f, 1.0f, 0.0f));
+
+		glMatrixMode(GL_PROJECTION);
+		glLoadMatrixf(projection.pointer());
+
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
+		// www.opengl.org/archives/resources/faq/technical/transformations.htm
+		// 9.030
+		// Used for exact "pixelization"
+		glTranslatef(0.375f, 0.375f, 0.0f);
+
+		transformationChanged = false;
+	}
+
+	if (currentRenderMode != RenderMode2D)
+	{
+		glActiveTexture(GL_TEXTURE0);
+
+		setBasicRenderStates(material2D, lastMaterial, true);
+		lastMaterial = material2D;
+
+		// Is this really needed to be called twice on each frame?
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
+	bool blending = (textured & alphaChannel) || transparent;
+	if (blending)
+	{
+		glEnable(GL_BLEND);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+	}
+	else
+	{
+		glDisable(GL_BLEND);
+		glDisable(GL_ALPHA_TEST);
+	}
+
+	if (textured)
+	{
+		setTextureRenderStates(material2D, false);
+
+		currentMaterial.textureLayers[0].texture = getBindedTexture(0);
+		setTransform(Texture0, math::Matrix4());
+		transformationChanged = false; // Texture transformation won't affect
+
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	}
+
+	currentRenderMode = RenderMode2D;
+}
+
+void OpenGLDevice::set3DRenderMode()
+{
+	if (currentRenderMode != RenderMode3D)
+	{
+		glDisable(GL_BLEND);
+		glDisable(GL_ALPHA_TEST);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glMatrixMode(GL_PROJECTION);
+		glLoadMatrixf(matrices[Projection].pointer());
+
+		glMatrixMode(GL_MODELVIEW);
+		glLoadMatrixf((matrices[View] * matrices[Model]).pointer());
+
+		glActiveTexture(GL_TEXTURE0);
+
+		shouldResetRenderStates = true;
+	}
+
+	if (shouldResetRenderStates || lastMaterial != currentMaterial)
+	{
+		if (lastMaterial.materialType != currentMaterial.materialType)
+		{
+			onUnsetMaterial();
+		}
+
+		onSetMaterial();
+
+		lastMaterial = currentMaterial;
+		shouldResetRenderStates = false;
+	}
+
+	currentRenderMode = RenderMode3D;
+}
+
+void OpenGLDevice::setBasicRenderStates(const Material& currentMaterial,
+	const Material& lastMaterial, bool shouldResetRenderStates)
+{
+	if (shouldResetRenderStates ||
+		currentMaterial.colorMaterial != lastMaterial.colorMaterial)
+	{
+		if (currentMaterial.colorMaterial != Material::NoColorMaterial)
+		{
+			glEnable(GL_COLOR_MATERIAL);
+
+			switch (currentMaterial.colorMaterial)
+			{
+				case Material::Diffuse:
+				{
+					glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
+
+					break;
+				}
+				case Material::Ambient:
+				{
+					glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT);
+
+					break;
+				}
+				case Material::Specular:
+				{
+					glColorMaterial(GL_FRONT_AND_BACK, GL_SPECULAR);
+
+					break;
+				}
+				case Material::Emissive:
+				{
+					glColorMaterial(GL_FRONT_AND_BACK, GL_EMISSION);
+
+					break;
+				}
+				case Material::DiffuseAndAmbient:
+				{
+					glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+
+					break;
+				}
+				default:
+				{
+					glDisable(GL_COLOR_MATERIAL);
+
+					break;
+				}
+			}
+		}
+		else
+		{
+			glDisable(GL_COLOR_MATERIAL);
+		}
+	}
+
+	if (shouldResetRenderStates ||
+		lastMaterial.diffuseColor != currentMaterial.diffuseColor ||
+		lastMaterial.ambientColor != currentMaterial.ambientColor ||
+		lastMaterial.emissiveColor != currentMaterial.emissiveColor ||
+		lastMaterial.colorMaterial != currentMaterial.colorMaterial)
+	{
+		GLfloat color[4];
+
+		float inverse = 1.0f / 255.0f;
+
+		if (currentMaterial.colorMaterial != Material::Ambient &&
+			currentMaterial.colorMaterial != Material::DiffuseAndAmbient)
+		{
+			color[0] = currentMaterial.ambientColor.getRed() * inverse;
+			color[1] = currentMaterial.ambientColor.getGreen() * inverse;
+			color[2] = currentMaterial.ambientColor.getBlue() * inverse;
+			color[3] = currentMaterial.ambientColor.getAlpha() * inverse;
+			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, color);
+		}
+
+		if (currentMaterial.colorMaterial != Material::Diffuse &&
+			currentMaterial.colorMaterial != Material::DiffuseAndAmbient)
+		{
+			color[0] = currentMaterial.diffuseColor.getRed() * inverse;
+			color[1] = currentMaterial.diffuseColor.getGreen() * inverse;
+			color[2] = currentMaterial.diffuseColor.getBlue() * inverse;
+			color[3] = currentMaterial.diffuseColor.getAlpha() * inverse;
+			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, color);
+		}
+
+		if (currentMaterial.colorMaterial != Material::Emissive)
+		{
+			color[0] = currentMaterial.emissiveColor.getRed() * inverse;
+			color[1] = currentMaterial.emissiveColor.getGreen() * inverse;
+			color[2] = currentMaterial.emissiveColor.getBlue() * inverse;
+			color[3] = currentMaterial.emissiveColor.getAlpha() * inverse;
+			glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, color);
+		}
+	}
+
+	if (shouldResetRenderStates ||
+		lastMaterial.emissiveColor != currentMaterial.emissiveColor ||
+		lastMaterial.shininess != currentMaterial.shininess ||
+		lastMaterial.colorMaterial != currentMaterial.colorMaterial)
+	{
+		GLfloat color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+
+		float inverse = 1.0f / 255.0f;
+
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, currentMaterial.shininess);
+
+		if (currentMaterial.shininess != 0.0f &&
+			currentMaterial.colorMaterial != Material::Specular)
+		{
+			color[0] = currentMaterial.specularColor.getRed() * inverse;
+			color[1] = currentMaterial.specularColor.getGreen() * inverse;
+			color[2] = currentMaterial.specularColor.getBlue() * inverse;
+			color[3] = currentMaterial.specularColor.getAlpha() * inverse;
+		}
+
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, color);
+	}
+
+	if (shouldResetRenderStates ||
+		lastMaterial.smoothShading != currentMaterial.smoothShading)
+	{
+		glShadeModel(currentMaterial.smoothShading ? GL_SMOOTH : GL_FLAT);
+	}
+
+	if (shouldResetRenderStates ||
+		lastMaterial.lighting != currentMaterial.lighting)
+	{
+		if (currentMaterial.lighting)
+		{
+			glEnable(GL_LIGHTING);
+		}
+		else
+		{
+			glDisable(GL_LIGHTING);
+		}
+	}
+
+	if (shouldResetRenderStates ||
+		lastMaterial.fogEnabled != currentMaterial.fogEnabled)
+	{
+		if (currentMaterial.fogEnabled)
+		{
+			glEnable(GL_FOG);
+		}
+		else
+		{
+			glDisable(GL_FOG);
+		}
+	}
+
+	if (shouldResetRenderStates ||
+		lastMaterial.normalizeNormals != currentMaterial.normalizeNormals)
+	{
+		if (currentMaterial.normalizeNormals)
+		{
+			glEnable(GL_NORMALIZE);
+		}
+		else
+		{
+			glDisable(GL_NORMALIZE);
+		}
+	}
+
+	if (shouldResetRenderStates ||
+		lastMaterial.wireframe != currentMaterial.wireframe)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK,
+			currentMaterial.wireframe ? GL_LINE : GL_FILL);
+	}
+
+	if (shouldResetRenderStates ||
+		lastMaterial.backFaceCulling != currentMaterial.backFaceCulling ||
+		lastMaterial.frontFaceCulling != currentMaterial.frontFaceCulling)
+	{
+		if (currentMaterial.backFaceCulling == true &&
+			currentMaterial.frontFaceCulling == true)
+		{
+			glCullFace(GL_FRONT_AND_BACK);
+			glEnable(GL_CULL_FACE);
+		}
+		else if (currentMaterial.backFaceCulling == true)
+		{
+			glCullFace(GL_BACK);
+			glEnable(GL_CULL_FACE);
+		}
+		else if (currentMaterial.frontFaceCulling == true)
+		{
+			glCullFace(GL_FRONT);
+			glEnable(GL_CULL_FACE);
+		}
+		else
+		{
+			glDisable(GL_CULL_FACE);
+		}
+	}
+
+	if (shouldResetRenderStates ||
+		lastMaterial.depthFunction != currentMaterial.depthFunction)
+	{
+		if (currentMaterial.depthFunction != Material::Disabled)
+		{
+			glEnable(GL_DEPTH_TEST);
+
+			switch (currentMaterial.depthFunction)
+			{
+				case Material::LessEqual:
+				{
+					glDepthFunc(GL_LEQUAL);
+					break;
+				}
+				case Material::Equal:
+				{
+					glDepthFunc(GL_EQUAL);
+					break;
+				}
+				case Material::Less:
+				{
+					glDepthFunc(GL_LESS);
+					break;
+				}
+				case Material::NotEqual:
+				{
+					glDepthFunc(GL_NOTEQUAL);
+					break;
+				}
+				case Material::GreaterEqual:
+				{
+					glDepthFunc(GL_GEQUAL);
+					break;
+				}
+				case Material::Greater:
+				{
+					glDepthFunc(GL_GREATER);
+					break;
+				}
+				case Material::Always:
+				{
+					glDepthFunc(GL_ALWAYS);
+					break;
+				}
+				case Material::Never:
+				{
+					glDepthFunc(GL_NEVER);
+					break;
+				}
+				default:
+				{
+					break;
+				}
+			}
+		}
+		else
+		{
+			glDisable(GL_DEPTH_TEST);
+		}
+	}
+
+	if (currentMaterial.blendOperation == Material::NoBlend)
+	{
+		glDisable(GL_BLEND);
+	}
+	else
+	{
+		glEnable(GL_BLEND);
+	}
+
+	// TODO: Anti-Aliasing
+
+	// TODO: Color mask
+}
+
+#if 0
+void OpenGLDevice::setBasicRenderStates(const Material& currentMaterial,
+	const Material& lastMaterial, bool shouldResetRenderStates)
+{
+	if (currentMaterial.zWriteEnabled)
+	{
+		switch (currentMaterial.zWriteFineControl)
+		{
+			case Material::OnlyNonTransparent:
+			{
+				glDepthMask(!currentMaterial.isTransparent());
+			}
+			case Material::ZBufferFlag:
+			{
+				glDepthMask(true);
+				break;
+			}
+		}
+	}
+	else
+	{
+		glDepthMask(false);
+	}
+
+	if (currentMaterial.blendOperation == Material::NoBlend)
+	{
+		glDisable(GL_BLEND);
+	}
+	else
+	{
+		glEnable(GL_BLEND);
+	}
+
+	setTextureRenderStates(currentMaterial, shouldResetRenderStates);
+}
+#endif
+
+void OpenGLDevice::toGLTextureMatrix(GLfloat* glMatrix,
+	const math::Matrix4& matrix)
+{
+	glMatrix[0] = matrix[0];
+	glMatrix[1] = matrix[1];
+	glMatrix[2] = 0.0f;
+	glMatrix[3] = 0.0f;
+
+	glMatrix[4] = matrix[4];
+	glMatrix[5] = matrix[5];
+	glMatrix[6] = 0.0f;
+	glMatrix[7] = 0.0f;
+
+	glMatrix[8] = 0.0f;
+	glMatrix[9] = 0.0f;
+	glMatrix[10] = 1.0f;
+	glMatrix[11] = 0.0f;
+
+	glMatrix[12] = matrix[8];
+	glMatrix[13] = matrix[9];
+	glMatrix[14] = 0.0f;
+	glMatrix[15] = 1.0f;
+}
+
+void OpenGLDevice::setTextureRenderStates(const Material& currentMaterial,
+	bool shouldResetRenderStates)
+{
+	// TODO
+
+	// THIS FUNCTION IS COMPLETELY INCOMPLETE :D
+	// MANY FEATURES (MOST OF THEM, REALLY) ARE MISSING
+
+	for (signed i = maxTextures - 1; i >= 0; --i)
+	{
+		Texture* tempTexture = getBindedTexture(i);
+		if (tempTexture == nullptr)
+		{
+			continue;
+		}
+
+		glActiveTexture(GL_TEXTURE0 + i);
+
+		glMatrixMode(GL_TEXTURE);
+
+		if (matrices[Texture0 + i].isIdentity())
+		{
+			glLoadIdentity();
+		}
+		else
+		{
+			GLfloat glMatrix[16];
+			toGLTextureMatrix(glMatrix, matrices[Texture0 + i]);
+		}
+
+		if (shouldResetRenderStates /* || check LOD */)
+		{
+			if (false) //(currentMaterial.textureLayers[i].lodBias != 0)
+			{
+				//float clamped = math::clamp(currentMaterial.textureLayers[i].lodBias * 0.125f, -max);
+			}
+			else
+			{
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, 0.0f);
+			}
+		}
+
+		if (shouldResetRenderStates /* || check bilinear filter */)
+		{
+
+		}
+
+		if (currentMaterial.useMipMaps && false /* tempTexture->hasMipMaps() */)
+		{
+
+		}
+		else
+		{
+			if (shouldResetRenderStates /* || bilinear filter */)
+			{
+
+			}
+		}
+	}
+
+	glActiveTexture(GL_TEXTURE0);
+}
+
+void OpenGLDevice::onSetMaterial()
+{
+	switch (currentMaterial.materialType)
+	{
+		case Material::Solid:
+		{
+			disableTextures(1);
+			setBasicRenderStates(currentMaterial, lastMaterial,
+				shouldResetRenderStates);
+
+			if (shouldResetRenderStates || (lastMaterial != currentMaterial))
+			{
+				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+			}
+
+			break;
+		}
+		case Material::LightMap:
+		case Material::DoubleLightMap:
+		case Material::LightMapLighting:
+		case Material::DoubleLightMapLighting:
+		{
+			disableTextures(2);
+			setBasicRenderStates(currentMaterial, lastMaterial,
+				shouldResetRenderStates);
+
+			if (shouldResetRenderStates ||
+				(lastMaterial.materialType != currentMaterial.materialType))
+			{
+				switch (currentMaterial.materialType)
+				{
+					case Material::LightMapLighting:
+					case Material::DoubleLightMapLighting:
+					{
+						glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
+							GL_MODULATE);
+						break;
+					}
+					case Material::LightMap:
+					case Material::DoubleLightMap:
+					{
+						glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
+							GL_REPLACE);
+						break;
+					}
+					default:
+					{
+						break;
+					}
+				}
+/*
+				glActiveTexture(GL_TEXTURE1);
+
+				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
+
+				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
+
+				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE);
+				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PREVIOUS_ARB);
+				glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_ARB, GL_MODULATE);
+				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_ARB, GL_TEXTURE);
+				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_ALPHA_ARB,
+					GL_PREVIOUS_ARB);
+
+				switch (currentMaterial.materialType)
+				{
+					case Material::DoubleLightMap:
+					case Material::DoubleLightMapLighting:
+					{
+						glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, 2.0f);
+						break;
+					}
+					case Material::LightMap:
+					case Material::LightMapLighting:
+					default:
+					{
+						glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, 1.0f);
+						break;
+					}
+				}
+
+				glActiveTexture(GL_TEXTURE0);
+*/
+			}
+
+			break;
+		}
+		case Material::DetailMap:
+		{
+			break;
+		}
+		case Material::Reflection:
+		{
+			break;
+		}
+		case Material::SemiTransparent:
+		{
+			break;
+		}
+		case Material::SharpTransparent:
+		{
+			disableTextures(1);
+			setBasicRenderStates(currentMaterial, lastMaterial,
+				shouldResetRenderStates);
+
+			glEnable(GL_ALPHA_TEST);
+			glAlphaFunc(GL_GREATER, 0.5f);
+
+			if (shouldResetRenderStates || (lastMaterial != currentMaterial))
+			{
+				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+			}
+
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
+}
+
+void OpenGLDevice::onUnsetMaterial()
+{
+	switch (lastMaterial.materialType)
+	{
+		case Material::Solid:
+		case Material::LightMap:
+		case Material::DoubleLightMap:
+		case Material::LightMapLighting:
+		case Material::DoubleLightMapLighting:
+		case Material::DetailMap:
+		case Material::Reflection:
+		case Material::SemiTransparent:
+		{
+			break;
+		}
+		case Material::SharpTransparent:
+		{
+			glDisable(GL_ALPHA_TEST);
+
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
+}
+
+Texture* OpenGLDevice::getBindedTexture(unsigned onLayer)
+{
+	assert(onLayer < maxTextures);
+
+	return bindedTextures[onLayer];
 }
 
 } // namespace device

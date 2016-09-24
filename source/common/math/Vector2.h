@@ -57,6 +57,14 @@ public:
 			math::compareWithEpsilon(y, other.y, epsilon));
 	}
 
+	bool isEqualToRelative(const Vector2<T>& other, T maxRelativeError =
+		(std::numeric_limits<T>::epsilon() * static_cast<T>(10))) const
+	{
+		return (
+			compareRelative(x, other.x, maxRelativeError) &&
+			compareRelative(y, other.y, maxRelativeError));
+	}
+
 	Vector2<T>& invert()
 	{
 		x = -x;

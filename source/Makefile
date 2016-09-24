@@ -22,6 +22,7 @@ endif
 
 MAIN_OBJECTS = main.o \
 	Stranded.o \
+	Camera.o \
 	Color.o \
 	Device.o \
 	Engine.o \
@@ -32,7 +33,6 @@ MAIN_OBJECTS = main.o \
 	Input.o \
 	IntroScreen.o \
 	Keyboard.o \
-	Light.o \
 	MainMenuScreen.o \
 	Material.o \
 	Matrix4.o \
@@ -51,6 +51,7 @@ MAIN_OBJECTS = main.o \
 	Sound.o \
 	Texture.o \
 	Vertex3D.o \
+	Timer.o \
 	Window.o
 
 all: debug
@@ -79,6 +80,12 @@ Stranded.o: Stranded.cpp Stranded.h \
 		sound/Sound.h \
 		window/Window.h
 	$(CXX) $(CXXFLAGS) -c Stranded.cpp
+
+Camera.o: graphics/scene/Camera.cpp graphics/scene/Camera.h \
+		graphics/device/Device.h \
+		graphics/scene/Node.h \
+		graphics/scene/Scene.h
+	$(CXX) $(CXXFLAGS) -c graphics/scene/Camera.cpp
 
 Color.o: graphics/Color.cpp graphics/Color.h
 	$(CXX) $(CXXFLAGS) -c graphics/Color.cpp
@@ -132,9 +139,6 @@ IntroScreen.o: gui/screen/IntroScreen.cpp gui/screen/IntroScreen.h \
 
 Keyboard.o: input/Keyboard.cpp input/Keyboard.h
 	$(CXX) $(CXXFLAGS) -c input/Keyboard.cpp
-
-Light.o: graphics/Light.cpp graphics/Light.h
-	$(CXX) $(CXXFLAGS) -c graphics/Light.cpp
 
 MainMenuScreen.o: gui/screen/MainMenuScreen.cpp gui/screen/MainMenuScreen.h \
 		gui/Gui.h \
@@ -201,6 +205,9 @@ Vertex3D.o: graphics/Vertex3D.cpp graphics/Vertex3D.h \
 		common/math/Vector3.h \
 		graphics/Color.h
 	$(CXX) $(CXXFLAGS) -c graphics/Vertex3D.cpp
+
+Timer.o: common/Timer.cpp common/Timer.h
+	$(CXX) $(CXXFLAGS) -c common/Timer.cpp
 
 Window.o: window/Window.cpp window/Window.h \
 		common/Modification.h \

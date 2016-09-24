@@ -32,8 +32,8 @@ Vertex3D::~Vertex3D()
 bool Vertex3D::operator==(const Vertex3D& other) const
 {
 	return (
-		position.isEqualTo(other.position) &&
-		normal == other.normal &&
+		position.isEqualToRelative(other.position) &&
+		normal.isEqualToRelative(other.normal) &&
 		color == other.color &&
 		textureCoords == other.textureCoords);
 }

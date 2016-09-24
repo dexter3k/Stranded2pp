@@ -4,7 +4,6 @@
 
 #include "../Color.h"
 #include "../Image.h"
-#include "../Light.h"
 #include "../Material.h"
 #include "../Texture.h"
 #include "../Vertex3D.h"
@@ -12,6 +11,7 @@
 #include "common/math/Matrix4.h"
 #include "common/math/Rect.h"
 #include "common/math/Vector2.h"
+#include "common/math/Vector3.h"
 
 namespace gfx
 {
@@ -22,23 +22,32 @@ namespace device
 class Device
 {
 public:
-	enum TransformationState
+	enum TransformType
 	{
-		TransformationView,
-		TransformationWorld,
-		TransformationProjection,
-		TransformationTexture0,
-		TransformationTexture1,
-		TransformationTexture2,
-		TransformationTexture3,
+		Projection = 0,
+		Model = 1,
+		View,
+		Texture0,
+		Texture1,
 
-		TransformationCount
+		TransformCount
 	};
+
+	static const unsigned maxTextures = 2;
 public:
 	Device();
 	virtual ~Device();
 
 	virtual bool init() = 0;
+
+	// Data management
+
+	virtual Texture* getTexture(const std::string& name) const = 0;
+	virtual Texture* loadTextureFromFile(const std::string& name,
+		bool applyColorKey = false) = 0;
+	virtual void unloadAllTextures() = 0;
+
+	// Rendering utilities
 
 	virtual void beginScene() = 0;
 	virtual void endScene() = 0;
@@ -47,57 +56,68 @@ public:
 
 	virtual void clearZBuffer() = 0;
 
-	virtual const math::Matrix4& getTransform(TransformationState state) const
-		= 0;
+	// Rendering properties
 
-	virtual void setTransform(TransformationState state,
-		const math::Matrix4& matrix) = 0;
+	virtual void setTransform(TransformType transformType,
+		const math::Matrix4& transform) = 0;
+	virtual void resetTransforms() = 0;
+	virtual void setMaterial(const Material& material) = 0;
 
-	virtual Texture* getTexture(const std::string& name) const = 0;
-	virtual Texture* loadTextureFromFile(const std::string& name,
-		bool applyColorKey = false) = 0;
+	// 3D Drawing
 
-	virtual void unloadAllTextures() = 0;
+	virtual void draw3DLine(const math::Vector3f& start,
+		const math::Vector3f& end,
+		const Color& color = Color(255, 255, 255, 255)) = 0;
 
-	virtual void drawPixel(unsigned x, unsigned y, const Color& color) = 0;
+	virtual void drawIndexedPrimitiveList(const Vertex3D* vertices,
+		uint32_t vertexCount, const uint16_t* indices,
+		uint32_t primitiveCount) = 0;
+
+	// 2D Drawing
+
+	virtual void drawPixel(unsigned x, unsigned y,
+		const Color& pixelColor = Color(255, 255, 255, 255)) = 0;
 
 	virtual void draw2DImage(Texture* texture,
-		const math::Vector2i& destination) = 0;
+		const math::Vector2i& imageDestination) = 0;
 
 	virtual void draw2DImage(Texture* texture,
-		const math::Vector2i& destination, const math::Recti& sourceRect,
-		const math::Recti* clipRect = 0,
+		const math::Vector2i& imageDestination,
+		const math::Recti& sourceRectangle,
 		const Color& color = Color(255, 255, 255, 255),
-		bool useAlphaChannel = false) = 0;
-
-	virtual void draw2DImage(Texture* texture, const math::Recti& destination)
-		= 0;
+		const math::Recti* clippingRectangle = nullptr,
+		bool useAlphaChannel = true) = 0;
 
 	virtual void draw2DImage(Texture* texture,
-		const math::Recti& destination, const math::Recti& sourceRect,
-		const math::Recti* clipRect = nullptr,
-		const Color* colors = nullptr, bool useAlphaChannel = false) = 0;
+		const math::Recti& destinationRectangle) = 0;
+
+	virtual void draw2DImage(Texture* texture,
+		const math::Recti& destinationRectangle,
+		const math::Recti& sourceRectangle, const Color* colors = nullptr,
+		const math::Recti* clippingRectangle = nullptr,
+		bool useAlphaChannel = true) = 0;
 
 	virtual void draw2DLine(const math::Vector2i& start,
 		const math::Vector2i& end,
 		const Color& color = Color(255, 255, 255, 255)) = 0;
 
 	virtual void draw2DPolygon(const math::Vector2i& center, float radius,
-		const Color& color = Color(100, 255, 255, 255),
-		unsigned vertexCount = 10) = 0;
-
-	virtual void draw2DRectangle(const Color& color,
-		const math::Recti& position, const math::Recti* clipRect = nullptr) = 0;
-
-	virtual void draw2DRectangle(const math::Recti& position,
-		const Color& colorLeftUp, const Color& colorRightUp,
-		const Color& colorLeftDown, const Color& colorRightDown,
-		const math::Recti* clipRect = nullptr) = 0;
-
-	virtual void draw2DRectangleOutline(const math::Recti& position,
+		unsigned vertexCount = 10,
 		const Color& color = Color(255, 255, 255, 255)) = 0;
 
-	virtual void setAmbientLight(const Color& color) = 0;
+	virtual void draw2DRectangle(const math::Recti& destinationRectangle,
+		const Color& color = Color(255, 255, 255, 255),
+		const math::Recti* clippingRectangle = nullptr) = 0;
+
+	virtual void draw2DRectangle(const math::Recti& destinationRectangle,
+		const Color& colorLeftUp, const Color& colorRightUp,
+		const Color& colorLeftDown, const Color& colorRightDown,
+		const math::Recti* clippingRectangle = nullptr) = 0;
+
+	virtual void draw2DRectangleOutline(const math::Recti& destinationRectangle,
+		const Color& color = Color(255, 255, 255, 255)) = 0;
+
+	// Utility events
 
 	virtual void onResize(const math::Vector2u& size) = 0;
 protected:

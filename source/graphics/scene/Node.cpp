@@ -10,30 +10,49 @@ namespace scene
 
 Node::Node(Node* parent, Scene* scene, int id, const math::Vector3f& position,
 		const math::Vector3f& rotation, const math::Vector3f& scale) :
-	parent(parent),
+	parent(nullptr),
 	children(),
 	scene(scene),
 	id(id),
 	name(""),
 	isVisible(true),
+	absoluteTransformation(),
 	position(position),
 	rotation(rotation),
 	scale(scale)
 {
-	assert(parent != nullptr);
 	assert(scene != nullptr);
+
+	setParent(parent);
 }
 
 Node::~Node()
 {}
 
+void Node::onAnimate(float deltaTime)
+{
+	if (isVisible)
+	{
+		updateAbsolutePosition();
+
+		for (auto& node : children)
+		{
+			node->onAnimate(deltaTime);
+		}
+	}
+}
+
 void Node::addChild(Node* child)
 {
 	assert(child != nullptr);
 
-	if (child->getParent() == this)
+	if (child->parent == nullptr)
 	{
-		return;
+		child->parent = this;
+	}
+	else
+	{
+		child->parent->removeChild(child);
 	}
 
 	children.push_back(child);
@@ -53,10 +72,8 @@ bool Node::removeChild(Node* childToRemove)
 	{
 		if ((*it) == childToRemove)
 		{
-			if ((*it)->getParent() == this)
-			{
-				(*it)->setParent(nullptr);
-			}
+			assert((*it)->parent == this);
+			(*it)->parent = nullptr;
 
 			children.erase(it);
 
@@ -101,21 +118,12 @@ void Node::setParent(Node* newParent)
 
 	if (parent != nullptr)
 	{
-		Node* oldParent = parent;
-		parent = newParent;
-
-		oldParent->removeChild(this);
-	}
-	else
-	{
-		parent = newParent;
+		parent->removeChild(this);
 	}
 
-	parent = newParent;
-
-	if (parent != nullptr)
+	if (newParent != nullptr)
 	{
-		parent->addChild(this);
+		newParent->addChild(this);
 	}
 }
 
@@ -167,6 +175,47 @@ const math::Vector3f& Node::getScale() const
 void Node::setScale(const math::Vector3f& scale)
 {
 	this->scale = scale;
+}
+
+math::Matrix4 Node::getTransformation() const
+{
+	math::Matrix4 transformationMatrix;
+	transformationMatrix.setRotationDegrees(rotation);
+	transformationMatrix.setTranslation(position);
+
+	if (!scale.isEqualToRelative(math::Vector3f(1.0f, 1.0f, 1.0f)))
+	{
+		math::Matrix4 scaleMatrix;
+		scaleMatrix.setScale(scale);
+
+		transformationMatrix *= scaleMatrix;
+	}
+
+	return transformationMatrix;
+}
+
+math::Matrix4 Node::getAbsoluteTransformation() const
+{
+	return absoluteTransformation;
+}
+
+math::Vector3f Node::getAbsolutePosition() const
+{
+	return absoluteTransformation.getTranslation();
+}
+
+// TODO: rename to transformation
+void Node::updateAbsolutePosition()
+{
+	if (parent != nullptr)
+	{
+		absoluteTransformation = parent->getAbsoluteTransformation() *
+			getTransformation();
+	}
+	else
+	{
+		absoluteTransformation = getTransformation();
+	}
 }
 
 } // namespace scene

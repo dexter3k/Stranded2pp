@@ -43,18 +43,22 @@ public:
 	Matrix4& operator*=(float scalar);
 
 	Matrix4& makeIdentity();
+	bool isIdentity() const;
 
 	Matrix4& setTranslation(const math::Vector3f& translation);
 	math::Vector3f getTranslation() const;
 
-	Matrix4& setRotation(const math::Vector3f& rotation);
-	math::Vector3f getRotation() const;
+	Matrix4& setRotationDegrees(const math::Vector3f& rotation);
+	Matrix4& setRotationRadians(const math::Vector3f& rotation);
+	math::Vector3f getRotationDegrees() const;
 
 	Matrix4& setScale(const math::Vector3f& scale);
 	math::Vector3f getScale() const;
 
 	Matrix4& buildProjectionMatrixOrtho(float width, float height, float near,
 		float far);
+	Matrix4& buildProjectionMatrixPerspective(float fieldOfViewDegrees,
+		float aspectRatio, float near, float far);
 private:
 	float matrix[16];
 };

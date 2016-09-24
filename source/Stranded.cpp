@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "common/Modification.h"
+#include "common/Timer.h"
 #include "engine/Engine.h"
 #include "graphics/Graphics.h"
 #include "gui/Gui.h"
@@ -85,9 +86,14 @@ void Stranded::run()
 {
 	float deltaTime = 0.0f;
 
+	Timer deltaTimer;
+	deltaTimer.restart();
+
 	isRunning = true;
 	while (isRunning)
 	{
+		deltaTime = deltaTimer.restart();
+
 		input->update(deltaTime);
 
 		engine->update(deltaTime);

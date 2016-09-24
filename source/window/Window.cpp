@@ -62,7 +62,7 @@ bool Window::init(const Modification& modification)
 	}
 	else
 	{
-		window.setFramerateLimit(300);
+		window.setFramerateLimit(30);
 	}
 
 	return true;
