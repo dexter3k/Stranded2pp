@@ -87,7 +87,6 @@ void Stranded::run()
 	float deltaTime = 0.0f;
 
 	Timer deltaTimer;
-	deltaTimer.restart();
 
 	isRunning = true;
 	while (isRunning)

@@ -61,7 +61,7 @@ bool OpenGLDevice::init()
 	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 	glHint(GL_POINT_SMOOTH_HINT, GL_FASTEST);
 
-	glFrontFace(GL_CCW);
+	//glFrontFace(GL_CCW);
 
 	quad2DVertices[0] = Vertex3D(math::Vector3f(-1.0f, 1.0f, 0.0f),
 		math::Vector3f(0.0f, 0.0f, 0.0f),
@@ -89,6 +89,11 @@ bool OpenGLDevice::init()
 	return true;
 }
 
+math::Vector2u OpenGLDevice::getRenderTargetSize() const
+{
+	return screenSize;
+}
+
 Texture* OpenGLDevice::getTexture(const std::string& name) const
 {
 	return findTexture(name);
@@ -100,8 +105,8 @@ Texture* OpenGLDevice::loadTextureFromFile(const std::string& name,
 	Texture* texture = findTexture(name);
 	if (texture != nullptr)
 	{
-		//std::cout << "Warn: texture '" << name << "' is already loaded!" <<
-		//	std::endl;
+		std::cout << "Warn: texture '" << name << "' is already loaded!" <<
+			std::endl;
 
 		return texture;
 	}
@@ -302,7 +307,7 @@ void OpenGLDevice::drawIndexedPrimitiveList(const Vertex3D* vertices,
 
 void OpenGLDevice::drawPixel(unsigned x, unsigned y, const Color& pixelColor)
 {
-	auto renderTargetSize = screenSize;
+	auto renderTargetSize = getRenderTargetSize();
 	if (x > renderTargetSize.x || y > renderTargetSize.y)
 	{
 		return;
@@ -378,7 +383,7 @@ void OpenGLDevice::draw2DImage(Texture* texture,
 	}
 
 	// TODO
-	const math::Vector2u& renderTargetSize = screenSize;
+	const math::Vector2u& renderTargetSize = getRenderTargetSize();
 
 	if (targetPosition.x + sourceSize.x > static_cast<int>(renderTargetSize.x))
 	{
@@ -526,7 +531,7 @@ void OpenGLDevice::draw2DImage(Texture* texture,
 		}
 
 		glEnable(GL_SCISSOR_TEST);
-		math::Vector2u renderTargetSize = screenSize;
+		math::Vector2u renderTargetSize = getRenderTargetSize();
 		glScissor(clippingRectangle->upperLeft.x,
 			renderTargetSize.y - clippingRectangle->lowerRight.y,
 			clippingRectangle->getWidth(), clippingRectangle->getHeight());
@@ -864,7 +869,7 @@ void OpenGLDevice::set2DRenderMode(bool transparent, bool textured,
 
 	if (currentRenderMode != RenderMode2D || transformationChanged)
 	{
-		math::Vector2u renderTargetSize = screenSize;
+		math::Vector2u renderTargetSize = getRenderTargetSize();
 		math::Matrix4 projection;
 		projection.buildProjectionMatrixOrtho(
 			static_cast<float>(renderTargetSize.x),

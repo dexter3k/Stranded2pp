@@ -24,6 +24,8 @@ protected:
 public:
 	virtual ~Node();
 
+	virtual void onRegisterNode();
+
 	virtual void onAnimate(float deltaTime);
 
 	virtual void addChild(Node* child);

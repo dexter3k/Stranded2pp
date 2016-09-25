@@ -291,7 +291,9 @@ math::Vector3f Matrix4::getRotationDegrees() const
 
 Matrix4& Matrix4::setScale(const math::Vector3f& scale)
 {
-	assert(false && "TODO");
+	matrix[0] = scale.x;
+	matrix[5] = scale.y;
+	matrix[10] = scale.z;
 }
 
 math::Vector3f Matrix4::getScale() const

@@ -40,6 +40,10 @@ public:
 
 	virtual bool init() = 0;
 
+	// Device info
+
+	virtual math::Vector2u getRenderTargetSize() const = 0;
+
 	// Data management
 
 	virtual Texture* getTexture(const std::string& name) const = 0;

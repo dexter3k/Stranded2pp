@@ -1,7 +1,10 @@
 #pragma once
 
+#include <list>
+
 #include "Node.h"
 
+#include "common/Timer.h"
 #include "common/math/Vector3.h"
 
 namespace gfx
@@ -31,7 +34,7 @@ public:
 		RenderPassNone,
 		RenderPassCamera,
 		RenderPassLight,
-		RenderPassSkyBox,
+		RenderPassSkybox,
 		RenderPassAutomatic,
 		RenderPassSolid,
 		RenderPassShadow,
@@ -80,7 +83,7 @@ public:
 		const math::Vector3f& rotation = math::Vector3f(0.0f, 0.0f, 0.0f),
 		int id = -1, bool makeActive = true);
 
-	Node* addSkyBox(Texture* top, Texture* bottom, Texture* left,
+	Node* addSkybox(Texture* top, Texture* bottom, Texture* left,
 		Texture* right, Texture* front, Texture* back, Node* parent = nullptr,
 		int id = -1);
 
@@ -112,6 +115,13 @@ private:
 	math::Vector3f cameraWorldPosition;
 
 	std::list<Node*> sceneNodes;
+
+	Timer animationDeltaTimer;
+
+	SceneNodeRenderPass currentRenderPass;
+
+	std::list<Node*> skyboxes;
+	std::list<Node*> solidObjects;
 };
 
 } // namespace scene

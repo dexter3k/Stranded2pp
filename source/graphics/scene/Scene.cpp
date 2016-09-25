@@ -1,6 +1,7 @@
 #include "Scene.h"
 
 #include "Camera.h"
+#include "Skybox.h"
 
 #include "../Color.h"
 #include "../Material.h"
@@ -18,7 +19,11 @@ Scene::Scene(Graphics& graphics, device::Device* device) :
 	device(device),
 	activeCamera(nullptr),
 	cameraWorldPosition(0.0f, 0.0f, 0.0f),
-	sceneNodes()
+	sceneNodes(),
+	animationDeltaTimer(),
+	currentRenderPass(RenderPassNone),
+	skyboxes(),
+	solidObjects()
 {}
 
 Scene::~Scene()
@@ -31,9 +36,6 @@ Scene::~Scene()
 	sceneNodes.clear();
 }
 
-float roty = 0.0f;
-float rotx = 0.0f;
-
 void Scene::drawAll()
 {
 	// TODO
@@ -43,17 +45,12 @@ void Scene::drawAll()
 		return;
 	}
 
-	Material test;
-	test.materialType = Material::SharpTransparent;
-	test.wireframe = false;
-	test.backFaceCulling = false;
-	test.frontFaceCulling = false;
-	test.textureLayers[0].texture = device->loadTextureFromFile("mods/Stranded II/sys/gfx/tutor.bmp", true);
-
-	device->setMaterial(test);
+	device->setMaterial(Material());
 	device->resetTransforms();
 
-	RootNode::onAnimate(1.0f);
+	float animationDeltaTime = animationDeltaTimer.restart();
+
+	RootNode::onAnimate(animationDeltaTime);
 
 	cameraWorldPosition = math::Vector3f(0.0f, 0.0f, 0.0f);
 	if (activeCamera != nullptr)
@@ -62,56 +59,33 @@ void Scene::drawAll()
 		cameraWorldPosition = activeCamera->getAbsolutePosition();
 	}
 
-	//device->draw3DLine(math::Vector3f(-2.0f, 0.0f, -10.0f),
-	//	math::Vector3f(5.0f, -3.0f, -10.0f));
+	RootNode::onRegisterNode();
 
-	device->setTransform(device::Device::Model,
-		math::Matrix4()
-			.setTranslation(math::Vector3f(0.0f, 0.0f, -5.0f))
-			.setRotationDegrees(math::Vector3f(++rotx, ++roty, 0.0f)));
+	// Render skyboxes
+	{
+		currentRenderPass = RenderPassSkybox;
 
-	const unsigned vertexCount = 24;
-	Vertex3D vertices[vertexCount] = {
-		Vertex3D(-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 0.0f, 0.0f),
-		Vertex3D(-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 0.0f, 1.0f),
-		Vertex3D(0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 1.0f, 1.0f),
-		Vertex3D(0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 1.0f, 0.0f),
+		for (auto&& skybox : skyboxes)
+		{
+			skybox->render();
+		}
 
-		Vertex3D(-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 0.0f, 0.0f),
-		Vertex3D(-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 0.0f, 1.0f),
-		Vertex3D(0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 1.0f, 1.0f),
-		Vertex3D(0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 1.0f, 0.0f),
+		skyboxes.clear();
+	}
 
-		Vertex3D(-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 0.0f, 0.0f),
-		Vertex3D(-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 0.0f, 1.0f),
-		Vertex3D(-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 1.0f, 1.0f),
-		Vertex3D(-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 1.0f, 0.0f),
+	// Render solid objects
+	{
+		currentRenderPass = RenderPassSolid;
 
-		Vertex3D(0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 0.0f, 0.0f),
-		Vertex3D(0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 0.0f, 1.0f),
-		Vertex3D(0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 1.0f, 1.0f),
-		Vertex3D(0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 1.0f, 0.0f),
+		for (auto&& object : solidObjects)
+		{
+			object->render();
+		}
 
-		Vertex3D(0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 0.0f, 0.0f),
-		Vertex3D(-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 0.0f, 1.0f),
-		Vertex3D(-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 1.0f, 1.0f),
-		Vertex3D(0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 1.0f, 0.0f),
+		solidObjects.clear();
+	}
 
-		Vertex3D(0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 0.0f, 0.0f),
-		Vertex3D(-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 0.0f, 1.0f),
-		Vertex3D(-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 1.0f, 1.0f),
-		Vertex3D(0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, Color(255, 255, 255), 1.0f, 0.0f),
-	};
-	unsigned short indices[] = {0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23};
-	unsigned primitiveCount = 12;
-
-	device->drawIndexedPrimitiveList(vertices, vertexCount, indices, primitiveCount);
-
-	device->draw2DRectangleOutline(math::Recti(50, 50, 750, 550));
-
-	device->draw2DImage(
-		device->loadTextureFromFile("mods/Stranded II/sys/gfx/tutor.bmp", true),
-		math::Recti(51, 51, 250, 200));
+	currentRenderPass = RenderPassNone;
 }
 
 device::Device* Scene::getDevice()
@@ -146,11 +120,19 @@ Camera* Scene::addCamera(Node* parent, const math::Vector3f& position,
 	return camera;
 }
 
-Node* Scene::addSkyBox(Texture* top, Texture* bottom, Texture* left,
+Node* Scene::addSkybox(Texture* top, Texture* bottom, Texture* left,
 	Texture* right, Texture* front, Texture* back, Node* parent, int id)
 {
-	// TODO
-	return nullptr;
+	if (parent == nullptr)
+	{
+		parent = this;
+	}
+
+	Node* skybox = new Skybox(top, bottom, left, right, front, back, parent,
+		this, id);
+	sceneNodes.push_back(skybox);
+
+	return skybox;
 }
 
 Node* Scene::addEmptyNode(Node* parent, int id)
@@ -177,8 +159,26 @@ void Scene::setActiveCamera(Camera* camera)
 
 bool Scene::registerNodeForRendering(Node* node, SceneNodeRenderPass pass)
 {
-	// TODO
-	return false;
+	if (node == nullptr)
+	{
+		return false;
+	}
+
+	switch (pass)
+	{
+		case RenderPassSkybox:
+		{
+			skyboxes.push_back(node);
+
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
+
+	return true;
 }
 
 void Scene::clearScene()
@@ -188,8 +188,7 @@ void Scene::clearScene()
 
 Scene::SceneNodeRenderPass Scene::getCurrentRenderPass() const
 {
-	// TODO
-	return RenderPassNone;
+	return currentRenderPass;
 }
 
 const Color& Scene::getAmbientLightColor() const

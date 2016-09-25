@@ -48,6 +48,7 @@ MAIN_OBJECTS = main.o \
 	RingBuffer.o \
 	Scene.o \
 	Screen.o \
+	Skybox.o \
 	Sound.o \
 	Texture.o \
 	Vertex3D.o \
@@ -193,6 +194,8 @@ Scene.o: graphics/scene/Scene.cpp graphics/scene/Scene.h \
 Screen.o: gui/screen/Screen.cpp gui/screen/Screen.h \
 		gui/Gui.h
 	$(CXX) $(CXXFLAGS) -c gui/screen/Screen.cpp
+Skybox.o: graphics/scene/Skybox.cpp graphics/scene/Skybox.h
+	$(CXX) $(CXXFLAGS) -c graphics/scene/Skybox.cpp
 
 Sound.o: sound/Sound.cpp sound/Sound.h
 	$(CXX) $(CXXFLAGS) -c sound/Sound.cpp

@@ -24,6 +24,10 @@ public:
 
 	bool init() override;
 
+	// Device info
+
+	math::Vector2u getRenderTargetSize() const override;
+
 	// Data management
 
 	Texture* getTexture(const std::string& name) const override;

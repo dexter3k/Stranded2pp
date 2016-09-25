@@ -29,6 +29,17 @@ Node::Node(Node* parent, Scene* scene, int id, const math::Vector3f& position,
 Node::~Node()
 {}
 
+void Node::onRegisterNode()
+{
+	if (isVisible)
+	{
+		for (auto&& node : children)
+		{
+			node->onRegisterNode();
+		}
+	}
+}
+
 void Node::onAnimate(float deltaTime)
 {
 	if (isVisible)
