@@ -8,7 +8,6 @@
 #include "input/RawInputHandler.h"
 
 class Engine;
-class Gui;
 class Input;
 class Modification;
 class Network;
@@ -64,8 +63,6 @@ private:
 	std::shared_ptr<QuitEventHandler> quitEventHandler;
 
 	std::shared_ptr<gfx::Graphics>	graphics;
-
-	std::shared_ptr<Gui>		gui;
 
 	std::shared_ptr<Network>	network;
 

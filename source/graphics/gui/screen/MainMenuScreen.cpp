@@ -6,6 +6,12 @@
 
 #include "input/Input.h"
 
+namespace gfx
+{
+
+namespace gui
+{
+
 bool MainMenuScreen::InputHandler::onMouseButtonPressed(uint8_t button, int x,
 	int y)
 {
@@ -42,3 +48,7 @@ void MainMenuScreen::update(float deltaTime)
 {
 	super::update(deltaTime);
 }
+
+} // namespace gui
+
+} // namespace gfx

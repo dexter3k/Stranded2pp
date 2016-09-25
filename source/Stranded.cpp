@@ -6,7 +6,6 @@
 #include "common/Timer.h"
 #include "engine/Engine.h"
 #include "graphics/Graphics.h"
-#include "gui/Gui.h"
 #include "input/Input.h"
 #include "network/Network.h"
 #include "sound/Sound.h"
@@ -20,10 +19,9 @@ Stranded::Stranded() :
 	input(new Input(*window)),
 	quitEventHandler(new QuitEventHandler(input.get(), *this)),
 	graphics(new gfx::Graphics(*input)),
-	gui(new Gui(*input)),
 	network(new Network()),
 	sound(new Sound()),
-	engine(new Engine(*input, *graphics, *gui, *network, *sound)),
+	engine(new Engine(*input, *graphics, *network, *sound)),
 	isRunning(false)
 {}
 
@@ -55,11 +53,6 @@ bool Stranded::init(const std::vector<std::string>& arguments)
 	quitEventHandler->init();
 
 	if (!graphics->init(*modification))
-	{
-		return false;
-	}
-
-	if (!gui->init(*modification))
 	{
 		return false;
 	}
@@ -98,8 +91,6 @@ void Stranded::run()
 		engine->update(deltaTime);
 
 		graphics->update(deltaTime);
-
-		gui->update(deltaTime);
 
 		graphics->drawAll();
 

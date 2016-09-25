@@ -1,5 +1,11 @@
 #pragma once
 
+namespace gfx
+{
+
+namespace gui
+{
+
 class Gui;
 
 class Screen
@@ -24,3 +30,7 @@ protected:
 
 	bool isCreated;
 };
+
+} // namespace gui
+
+} // namespace gfx

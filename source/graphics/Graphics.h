@@ -8,6 +8,11 @@ class Modification;
 namespace gfx
 {
 
+namespace gui
+{
+	class Gui;
+}
+
 namespace device
 {
 
@@ -40,6 +45,7 @@ private:
 
 	std::shared_ptr<device::Device> device;
 	std::shared_ptr<scene::Scene> scene;
+	std::shared_ptr<gui::Gui> gui;
 };
 
 } // namespace gfx

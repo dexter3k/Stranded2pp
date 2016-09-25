@@ -9,6 +9,8 @@
 
 #include "scene/Camera.h"
 
+#include "gui/Gui.h"
+
 
 namespace gfx
 {
@@ -16,7 +18,8 @@ namespace gfx
 Graphics::Graphics(Input& input) :
 	input(input),
 	device(new device::OpenGLDevice()),
-	scene(new scene::Scene(*this, device.get()))
+	scene(new scene::Scene(*this, device.get())),
+	gui(new gui::Gui(input, device.get()))
 {}
 
 Graphics::~Graphics()
@@ -25,6 +28,11 @@ Graphics::~Graphics()
 bool Graphics::init(const Modification& modification)
 {
 	if (!device->init())
+	{
+		return false;
+	}
+
+	if (!gui->init(modification))
 	{
 		return false;
 	}
@@ -57,6 +65,8 @@ void Graphics::update(float deltaTime)
 		rotation.y += 5.0f;
 		camera->setRotation(rotation);
 	}
+
+	gui->update(deltaTime);
 }
 
 void Graphics::drawAll()
@@ -64,6 +74,8 @@ void Graphics::drawAll()
 	device->beginScene();
 
 	scene->drawAll();
+
+	gui->drawAll();
 
 	device->endScene();
 }

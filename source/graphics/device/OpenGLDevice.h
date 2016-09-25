@@ -6,6 +6,8 @@
 #include <SFML/OpenGL.hpp>
 
 #include "Device.h"
+#include "../Material.h"
+#include "../Vertex3D.h"
 
 namespace gfx
 {

@@ -67,44 +67,54 @@ stranded2: $(MAIN_OBJECTS)
 	$(CXX) $(MAIN_OBJECTS) -o $(TargetPath)$(Target) $(LDFLAGS)
 
 main.o: main.cpp \
-		Stranded.h
+		Stranded.h \
+		input/RawInputHandler.h
 	$(CXX) $(CXXFLAGS) -c main.cpp
 
 Stranded.o: Stranded.cpp Stranded.h \
-		common/FileSystem.h \
 		common/Modification.h \
+		common/Timer.h \
 		engine/Engine.h \
 		graphics/Graphics.h \
-		gui/Gui.h \
 		input/Input.h \
+		input/Keyboard.h \
+		input/Mouse.h \
+		input/RawInputHandler.h \
 		network/Network.h \
 		sound/Sound.h \
 		window/Window.h
 	$(CXX) $(CXXFLAGS) -c Stranded.cpp
 
 Camera.o: graphics/scene/Camera.cpp graphics/scene/Camera.h \
+		common/math/MathUtility.h \
+		common/math/Matrix4.h \
+		common/math/Rect.h \
+		common/math/Vector2.h \
+		common/math/Vector3.h \
 		graphics/device/Device.h \
 		graphics/scene/Node.h \
-		graphics/scene/Scene.h
+		graphics/scene/Scene.h \
+		graphics/Color.h
 	$(CXX) $(CXXFLAGS) -c graphics/scene/Camera.cpp
 
 Color.o: graphics/Color.cpp graphics/Color.h
 	$(CXX) $(CXXFLAGS) -c graphics/Color.cpp
 
-Device.o: graphics/device/Device.cpp graphics/device/Device.h
+Device.o: graphics/device/Device.cpp graphics/device/Device.h \
+		common/math/MathUtility.h \
+		common/math/Matrix4.h \
+		common/math/Rect.h \
+		common/math/Vector2.h \
+		common/math/Vector3.h \
+		graphics/Color.h
 	$(CXX) $(CXXFLAGS) -c graphics/device/Device.cpp
 
 Engine.o: engine/Engine.cpp engine/Engine.h \
-		graphics/Graphics.h \
-		gui/Gui.h \
-		input/Input.h \
-		input/Keyboard.h \
-		input/Mouse.h \
-		network/Network.h \
-		sound/Sound.h
+		common/Modification.h
 	$(CXX) $(CXXFLAGS) -c engine/Engine.cpp
 
-FileSystem.o: common/FileSystem.cpp common/FileSystem.h
+FileSystem.o: common/FileSystem.cpp common/FileSystem.h \
+		common/RingBuffer.h
 	$(CXX) $(CXXFLAGS) -c common/FileSystem.cpp
 
 Graphics.o: graphics/Graphics.cpp graphics/Graphics.h \
@@ -116,13 +126,13 @@ Graphics.o: graphics/Graphics.cpp graphics/Graphics.h \
 		input/Mouse.h
 	$(CXX) $(CXXFLAGS) -c graphics/Graphics.cpp
 
-Gui.o: gui/Gui.cpp gui/Gui.h \
-		gui/screen/Screen.h \
-		gui/screen/IntroScreen.h \
+Gui.o: graphics/gui/Gui.cpp graphics/gui/Gui.h \
+		graphics/gui/screen/Screen.h \
+		graphics/gui/screen/IntroScreen.h \
 		input/Input.h \
 		input/Keyboard.h \
 		input/Mouse.h
-	$(CXX) $(CXXFLAGS) -c gui/Gui.cpp
+	$(CXX) $(CXXFLAGS) -c graphics/gui/Gui.cpp
 
 Image.o: graphics/Image.cpp graphics/Image.h
 	$(CXX) $(CXXFLAGS) -c graphics/Image.cpp
@@ -133,18 +143,20 @@ Input.o: input/Input.cpp input/Input.h \
 		window/Window.h
 	$(CXX) $(CXXFLAGS) -c input/Input.cpp
 
-IntroScreen.o: gui/screen/IntroScreen.cpp gui/screen/IntroScreen.h \
-		gui/Gui.h \
-		gui/screen/Screen.h
-	$(CXX) $(CXXFLAGS) -c gui/screen/IntroScreen.cpp
+IntroScreen.o: graphics/gui/screen/IntroScreen.cpp \
+	graphics/gui/screen/IntroScreen.h \
+		graphics/gui/Gui.h \
+		graphics/gui/screen/Screen.h
+	$(CXX) $(CXXFLAGS) -c graphics/gui/screen/IntroScreen.cpp
 
 Keyboard.o: input/Keyboard.cpp input/Keyboard.h
 	$(CXX) $(CXXFLAGS) -c input/Keyboard.cpp
 
-MainMenuScreen.o: gui/screen/MainMenuScreen.cpp gui/screen/MainMenuScreen.h \
-		gui/Gui.h \
-		gui/screen/Screen.h
-	$(CXX) $(CXXFLAGS) -c gui/screen/MainMenuScreen.cpp
+MainMenuScreen.o: graphics/gui/screen/MainMenuScreen.cpp \
+	graphics/gui/screen/MainMenuScreen.h \
+		graphics/gui/Gui.h \
+		graphics/gui/screen/Screen.h
+	$(CXX) $(CXXFLAGS) -c graphics/gui/screen/MainMenuScreen.cpp
 
 Material.o: graphics/Material.cpp graphics/Material.h
 	$(CXX) $(CXXFLAGS) -c graphics/Material.cpp
@@ -191,9 +203,9 @@ Scene.o: graphics/scene/Scene.cpp graphics/scene/Scene.h \
 		graphics/Graphics.h
 	$(CXX) $(CXXFLAGS) -c graphics/scene/Scene.cpp
 
-Screen.o: gui/screen/Screen.cpp gui/screen/Screen.h \
-		gui/Gui.h
-	$(CXX) $(CXXFLAGS) -c gui/screen/Screen.cpp
+Screen.o: graphics/gui/screen/Screen.cpp graphics/gui/screen/Screen.h \
+		graphics/gui/Gui.h
+	$(CXX) $(CXXFLAGS) -c graphics/gui/screen/Screen.cpp
 Skybox.o: graphics/scene/Skybox.cpp graphics/scene/Skybox.h
 	$(CXX) $(CXXFLAGS) -c graphics/scene/Skybox.cpp
 

@@ -4,6 +4,12 @@
 
 #include "../Gui.h"
 
+namespace gfx
+{
+
+namespace gui
+{
+
 Screen::Screen(Gui& gui) :
 	gui(gui),
 	isCreated(false)
@@ -30,3 +36,7 @@ void Screen::update(float deltaTime)
 {
 
 }
+
+} // namespace gui
+
+} // namespace gfx

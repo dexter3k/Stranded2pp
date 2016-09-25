@@ -3,10 +3,6 @@
 #include <string>
 
 #include "../Color.h"
-#include "../Image.h"
-#include "../Material.h"
-#include "../Texture.h"
-#include "../Vertex3D.h"
 
 #include "common/math/Matrix4.h"
 #include "common/math/Rect.h"
@@ -15,6 +11,11 @@
 
 namespace gfx
 {
+
+class Image;
+class Material;
+class Texture;
+class Vertex3D;
 
 namespace device
 {

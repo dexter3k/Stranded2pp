@@ -6,6 +6,12 @@
 
 class Input;
 
+namespace gfx
+{
+
+namespace gui
+{
+
 class IntroScreen : public Screen
 {
 	typedef Screen super;
@@ -39,3 +45,7 @@ private:
 private:
 	std::shared_ptr<InputHandler> inputHandler;
 };
+
+} // namespace gui
+
+} // namespace gfx

@@ -2,7 +2,6 @@
 
 #include <memory>
 
-class Gui;
 class Input;
 class Modification;
 class Network;
@@ -26,7 +25,7 @@ class Engine
 		Editor
 	};
 public:
-	Engine(Input& input, gfx::Graphics& graphics, Gui& gui, Network& network,
+	Engine(Input& input, gfx::Graphics& graphics, Network& network,
 		Sound& sound);
 	~Engine();
 
@@ -38,7 +37,6 @@ public:
 private:
 	Input&		input;
 	gfx::Graphics&	graphics;
-	Gui&		gui;
 	Network&	network;
 	Sound&		sound;
 

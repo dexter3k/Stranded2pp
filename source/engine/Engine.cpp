@@ -4,11 +4,10 @@
 
 #include "common/Modification.h"
 
-Engine::Engine(Input& input, gfx::Graphics& graphics, Gui& gui, Network& network,
+Engine::Engine(Input& input, gfx::Graphics& graphics, Network& network,
 		Sound& sound) :
 	input(input),
 	graphics(graphics),
-	gui(gui),
 	network(network),
 	sound(sound),
 	gameState(Intro)

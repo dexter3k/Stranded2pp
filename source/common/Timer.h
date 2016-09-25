@@ -2,7 +2,6 @@
 
 #include <iostream>
 
-#include <SFML/System.hpp>
 #include <SFML/System/Clock.hpp>
 
 

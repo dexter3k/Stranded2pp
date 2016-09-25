@@ -6,7 +6,13 @@
 #include "common/Modification.h"
 #include "input/Input.h"
 
-Gui::Gui(Input& input) :
+namespace gfx
+{
+
+namespace gui
+{
+
+Gui::Gui(Input& input, device::Device* device) :
 	input(input),
 	currentScreen(nullptr),
 	introScreen(new IntroScreen(*this, input)),
@@ -34,6 +40,11 @@ void Gui::update(float deltaTime)
 	{
 		currentScreen->update(deltaTime);
 	}
+}
+
+void Gui::drawAll()
+{
+	
 }
 
 void Gui::setScreen(Screen::Screens screen)
@@ -70,3 +81,7 @@ void Gui::setScreen(Screen::Screens screen)
 		currentScreen->create();
 	}
 }
+
+} // namespace gui
+
+} // namespace gfx

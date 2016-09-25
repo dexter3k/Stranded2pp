@@ -6,6 +6,12 @@
 
 #include "input/Input.h"
 
+namespace gfx
+{
+
+namespace gui
+{
+
 bool IntroScreen::InputHandler::onKeyPressed(uint8_t key, bool alt,
 	bool control, bool shift, bool super)
 {
@@ -59,3 +65,7 @@ void IntroScreen::skipIntro()
 
 	gui.setScreen(Screen::MainMenu);
 }
+
+} // namespace gui
+
+} // namespace gfx
