@@ -40,6 +40,8 @@ public:
 	void update(float deltaTime);
 
 	void drawAll();
+
+	gui::Gui& getGui();
 private:
 	Input& input;
 

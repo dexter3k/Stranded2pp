@@ -1,9 +1,13 @@
 #include "IntroScreen.h"
 
+#include <cstdint>
 #include <iostream>
 
 #include "../Gui.h"
+#include "../GuiBackgroundImage.h"
+#include "../../device/Device.h"
 
+#include "engine/Engine.h"
 #include "input/Input.h"
 
 namespace gfx
@@ -30,7 +34,12 @@ bool IntroScreen::InputHandler::onMouseButtonPressed(uint8_t button, int x,
 
 IntroScreen::IntroScreen(Gui& gui, Input& input) :
 	super(gui),
-	inputHandler(new InputHandler(input, *this))
+	inputHandler(new InputHandler(input, *this)),
+	introImage(nullptr),
+	fadeColor(0, 0, 0),
+	maxShowTime(3.0f),
+	fadeStart(0.80f),
+	showTime(0.0f)
 {}
 
 IntroScreen::~IntroScreen()
@@ -38,16 +47,32 @@ IntroScreen::~IntroScreen()
 
 void IntroScreen::create()
 {
-	super::create();
+	std::cout << "Creating intro screen" << std::endl;
+
+	showTime = 0.0f;
+
+	device::Device* device = gui.getDevice();
+
+	math::Vector2u screenSize = gui.getScreenSize();
+
+	Texture* texture =
+		(device != nullptr) ?
+			device->loadTextureFromFile(gui.getModPath() + "sys/gfx/logo.bmp") :
+			nullptr;
+
+	introImage = gui.addBackgroundImage(texture);
 
 	inputHandler->init();
 
-	std::cout << "Creating intro screen" << std::endl;
+	super::create();
 }
 
 void IntroScreen::destroy()
 {
 	std::cout << "Destroying intro screen" << std::endl;
+
+	gui.deleteGuiElement(introImage);
+	introImage = nullptr;
 
 	inputHandler->remove();
 
@@ -56,6 +81,24 @@ void IntroScreen::destroy()
 
 void IntroScreen::update(float deltaTime)
 {
+	showTime += deltaTime;
+	if (showTime > maxShowTime)
+	{
+		skipIntro();
+	}
+	else
+	{
+		float fadeStartTime = maxShowTime * fadeStart;
+		if (showTime > fadeStartTime)
+		{
+			float fadeLength = maxShowTime - fadeStartTime;
+			float fade = (showTime - fadeStartTime) / fadeLength;
+
+			fadeColor.setAlpha(static_cast<uint8_t>(255.0f * fade));
+			introImage->setMaskColor(fadeColor);
+		}
+	}
+
 	super::update(deltaTime);
 }
 
@@ -63,7 +106,12 @@ void IntroScreen::skipIntro()
 {
 	std::cout << "Skip intro!" << std::endl;
 
-	gui.setScreen(Screen::MainMenu);
+	Engine* engine = gui.getEngine();
+
+	if (engine != nullptr)
+	{
+		engine->skipIntro();
+	}
 }
 
 } // namespace gui

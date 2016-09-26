@@ -1,8 +1,11 @@
 #include "Engine.h"
 
 #include <cassert>
+#include <iostream>
 
 #include "common/Modification.h"
+#include "graphics/gui/Gui.h"
+#include "graphics/Graphics.h"
 
 Engine::Engine(Input& input, gfx::Graphics& graphics, Network& network,
 		Sound& sound) :
@@ -11,7 +14,9 @@ Engine::Engine(Input& input, gfx::Graphics& graphics, Network& network,
 	network(network),
 	sound(sound),
 	gameState(Intro)
-{}
+{
+	graphics.getGui().connectEngine(this);
+}
 
 Engine::~Engine()
 {}
@@ -49,6 +54,7 @@ void Engine::update(float deltaTime)
 
 void Engine::setGameState(GameState newGameState)
 {
+	std::cout << "Setting game state" << std::endl;
 	// remove old state
 	switch (gameState)
 	{
@@ -92,6 +98,8 @@ void Engine::setGameState(GameState newGameState)
 		}
 		case MainMenu:
 		{
+			graphics.getGui().setScreen(gfx::gui::Screen::MainMenu);
+
 			break;
 		}
 		case Singleplayer:
@@ -117,4 +125,12 @@ void Engine::setGameState(GameState newGameState)
 Engine::GameState Engine::getGameState() const
 {
 	return gameState;
+}
+
+void Engine::skipIntro()
+{
+	if (gameState == Intro)
+	{
+		setGameState(MainMenu);
+	}
 }

@@ -53,6 +53,9 @@ bool Graphics::init(const Modification& modification)
 		device->loadTextureFromFile(
 			modification.getPath() + "skies/sky_bk.jpg"), nullptr);
 
+	//gui->addImage(device->loadTextureFromFile(modification.getPath() + "sys/gfx/wrenchItem.png", true), math::Recti(100, 100, 400, 400));
+	//gui->addButton(device->loadTextureFromFile(modification.getPath() + "sys/gfx/bigbutton.bmp", true), device->loadTextureFromFile(modification.getPath() + "sys/gfx/bigbutton_over.bmp", true), math::Vector2i(50, 50));
+
 	return true;
 }
 
@@ -78,6 +81,11 @@ void Graphics::drawAll()
 	gui->drawAll();
 
 	device->endScene();
+}
+
+gui::Gui& Graphics::getGui()
+{
+	return *gui;
 }
 
 } // namespace gfx

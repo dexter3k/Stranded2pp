@@ -4,6 +4,8 @@
 
 #include "input/RawInputHandler.h"
 
+#include "../../Color.h"
+
 class Input;
 
 namespace gfx
@@ -11,6 +13,8 @@ namespace gfx
 
 namespace gui
 {
+
+class GuiBackgroundImage;
 
 class IntroScreen : public Screen
 {
@@ -44,6 +48,13 @@ private:
 	void skipIntro();
 private:
 	std::shared_ptr<InputHandler> inputHandler;
+
+	GuiBackgroundImage* introImage;
+
+	Color fadeColor;
+	const float maxShowTime;
+	const float fadeStart;
+	float showTime;
 };
 
 } // namespace gui

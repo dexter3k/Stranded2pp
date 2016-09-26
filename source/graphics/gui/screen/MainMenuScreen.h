@@ -12,6 +12,8 @@ namespace gfx
 namespace gui
 {
 
+class GuiButton;
+
 class MainMenuScreen : public Screen
 {
 	typedef Screen super;
@@ -26,6 +28,8 @@ class MainMenuScreen : public Screen
 		{}
 
 		bool onMouseButtonPressed(uint8_t button, int x, int y) override;
+
+		bool onMouseMoved(int x, int y) override;
 	private:
 		MainMenuScreen& mainMenuScreen;
 	};
@@ -40,6 +44,8 @@ public:
 	void update(float deltaTime) override;
 private:
 	std::shared_ptr<InputHandler> inputHandler;
+
+	GuiButton* button1;
 };
 
 } // namespace gui

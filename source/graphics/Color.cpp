@@ -65,22 +65,22 @@ float Color::getClampAlpha() const
 
 void Color::setRed(uint8_t value)
 {
-	color = (value) | (color & 0x00ffffff);
+	color = (value) | (color & 0xffffff00);
 }
 
 void Color::setGreen(uint8_t value)
 {
-	color = (value << 8) | (color & 0xff00ffff);
+	color = (value << 8) | (color & 0xffff00ff);
 }
 
 void Color::setBlue(uint8_t value)
 {
-	color = (value << 16) | (color & 0xffff00ff);
+	color = (value << 16) | (color & 0xff00ffff);
 }
 
 void Color::setAlpha(uint8_t value)
 {
-	color = (value << 24) | (color & 0xffffff00);
+	color = (value << 24) | (color & 0x00ffffff);
 }
 
 bool Color::operator==(const Color& other) const

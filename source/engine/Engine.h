@@ -34,6 +34,8 @@ public:
 
 	void setGameState(GameState newGameState);
 	GameState getGameState() const;
+
+	void skipIntro();
 private:
 	Input&		input;
 	gfx::Graphics&	graphics;

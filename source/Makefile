@@ -29,6 +29,10 @@ MAIN_OBJECTS = main.o \
 	FileSystem.o \
 	Graphics.o \
 	Gui.o \
+	GuiBackgroundImage.o \
+	GuiButton.o \
+	GuiElement.o \
+	GuiImage.o \
 	Image.o \
 	Input.o \
 	IntroScreen.o \
@@ -133,6 +137,28 @@ Gui.o: graphics/gui/Gui.cpp graphics/gui/Gui.h \
 		input/Keyboard.h \
 		input/Mouse.h
 	$(CXX) $(CXXFLAGS) -c graphics/gui/Gui.cpp
+
+GuiBackgroundImage.o: graphics/gui/GuiBackgroundImage.cpp \
+	graphics/gui/GuiBackgroundImage.h \
+		graphics/device/Device.h \
+		graphics/gui/Gui.h \
+		graphics/gui/GuiElement.h
+	$(CXX) $(CXXFLAGS) -c graphics/gui/GuiBackgroundImage.cpp
+
+GuiButton.o: graphics/gui/GuiButton.cpp graphics/gui/GuiButton.h \
+		graphics/device/Device.h \
+		graphics/gui/Gui.h \
+		graphics/gui/GuiElement.h
+	$(CXX) $(CXXFLAGS) -c graphics/gui/GuiButton.cpp
+
+GuiElement.o: graphics/gui/GuiElement.cpp graphics/gui/GuiElement.h
+	$(CXX) $(CXXFLAGS) -c graphics/gui/GuiElement.cpp
+
+GuiImage.o: graphics/gui/GuiImage.cpp graphics/gui/GuiImage.h \
+		graphics/device/Device.h \
+		graphics/gui/Gui.h \
+		graphics/gui/GuiElement.h
+	$(CXX) $(CXXFLAGS) -c graphics/gui/GuiImage.cpp
 
 Image.o: graphics/Image.cpp graphics/Image.h
 	$(CXX) $(CXXFLAGS) -c graphics/Image.cpp

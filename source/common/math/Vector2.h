@@ -34,6 +34,23 @@ public:
 	~Vector2()
 	{}
 
+	Vector2<T>& operator=(const Vector2<T>& right)
+	{
+		x = right.x;
+		y = right.y;
+
+		return *this;
+	}
+
+	template <typename R>
+	Vector2<T>& operator=(const Vector2<R>& right)
+	{
+		x = static_cast<T>(right.x);
+		y = static_cast<T>(right.y);
+
+		return *this;
+	}
+
 	T getDotProduct(const Vector2<T>& other) const
 	{
 		return (x * other.x) + (y * other.y);

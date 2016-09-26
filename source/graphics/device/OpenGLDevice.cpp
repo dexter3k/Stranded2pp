@@ -102,6 +102,7 @@ Texture* OpenGLDevice::getTexture(const std::string& name) const
 Texture* OpenGLDevice::loadTextureFromFile(const std::string& name,
 	bool applyColorKey)
 {
+	std::cout << "Loading texture '" << name << "'" << std::endl;
 	Texture* texture = findTexture(name);
 	if (texture != nullptr)
 	{
