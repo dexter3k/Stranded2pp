@@ -41,7 +41,6 @@ MAIN_OBJECTS = main.o \
 	Material.o \
 	Matrix4.o \
 	Mesh.o \
-	MeshBuffer.o \
 	MeshNode.o \
 	Modification.o \
 	Mouse.o \
@@ -54,6 +53,7 @@ MAIN_OBJECTS = main.o \
 	Screen.o \
 	Skybox.o \
 	Sound.o \
+	Terrain.o \
 	Texture.o \
 	Vertex3D.o \
 	Timer.o \
@@ -190,16 +190,13 @@ Material.o: graphics/Material.cpp graphics/Material.h
 Matrix4.o: common/math/Matrix4.cpp common/math/Matrix4.h
 	$(CXX) $(CXXFLAGS) -c common/math/Matrix4.cpp
 
-Mesh.o: graphics/scene/Mesh.cpp graphics/scene/Mesh.h \
-		graphics/scene/MeshBuffer.h
-	$(CXX) $(CXXFLAGS) -c graphics/scene/Mesh.cpp
-
-MeshBuffer.o: graphics/scene/MeshBuffer.cpp graphics/scene/MeshBuffer.h
-	$(CXX) $(CXXFLAGS) -c graphics/scene/MeshBuffer.cpp
+Mesh.o: graphics/Mesh.cpp graphics/Mesh.h \
+		graphics/MeshBuffer.h
+	$(CXX) $(CXXFLAGS) -c graphics/Mesh.cpp
 
 MeshNode.o: graphics/scene/MeshNode.cpp graphics/scene/MeshNode.h \
-		graphics/scene/Mesh.h \
-		graphics/scene/Node.h
+		graphics/scene/Node.h \
+		graphics/Mesh.h
 	$(CXX) $(CXXFLAGS) -c graphics/scene/MeshNode.cpp
 
 Modification.o: common/Modification.cpp common/Modification.h \
@@ -237,6 +234,10 @@ Skybox.o: graphics/scene/Skybox.cpp graphics/scene/Skybox.h
 
 Sound.o: sound/Sound.cpp sound/Sound.h
 	$(CXX) $(CXXFLAGS) -c sound/Sound.cpp
+
+Terrain.o: graphics/scene/Terrain.cpp graphics/scene/Terrain.h \
+		graphics/scene/Node.h
+	$(CXX) $(CXXFLAGS) -c graphics/scene/Terrain.cpp
 
 Texture.o: graphics/Texture.cpp graphics/Texture.h
 	$(CXX) $(CXXFLAGS) -c graphics/Texture.cpp

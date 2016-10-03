@@ -1,5 +1,9 @@
 #include "GuiElement.h"
 
+#include <iostream>
+
+#include "Gui.h"
+
 namespace gfx
 {
 
@@ -8,7 +12,7 @@ namespace gui
 
 GuiElement::GuiElement(GuiElement* parent, Gui* gui, int id,
 		const math::Vector2i& position) :
-	parent(parent),
+	parent(nullptr),
 	children(),
 	gui(gui),
 	id(id),
@@ -19,6 +23,8 @@ GuiElement::GuiElement(GuiElement* parent, Gui* gui, int id,
 {
 	assert(gui != nullptr);
 
+	setParent(parent);
+
 	if (parent != nullptr)
 	{
 		absolutePosition = parent->getAbsolutePosition() + position;
@@ -27,6 +33,11 @@ GuiElement::GuiElement(GuiElement* parent, Gui* gui, int id,
 
 GuiElement::~GuiElement()
 {
+	for (auto&& child : children)
+	{
+		gui->deleteGuiElement(child);
+	}
+
 	if (parent != nullptr)
 	{
 		parent->removeChild(this);
@@ -50,13 +61,43 @@ void GuiElement::onDraw()
 {
 	if (isVisible)
 	{
-		updateAbsolutePosition();
-
 		for (auto&& child : children)
 		{
 			child->onDraw();
 		}
 	}
+}
+
+bool GuiElement::onMouseButtonPressed(uint8_t button, int x, int y)
+{
+	if (isVisible)
+	{
+		for (auto&& child : children)
+		{
+			if (child->onMouseButtonPressed(button, x, y))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+bool GuiElement::onMouseMoved(int x, int y)
+{
+	if (isVisible)
+	{
+		for (auto&& child : children)
+		{
+			if (child->onMouseMoved(x, y))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 void GuiElement::addChild(GuiElement* child)

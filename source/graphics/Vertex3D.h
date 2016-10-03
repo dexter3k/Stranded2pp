@@ -26,4 +26,22 @@ public:
 	bool operator!=(const Vertex3D& other) const;
 };
 
+class Vertex3D2TCoords : public Vertex3D
+{
+	typedef Vertex3D super;
+public:
+	math::Vector2f textureCoords2; // Second set of texture coordinates
+
+	Vertex3D2TCoords();
+	Vertex3D2TCoords(float x, float y, float z, float nX, float nY, float nZ,
+		const Color& color, float u, float v, float u2, float v2);
+	Vertex3D2TCoords(const math::Vector3f& position, const math::Vector3f& normal,
+		const Color& color, const math::Vector2f& textureCoords,
+		const math::Vector2f& textureCoords2);
+	~Vertex3D2TCoords();
+
+	bool operator==(const Vertex3D2TCoords& other) const;
+	bool operator!=(const Vertex3D2TCoords& other) const;
+};
+
 } // namespace gfx

@@ -46,14 +46,10 @@ void Image::flipHorizontally()
 	image.flipHorizontally();
 }
 
-void Image::applyStrandedColorKey()
+void Image::applyColorKey(const Color& color)
 {
-	sf::Color before = image.getPixel(2, 2);
-	image.createMaskFromColor(sf::Color(255, 0, 255));
-	sf::Color after = image.getPixel(2, 2);
-
-	std::cout << before.toInteger() << std::endl;
-	std::cout << after.toInteger() << std::endl;
+	image.createMaskFromColor(sf::Color(color.getRed(), color.getGreen(),
+		color.getBlue()));
 }
 
 } // namespace gfx

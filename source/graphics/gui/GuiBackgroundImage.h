@@ -19,12 +19,12 @@ class GuiBackgroundImage : public GuiElement
 public:
 	GuiBackgroundImage(GuiElement* parent, Gui* gui, Texture* backgroundTexture,
 		const Color& backgroundColor = Color(0, 0, 0),
-		const Color& maskColor = Color(0, 0, 0, 0), bool stretched = false,
+		const Color& maskColor = Color(0, 0, 0, 0),
 		const math::Recti& sourceRectangle = math::Recti(0, 0, 0, 0),
 		int id = -1);
 	~GuiBackgroundImage();
 
-	void draw();
+	void onDraw() override;
 
 	void setMaskColor(const Color& color);
 private:
@@ -34,8 +34,6 @@ private:
 
 	Color backgroundColor;
 	Color maskColor;
-
-	bool isStretched;
 };
 
 } // namespace gui

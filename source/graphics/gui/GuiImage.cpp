@@ -32,9 +32,10 @@ GuiImage::GuiImage(Texture* texture, const math::Recti& destinationRectangle,
 GuiImage::~GuiImage()
 {}
 
-void GuiImage::draw()
+void GuiImage::onDraw()
 {
 	device::Device* device = gui->getDevice();
+
 	if (device != nullptr)
 	{
 		device->draw2DImage(texture, destinationRectangle, sourceRectangle);

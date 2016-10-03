@@ -22,11 +22,12 @@ public:
 		GuiElement* parent, Gui* gui, int id = -1);
 	~GuiButton();
 
-	void draw();
+	void onDraw() override;
+	bool onMouseButtonPressed(uint8_t button, int x, int y) override;
+	bool onMouseMoved(int x, int y) override;
 private:
 	Texture* textures[2];
 
-	math::Vector2i position;
 	math::Recti sourceRectangle;
 
 	bool isHovered;

@@ -294,6 +294,8 @@ Matrix4& Matrix4::setScale(const math::Vector3f& scale)
 	matrix[0] = scale.x;
 	matrix[5] = scale.y;
 	matrix[10] = scale.z;
+
+	return *this;
 }
 
 math::Vector3f Matrix4::getScale() const

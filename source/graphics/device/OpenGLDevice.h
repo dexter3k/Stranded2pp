@@ -26,19 +26,42 @@ public:
 
 	bool init() override;
 
+
 	// Device info
+
 
 	math::Vector2u getRenderTargetSize() const override;
 
+
 	// Data management
 
-	Texture* getTexture(const std::string& name) const override;
-	Texture* loadTextureFromFile(const std::string& name,
-		bool applyColorKey = false) override;
 
-	void unloadAllTextures() override;
+	// Try to grab texture. If texture is found, increases grab count and
+	// return it. Else just return nullptr
+	Texture* grabTexture(const std::string& name) override;
+	
+	// Release texture. If texture is found, decrease grab count and if grab
+	// count is zero, then delete texture. If no texture is found, then
+	// behaviour is undefined
+	void releaseTexture(const std::string& name) override;
+
+
+	// Load texture from file and set grab count to one
+	// Will set to default pink rgb(127, 31, 127) texture, is not found and
+	// loadEmptyIfMissing equals true. Will also apply color key if needed.
+	// Returns pointer to texture on success or nullptr on error
+	Texture* loadTextureFromFile(const std::string& name,
+		bool loadEmptyIfMissing = false, bool applyColorKey = false,
+		const Color& colorKey = Color(255, 0, 255)) override;
+
+	// Load texture from image and set grab count to one
+	// Returns pointer to texture on success or nullptr on error
+	Texture* loadTextureFromImage(const std::string& name, const Image& image)
+		override;
+
 
 	// Rendering utilities
+
 
 	void beginScene() override;
 	void endScene() override;
@@ -60,7 +83,7 @@ public:
 		const Color& color = Color(255, 255, 255, 255)) override;
 
 	void drawIndexedPrimitiveList(const Vertex3D* vertices,
-		uint32_t vertexCount, const uint16_t* indices, uint32_t primitiveCount)
+		uint32_t vertexCount, const uint32_t* indices, uint32_t primitiveCount)
 		override;
 
 	// 2D Rendering
@@ -111,12 +134,18 @@ public:
 
 	void onResize(const math::Vector2u& size) override;
 private:
+	struct TextureHolder
+	{
+		Texture* texture;
+		unsigned referenceCount;
+	};
+private:
 
 	/*
 		Private utility functions
 	*/
 
-	Texture* findTexture(const std::string& name) const;
+	TextureHolder findTexture(const std::string& name) const;
 
 	void bindTexture(unsigned textureLayer, Texture* texture);
 
@@ -143,9 +172,12 @@ private:
 
 	void toGLTextureMatrix(GLfloat* glMatrix, const math::Matrix4& matrix);
 private:
+	Texture* createTextureFromImage(const std::string& name,
+		const Image& image);
+private:
 	Color clearColor;
 
-	std::map<std::string, Texture*> loadedTextures;
+	std::map<std::string, TextureHolder> loadedTextures;
 
 	math::Matrix4 matrices[TransformCount];
 

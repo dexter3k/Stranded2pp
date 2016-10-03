@@ -12,15 +12,13 @@ namespace gui
 
 GuiBackgroundImage::GuiBackgroundImage(GuiElement* parent, Gui* gui,
 		Texture* backgroundTexture, const Color& backgroundColor,
-		const Color& maskColor, bool stretched,
-		const math::Recti& sourceRectangle, int id) :
+		const Color& maskColor, const math::Recti& sourceRectangle, int id) :
 	super(parent, gui, id),
 	texture(backgroundTexture),
 	destinationRectangle(),
 	sourceRectangle(sourceRectangle),
 	backgroundColor(backgroundColor),
-	maskColor(maskColor),
-	isStretched(stretched)
+	maskColor(maskColor)
 {
 	if (sourceRectangle.upperLeft.x == 0 &&
 		sourceRectangle.upperLeft.y == 0 &&
@@ -46,7 +44,7 @@ GuiBackgroundImage::GuiBackgroundImage(GuiElement* parent, Gui* gui,
 GuiBackgroundImage::~GuiBackgroundImage()
 {}
 
-void GuiBackgroundImage::draw()
+void GuiBackgroundImage::onDraw()
 {
 	device::Device* device = gui->getDevice();
 
@@ -65,6 +63,8 @@ void GuiBackgroundImage::draw()
 				maskColor);
 		}
 	}
+
+	super::onDraw();
 }
 
 void GuiBackgroundImage::setMaskColor(const Color& color)

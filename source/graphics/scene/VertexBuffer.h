@@ -1,4 +1,4 @@
-#include "MeshBuffer.h"
+#pragma once
 
 namespace gfx
 {
@@ -6,8 +6,11 @@ namespace gfx
 namespace scene
 {
 
-MeshBuffer::MeshBuffer()
-{}
+class VertexBuffer
+{
+public:
+	VertexBuffer();
+};
 
 } // namespace scene
 

@@ -22,6 +22,8 @@ public:
 
 	virtual void onAnimate(float deltaTime);
 	virtual void onDraw();
+	virtual bool onMouseButtonPressed(uint8_t button, int x, int y);
+	virtual bool onMouseMoved(int x, int y);
 
 	virtual void addChild(GuiElement* child);
 	virtual const std::list<GuiElement*>& getChildren() const;
@@ -47,8 +49,6 @@ public:
 	virtual const math::Vector2i& getAbsolutePosition() const;
 
 	virtual void updateAbsolutePosition();
-
-	virtual void draw() = 0;
 protected:
 	GuiElement* parent;
 	std::list<GuiElement*> children;

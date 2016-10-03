@@ -44,7 +44,7 @@ void Node::onAnimate(float deltaTime)
 {
 	if (isVisible)
 	{
-		updateAbsolutePosition();
+		updateAbsoluteTransformation();
 
 		for (auto& node : children)
 		{
@@ -215,8 +215,7 @@ math::Vector3f Node::getAbsolutePosition() const
 	return absoluteTransformation.getTranslation();
 }
 
-// TODO: rename to transformation
-void Node::updateAbsolutePosition()
+void Node::updateAbsoluteTransformation()
 {
 	if (parent != nullptr)
 	{
@@ -228,6 +227,9 @@ void Node::updateAbsolutePosition()
 		absoluteTransformation = getTransformation();
 	}
 }
+
+void Node::render()
+{}
 
 } // namespace scene
 

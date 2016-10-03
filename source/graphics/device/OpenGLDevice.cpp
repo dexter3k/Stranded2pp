@@ -47,7 +47,17 @@ OpenGLDevice::OpenGLDevice() :
 
 OpenGLDevice::~OpenGLDevice()
 {
-	unloadAllTextures();
+	for (unsigned i = 0; i < maxTextures; ++i)
+	{
+		bindTexture(i, nullptr);
+	}
+
+	for (auto&& holderEntry : loadedTextures)
+	{
+		delete holderEntry.second.texture;
+	}
+
+	loadedTextures.clear();
 }
 
 bool OpenGLDevice::init()
@@ -94,76 +104,105 @@ math::Vector2u OpenGLDevice::getRenderTargetSize() const
 	return screenSize;
 }
 
-Texture* OpenGLDevice::getTexture(const std::string& name) const
+Texture* OpenGLDevice::grabTexture(const std::string& name)
 {
-	return findTexture(name);
+	TextureHolder holder = findTexture(name);
+	if (holder.texture == nullptr)
+	{
+		return nullptr;
+	}
+
+	++(holder.referenceCount);
+
+	return holder.texture;
+}
+
+void OpenGLDevice::releaseTexture(const std::string& name)
+{
+	TextureHolder holder = findTexture(name);
+	if (holder.texture == nullptr)
+	{
+		std::cout << "Error: Trying to release unknown texture - '" << name <<
+			"'" << std::endl;
+
+		assert(!"Releasing unknown texture!");
+
+		return;
+	}
+
+	if (holder.referenceCount <= 1)
+	{
+		delete holder.texture;
+
+		loadedTextures.erase(name);
+	}
+	else
+	{
+		--(holder.referenceCount);
+	}
 }
 
 Texture* OpenGLDevice::loadTextureFromFile(const std::string& name,
-	bool applyColorKey)
+	bool loadEmptyIfMissing, bool applyColorKey, const Color& colorKey)
 {
-	std::cout << "Loading texture '" << name << "'" << std::endl;
-	Texture* texture = findTexture(name);
-	if (texture != nullptr)
+	TextureHolder holder = findTexture(name);
+	if (holder.texture != nullptr)
 	{
 		std::cout << "Warn: texture '" << name << "' is already loaded!" <<
 			std::endl;
 
-		return texture;
-	}
-
-	if (!fs::checkFileExists(name))
-	{
-		std::cout << "Error: unable to load texture: file '" << name
-			<< "' not found" << std::endl;
-
-		return nullptr;
+		return grabTexture(name);
 	}
 
 	Image image;
-	if (!image.loadFromFile(name))
+	bool exists = fs::checkFileExists(name);
+	if (!exists ||
+		!image.loadFromFile(name))
 	{
-		image.create(math::Vector2u(16, 16), Color(255, 32, 128));
-	}
+		if (!exists)
+		{
+			std::cout << "Error: unable to load texture: file '" << name << 
+				"' does not exist" << std::endl;
+		}
+		else
+		{
+			std::cout << "Error: unable to load texture: file '" << name << 
+				"' is corrupted" << std::endl;
+		}
 
-	math::Vector2u imageSize = image.getSize();
-	if (imageSize.x == 0 ||
-		imageSize.y == 0)
-	{
-		std::cout << "Incorrect texture size: (" << imageSize.x << "; " <<
-			imageSize.y << ")" << std::endl;
+		if (!loadEmptyIfMissing)
+		{
+			return nullptr;
+		}
 
-		return nullptr;
+		std::cout << "Creating empty \"missing\" texture" << std::endl;
+
+		image.create(math::Vector2u(16, 16), Color(127, 31, 127));
 	}
 
 	if (applyColorKey)
 	{
-		image.applyStrandedColorKey();
+		image.applyColorKey(colorKey);
 	}
 
-	texture = new Texture(name, image, *this);
-	if (texture != nullptr)
-	{
-		loadedTextures[name] = texture;
-	}
-
-	return texture;
+	return createTextureFromImage(name, image);
 }
 
-void OpenGLDevice::unloadAllTextures()
+Texture* OpenGLDevice::loadTextureFromImage(const std::string& name,
+	const Image& image)
 {
-	for (unsigned i = 0; i < maxTextures; ++i)
+	TextureHolder holder = findTexture(name);
+	if (holder.texture != nullptr)
 	{
-		bindTexture(i, nullptr);
+		std::cout << "Error: texture '" << name << "' is already loaded!" <<
+			std::endl;
+
+		assert(!"Texture is already loaded (fromImage)");
 	}
 
-	for (auto&& texture : loadedTextures)
-	{
-		delete texture.second;
-	}
-
-	loadedTextures.clear();
+	return createTextureFromImage(name, image);	
 }
+
 
 /*
 	Rendering utilities
@@ -277,7 +316,7 @@ void OpenGLDevice::draw3DLine(const math::Vector3f& start,
 }
 
 void OpenGLDevice::drawIndexedPrimitiveList(const Vertex3D* vertices,
-	uint32_t vertexCount, const uint16_t* indices, uint32_t primitiveCount)
+	uint32_t vertexCount, const uint32_t* indices, uint32_t primitiveCount)
 {
 	if (vertexCount == 0 || primitiveCount == 0)
 	{
@@ -299,7 +338,7 @@ void OpenGLDevice::drawIndexedPrimitiveList(const Vertex3D* vertices,
 	glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D),
 		&((static_cast<const Vertex3D*>(vertices))[0].textureCoords));
 
-	glDrawElements(GL_TRIANGLES, primitiveCount * 3, GL_UNSIGNED_SHORT, indices);
+	glDrawElements(GL_TRIANGLES, primitiveCount * 3, GL_UNSIGNED_INT, indices);
 }
 
 /*
@@ -758,12 +797,13 @@ void OpenGLDevice::onResize(const math::Vector2u& size)
 	Private utility functions
 */
 
-Texture* OpenGLDevice::findTexture(const std::string& name) const
+OpenGLDevice::TextureHolder OpenGLDevice::findTexture(const std::string& name)
+	const
 {
 	auto it = loadedTextures.find(name);
 	if (it == loadedTextures.end())
 	{
-		return nullptr;
+		return TextureHolder();
 	}
 
 	return it->second;
@@ -886,6 +926,8 @@ void OpenGLDevice::set2DRenderMode(bool transparent, bool textured,
 		// www.opengl.org/archives/resources/faq/technical/transformations.htm
 		// 9.030
 		// Used for exact "pixelization"
+
+		// Important TODO
 		glTranslatef(0.375f, 0.375f, 0.0f);
 
 		transformationChanged = false;
@@ -1515,6 +1557,32 @@ Texture* OpenGLDevice::getBindedTexture(unsigned onLayer)
 	assert(onLayer < maxTextures);
 
 	return bindedTextures[onLayer];
+}
+
+Texture* OpenGLDevice::createTextureFromImage(const std::string& name,
+	const Image& image)
+{
+	math::Vector2u imageSize = image.getSize();
+	if (imageSize.x == 0 ||
+		imageSize.y == 0)
+	{
+		std::cout << "Incorrect texture size: (" << imageSize.x << "; " <<
+			imageSize.y << ")" << std::endl;
+
+		return nullptr;	
+	}
+
+	Texture* texture = new Texture(name, image, *this);
+	if (texture != nullptr)
+	{
+		TextureHolder holder;
+		holder.texture = texture;
+		holder.referenceCount = 1;
+
+		loadedTextures[name] = holder;
+	}
+
+	return texture;
 }
 
 } // namespace device

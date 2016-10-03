@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+#include <vector>
 
 #include "Node.h"
 
@@ -25,7 +26,7 @@ namespace scene
 class Camera;
 class Mesh;
 
-class Scene : public Node
+class Scene : private Node
 {
 	typedef Node RootNode;
 public:
@@ -59,9 +60,6 @@ public:
 	Camera* getActiveCamera() const;
 	void setActiveCamera(Camera* camera);
 
-	const Color& getAmbientLightColor() const;
-	void setAmbientLightColor(const Color& color);
-
 	/*
 		Node creation and management
 	*/
@@ -86,6 +84,13 @@ public:
 	Node* addSkybox(Texture* top, Texture* bottom, Texture* left,
 		Texture* right, Texture* front, Texture* back, Node* parent = nullptr,
 		int id = -1);
+
+	Node* addTerrain(unsigned terrainSize, const std::vector<float>& heightMap,
+		const std::vector<gfx::Color>& colorMap, Texture* firstDetailTexture,
+		Texture* secondDetailTexture, Node* parent = nullptr, int id = -1,
+		const math::Vector3f& position = math::Vector3f(0.0f, 0.0f, 0.0f),
+		const math::Vector3f& rotation = math::Vector3f(0.0f, 0.0f, 0.0f),
+		const math::Vector3f& scale = math::Vector3f(1.0f, 1.0f, 1.0f));
 
 	Node* addEmptyNode(Node* parent, int id = -1);
 

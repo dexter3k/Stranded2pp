@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include "Skybox.h"
+#include "Terrain.h"
 
 #include "../Color.h"
 #include "../Material.h"
@@ -28,12 +29,7 @@ Scene::Scene(Graphics& graphics, device::Device* device) :
 
 Scene::~Scene()
 {
-	for (auto&& node : sceneNodes)
-	{
-		delete node;
-	}
-
-	sceneNodes.clear();
+	clearScene();
 }
 
 void Scene::drawAll()
@@ -135,10 +131,37 @@ Node* Scene::addSkybox(Texture* top, Texture* bottom, Texture* left,
 	return skybox;
 }
 
+Node* Scene::addTerrain(unsigned terrainSize,
+	const std::vector<float>& heightMap,
+	const std::vector<gfx::Color>& colorMap, Texture* firstDetailTexture,
+	Texture* secondDetailTexture, Node* parent, int id,
+	const math::Vector3f& position, const math::Vector3f& rotation,
+	const math::Vector3f& scale)
+{
+	if (parent == nullptr)
+	{
+		parent = this;
+	}
+
+	Node* terrain = new Terrain(terrainSize, heightMap, colorMap,
+		firstDetailTexture, secondDetailTexture, parent, this, id, position, rotation,
+		scale);
+
+	sceneNodes.push_back(terrain);
+
+	return terrain;
+}
+
 Node* Scene::addEmptyNode(Node* parent, int id)
 {
-	// TODO
-	return nullptr;
+	if (parent == nullptr)
+	{
+		parent = this;
+	}
+
+	Node* emptyNode = new Node(parent, this, id);
+
+	return emptyNode;
 }
 
 Node* Scene::getRootNode()
@@ -148,7 +171,6 @@ Node* Scene::getRootNode()
 
 Camera* Scene::getActiveCamera() const
 {
-	// TODO
 	return activeCamera;
 }
 
@@ -183,23 +205,17 @@ bool Scene::registerNodeForRendering(Node* node, SceneNodeRenderPass pass)
 
 void Scene::clearScene()
 {
-	// TODO
+	for (auto&& node : sceneNodes)
+	{
+		delete node;
+	}
+
+	sceneNodes.clear();
 }
 
 Scene::SceneNodeRenderPass Scene::getCurrentRenderPass() const
 {
 	return currentRenderPass;
-}
-
-const Color& Scene::getAmbientLightColor() const
-{
-	// TODO
-	return Color(255, 255, 255);
-}
-
-void Scene::setAmbientLightColor(const Color& color)
-{
-	// TODO
 }
 
 bool Scene::isCulled(const Node* node) const
@@ -210,7 +226,7 @@ bool Scene::isCulled(const Node* node) const
 
 void Scene::render()
 {
-	// TODO
+	// Nothing to do here
 }
 
 } // namespace scene

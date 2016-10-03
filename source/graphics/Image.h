@@ -27,7 +27,7 @@ public:
 	void flipVertically();
 	void flipHorizontally();
 
-	void applyStrandedColorKey();
+	void applyColorKey(const Color& color = Color(255, 0, 255));
 private:
 	sf::Image image;
 };

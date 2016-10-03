@@ -21,7 +21,7 @@ public:
 		int id = -1);
 	~GuiImage();
 
-	void draw();
+	void onDraw() override;
 private:
 	Texture* texture;
 	math::Recti destinationRectangle;

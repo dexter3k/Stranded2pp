@@ -46,9 +46,9 @@ void MainMenuScreen::create()
 	if (device != nullptr)
 	{
 		textures[0] = device->loadTextureFromFile(
-			gui.getModPath() + "sys/gfx/bigbutton.bmp", true);
+			gui.getModPath() + "sys/gfx/bigbutton.bmp", false, true);
 		textures[1] = device->loadTextureFromFile(
-			gui.getModPath() + "sys/gfx/bigbutton_over.bmp", true);
+			gui.getModPath() + "sys/gfx/bigbutton_over.bmp", false, true);
 	}
 
 	button1 = gui.addButton(textures[0], textures[1], math::Vector2i(50, 50));

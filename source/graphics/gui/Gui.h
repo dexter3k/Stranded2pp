@@ -10,6 +10,8 @@
 
 #include "GuiElement.h"
 
+#include "input/RawInputHandler.h"
+
 class Engine;
 class Input;
 class Modification;
@@ -36,6 +38,18 @@ class MainMenuScreen;
 class Gui : public GuiElement
 {
 	typedef GuiElement RootElement;
+
+	class InputHandler : public RawInputHandler
+	{
+		typedef RawInputHandler super;
+	public:
+		InputHandler(Input& input, Gui& gui);
+
+		bool onMouseButtonPressed(uint8_t button, int x, int y) override;
+		bool onMouseMoved(int x, int y) override;
+	private:
+		Gui& gui;
+	} inputHandler;
 public:
 	Gui(Input& input, device::Device* device);
 	~Gui();
@@ -47,6 +61,8 @@ public:
 
 	void setScreen(Screen::Screens screen);
 
+	GuiElement* getRootElement();
+
 	GuiButton* addButton(Texture* normalTexture, Texture* hoverTexture,
 		const math::Vector2i& position,
 		const math::Recti& sourceRectangle = math::Recti(0, 0, 0, 0),
@@ -54,7 +70,7 @@ public:
 
 	GuiBackgroundImage* addBackgroundImage(Texture* texture,
 		const Color& backgroundColor = Color(0, 0, 0),
-		const Color& maskColor = Color(0, 0, 0, 0), bool stretch = false,
+		const Color& maskColor = Color(0, 0, 0, 0),
 		const math::Recti& sourceRectangle = math::Recti(0, 0, 0, 0),
 		GuiElement* parent = nullptr, int id = -1);
 
@@ -72,9 +88,6 @@ public:
 	Engine* getEngine() const;
 	device::Device* getDevice() const;
 	const std::string& getModPath() const;
-
-	// GuiElement overrides
-	void draw() override;
 private:
 	Input& input;
 	device::Device* device;

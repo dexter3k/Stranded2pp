@@ -1,6 +1,7 @@
 #include "Gui.h"
 
 #include <cassert>
+#include <iostream>
 
 #include "screen/IntroScreen.h"
 #include "screen/MainMenuScreen.h"
@@ -21,8 +22,28 @@ namespace gfx
 namespace gui
 {
 
+Gui::InputHandler::InputHandler(Input& input, Gui& gui) :
+	super(&input),
+	gui(gui)
+{}
+
+bool Gui::InputHandler::onMouseButtonPressed(uint8_t button, int x, int y)
+{
+	gui.onMouseButtonPressed(button, x, y);
+
+	return false;
+}
+
+bool Gui::InputHandler::onMouseMoved(int x, int y)
+{
+	gui.onMouseMoved(x, y);
+
+	return false;
+}
+
 Gui::Gui(Input& input, device::Device* device) :
 	RootElement(nullptr, this),
+	inputHandler(input, *this),
 	input(input),
 	device(device),
 	engine(nullptr),
@@ -36,6 +57,8 @@ Gui::Gui(Input& input, device::Device* device) :
 
 Gui::~Gui()
 {
+	inputHandler.remove();
+
 	if (currentScreen != nullptr)
 	{
 		currentScreen->destroy();
@@ -55,12 +78,19 @@ bool Gui::init(const Modification& modification)
 
 	setScreen(Screen::Intro);
 
+	inputHandler.init();
+
 	return true;
 }
 
 void Gui::update(float deltaTime)
 {
 	screenSize = device->getRenderTargetSize();
+
+	for (auto&& element : guiElements)
+	{
+		element->onAnimate(deltaTime);
+	}
 
 	if (currentScreen != nullptr)
 	{
@@ -70,10 +100,7 @@ void Gui::update(float deltaTime)
 
 void Gui::drawAll()
 {
-	for (auto&& element : guiElements)
-	{
-		element->draw();
-	}
+	RootElement::onDraw();
 }
 
 void Gui::setScreen(Screen::Screens screen)
@@ -111,6 +138,11 @@ void Gui::setScreen(Screen::Screens screen)
 	}
 }
 
+GuiElement* Gui::getRootElement()
+{
+	return this;
+}
+
 GuiButton* Gui::addButton(Texture* normalTexture, Texture* hoverTexture,
 	const math::Vector2i& position, const math::Recti& sourceRectangle,
 	GuiElement* parent, int id)
@@ -129,7 +161,7 @@ GuiButton* Gui::addButton(Texture* normalTexture, Texture* hoverTexture,
 }
 
 GuiBackgroundImage* Gui::addBackgroundImage(Texture* texture,
-	const Color& backgroundColor, const Color& maskColor, bool stretch,
+	const Color& backgroundColor, const Color& maskColor,
 	const math::Recti& sourceRectangle, GuiElement* parent, int id)
 {
 	if (parent == nullptr)
@@ -138,7 +170,7 @@ GuiBackgroundImage* Gui::addBackgroundImage(Texture* texture,
 	}
 
 	GuiBackgroundImage* image = new GuiBackgroundImage(parent, this, texture,
-		backgroundColor, maskColor, stretch, sourceRectangle, id);
+		backgroundColor, maskColor, sourceRectangle, id);
 
 	guiElements.push_back(image);
 
@@ -207,9 +239,6 @@ const std::string& Gui::getModPath() const
 {
 	return modPath;
 }
-
-void Gui::draw()
-{}
 
 } // namespace gui
 
