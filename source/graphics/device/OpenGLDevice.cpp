@@ -8,6 +8,11 @@
 #include "common/math/MathUtility.h"
 #include "common/FileSystem.h"
 
+static inline char* buffer_offset(const long offset)
+{
+	return (static_cast<char*>(0) + offset);
+}
+
 namespace gfx
 {
 
@@ -315,31 +320,155 @@ void OpenGLDevice::draw3DLine(const math::Vector3f& start,
 	glDrawElements(GL_LINES, 2, GL_UNSIGNED_SHORT, quad2DIndices);
 }
 
-void OpenGLDevice::drawIndexedPrimitiveList(const Vertex3D* vertices,
-	uint32_t vertexCount, const uint32_t* indices, uint32_t primitiveCount)
+void OpenGLDevice::drawIndexedPrimitiveList(const void* vertices,
+	uint32_t vertexCount, const void* indices, uint32_t primitiveCount,
+	Vertex3D::VertexType vertexType, IndexSize indexSize)
 {
 	if (vertexCount == 0 || primitiveCount == 0)
 	{
 		return;
 	}
 
-	//std::cout << "Drawing indexed primitive list " << vertexCount << " " << primitiveCount << std::endl;
+	if (primitiveCount > 0x7fffffff)
+	{
+		std::cout << "Unable to draw so much primitives (" << primitiveCount <<
+			") limit: " << 0x7fffffff << std::endl;
+
+		return;
+	}
 
 	set3DRenderMode();
 
 	setClientStates(true, true, true, true);
 
-	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex3D),
-		&((static_cast<const Vertex3D*>(vertices))[0].color));
-	glVertexPointer(3, GL_FLOAT, sizeof(Vertex3D),
-		&((static_cast<const Vertex3D*>(vertices))[0].position));
-	glNormalPointer(GL_FLOAT, sizeof(Vertex3D),
-		&((static_cast<const Vertex3D*>(vertices))[0].normal));
-	glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D),
-		&((static_cast<const Vertex3D*>(vertices))[0].textureCoords));
+	switch (vertexType)
+	{
+		case Vertex3D::Standard:
+		{
+			if (vertices != nullptr)
+			{
+				glNormalPointer(GL_FLOAT, sizeof(Vertex3D),
+					&((static_cast<const Vertex3D*>(vertices))[0].normal));
+				glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex3D),
+					&((static_cast<const Vertex3D*>(vertices))[0].color));
+				glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D),
+					&((static_cast<const Vertex3D*>(vertices))[0].textureCoords));
+				glVertexPointer(3, GL_FLOAT, sizeof(Vertex3D),
+					&((static_cast<const Vertex3D*>(vertices))[0].position));
+			}
+			else
+			{
+				glNormalPointer(GL_FLOAT, sizeof(Vertex3D),
+					buffer_offset(12));
+				glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex3D),
+					buffer_offset(24));
+				glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D),
+					buffer_offset(28));
+				glVertexPointer(3, GL_FLOAT, sizeof(Vertex3D),
+					buffer_offset(0));
+			}
 
-	glDrawElements(GL_TRIANGLES, primitiveCount * 3, GL_UNSIGNED_INT, indices);
+			if (bindedTextures[1] != nullptr)
+			{
+				glActiveTexture(GL_TEXTURE1);
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+				if (vertices != nullptr)
+				{
+					glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D),
+						&((static_cast<const Vertex3D*>(vertices))[0]
+							.textureCoords));
+				}
+				else
+				{
+					glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D),
+						buffer_offset(28));
+				}
+			}
+
+			break;
+		}
+		case Vertex3D::DoubleTCoords:
+		{
+			if (vertices != nullptr)
+			{
+				glNormalPointer(GL_FLOAT, sizeof(Vertex3D2TCoords),
+					&((static_cast<const Vertex3D2TCoords*>(vertices))[0]
+						.normal));
+				glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex3D2TCoords),
+					&((static_cast<const Vertex3D2TCoords*>(vertices))[0]
+						.color));
+				glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D2TCoords),
+					&((static_cast<const Vertex3D2TCoords*>(vertices))[0]
+						.textureCoords));
+				glVertexPointer(3, GL_FLOAT, sizeof(Vertex3D2TCoords),
+					&((static_cast<const Vertex3D2TCoords*>(vertices))[0]
+						.position));
+
+				glActiveTexture(GL_TEXTURE1);
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D2TCoords),
+					&((static_cast<const Vertex3D2TCoords*>(vertices))[0]
+						.textureCoords2));
+			}
+			else
+			{
+				glNormalPointer(GL_FLOAT, sizeof(Vertex3D2TCoords),
+					buffer_offset(12));
+				glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex3D2TCoords),
+					buffer_offset(24));
+				glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D2TCoords),
+					buffer_offset(28));
+				glVertexPointer(3, GL_FLOAT, sizeof(Vertex3D2TCoords),
+					buffer_offset(0));
+
+				glActiveTexture(GL_TEXTURE1);
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D2TCoords),
+					buffer_offset(36));
+			}
+
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
+
+	GLenum glIndexSize = GL_UNSIGNED_SHORT;
+	switch (indexSize)
+	{
+		case Index32Bit:
+		{
+			glIndexSize = GL_UNSIGNED_INT;
+
+			break;
+		}
+		case Index16Bit:
+		{
+			glIndexSize = GL_UNSIGNED_SHORT;
+
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
+
+	glDrawElements(GL_TRIANGLES, primitiveCount * 3, glIndexSize, indices);
+
+	if (bindedTextures[1] != nullptr ||
+		vertexType == Vertex3D::DoubleTCoords)
+	{
+		glActiveTexture(GL_TEXTURE1);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		glActiveTexture(GL_TEXTURE1);
+	}
 }
+
 
 /*
 	2D Rendering

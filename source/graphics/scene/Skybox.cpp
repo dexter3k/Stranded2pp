@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "Scene.h"
 #include "../Color.h"
+#include "../IndexSize.h"
 #include "../device/Device.h"
 
 #include "common/math/Matrix4.h"
@@ -143,7 +144,8 @@ void Skybox::render()
 	for (unsigned i = 0; i < 6; ++i)
 	{
 		device->setMaterial(materials[i]);
-		device->drawIndexedPrimitiveList(&(vertices[i * 4]), 4, indices, 2);
+		device->drawIndexedPrimitiveList(&(vertices[i * 4]), 4, indices, 2,
+			Vertex3D::Standard, Index16Bit);
 	}
 }
 

@@ -4,8 +4,8 @@
 #include <vector>
 
 #include "IndexSize.h"
-#include "common/math/Vector2.h"
-#include "common/math/Vector3.h"
+#include "Material.h"
+#include "Vertex3D.h"
 
 namespace gfx
 {
@@ -15,29 +15,36 @@ class IndexBuffer;
 class MeshBuffer
 {
 public:
-	MeshBuffer(IndexSize indexSize);
+	MeshBuffer();
 	~MeshBuffer();
 
-	const math::Vector3f* getVertexPositions() const;
-	const math::Vector3f* getVertexNormals() const;
-	const math::Vector2f* getVertexTextureCoordinates(unsigned layer) const;
+	const Material& getMaterial() const;
+	Material& getMaterial();
 
-	math::Vector3f* getVertexPositions();
-	math::Vector3f* getVertexNormals();
-	math::Vector2f* getVertexTextureCoordinates(unsigned layer);
+	Vertex3D::VertexType getVertexType() const;
 
-	const IndexBuffer& getIndexBuffer() const;
-	IndexBuffer& getIndexBuffer();
+	const void* getVertices() const;
+	void* getVertices();
 
-	void setDirty();
+	unsigned getVertexCount() const;
+
+	IndexSize getIndexSize() const;
+
+	const void* getIndices() const;
+	void* getIndices();
+
+	unsigned getIndexCount() const;
+
+	const Vector3f& getPosition(unsigned index) const;
+	Vector3f& getPosition(unsigned index);
+
+	const Vector3f& getNormal(unsigned index) const;
+	Vector3f& getNormal(unsigned index);
+
+	const Vector2f& getTextureCoord(unsigned index) const;
+	Vector2f& getTextureCoord(unsigned index);
 private:
-	struct
-	{
-		std::vector<math::Vector3f> position;
-		std::vector<math::Vector3f> normal;
-		std::vector<std::vector<math::Vector2f>> textureCoordinates;
-	} vertices;
-
+	VertexBuffer* vertexBuffer;
 	IndexBuffer* indexBuffer;
 };
 

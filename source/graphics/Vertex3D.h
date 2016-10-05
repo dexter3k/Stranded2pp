@@ -10,6 +10,12 @@ namespace gfx
 class Vertex3D
 {
 public:
+	enum VertexType
+	{
+		Standard,
+		DoubleTCoords
+	};
+public:
 	math::Vector3f position;
 	math::Vector3f normal;
 	Color color;

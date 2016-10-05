@@ -27,7 +27,7 @@ public:
 
 	void render() override;
 private:
-	uint32_t indices[6];
+	uint16_t indices[6];
 
 	Vertex3D vertices[6 * 4];
 	Material materials[6];

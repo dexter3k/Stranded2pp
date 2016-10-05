@@ -3,6 +3,8 @@
 #include <string>
 
 #include "../Color.h"
+#include "../IndexSize.h"
+#include "../Vertex3D.h"
 
 #include "common/math/Matrix4.h"
 #include "common/math/Rect.h"
@@ -102,9 +104,10 @@ public:
 		const math::Vector3f& end,
 		const Color& color = Color(255, 255, 255, 255)) = 0;
 
-	virtual void drawIndexedPrimitiveList(const Vertex3D* vertices,
-		uint32_t vertexCount, const uint32_t* indices,
-		uint32_t primitiveCount) = 0;
+	virtual void drawIndexedPrimitiveList(const void* vertices,
+		uint32_t vertexCount, const void* indices, uint32_t primitiveCount,
+		Vertex3D::VertexType vertexType = Vertex3D::Standard,
+		IndexSize indexSize = Index32Bit) = 0;
 
 
 	// 2D Drawing

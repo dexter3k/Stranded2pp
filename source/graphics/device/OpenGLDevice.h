@@ -77,16 +77,21 @@ public:
 	void resetTransforms() override;
 	void setMaterial(const Material& material) override;
 
+
 	// 3D Rendering
+
 
 	void draw3DLine(const math::Vector3f& start, const math::Vector3f& end,
 		const Color& color = Color(255, 255, 255, 255)) override;
 
-	void drawIndexedPrimitiveList(const Vertex3D* vertices,
-		uint32_t vertexCount, const uint32_t* indices, uint32_t primitiveCount)
-		override;
+	void drawIndexedPrimitiveList(const void* vertices, uint32_t vertexCount,
+		const void* indices, uint32_t primitiveCount,
+		Vertex3D::VertexType vertexType = Vertex3D::Standard,
+		IndexSize indexSize = Index32Bit) override;
+
 
 	// 2D Rendering
+
 
 	void drawPixel(unsigned x, unsigned y,
 		const Color& pixelColor = Color(255, 255, 255, 255)) override;
