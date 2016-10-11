@@ -42,7 +42,7 @@ void Mesh::setDirty()
 {
 	for (auto&& meshBuffer : meshBuffers)
 	{
-		//meshBuffer->setDirty();
+		meshBuffer->setDirty();
 	}
 }
 

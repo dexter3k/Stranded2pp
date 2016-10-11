@@ -40,8 +40,9 @@ bool Graphics::init(const Modification& modification)
 		return false;
 	}
 
-	scene->addCamera(nullptr, math::Vector3f(0.0f, 10.0f, 5.0f),
+	scene->addCamera(nullptr, math::Vector3f(0.0f, 10.0f, 10.0f),
 		math::Vector3f(-22.5f, 0.0f, 0.0f));
+	/*
 	scene->addSkybox(
 		device->loadTextureFromFile(
 			modification.getPath() + "skies/sky_up.jpg"),
@@ -55,13 +56,13 @@ bool Graphics::init(const Modification& modification)
 			modification.getPath() + "skies/sky_fr.jpg"),
 		device->loadTextureFromFile(
 			modification.getPath() + "skies/sky_bk.jpg"), nullptr);
-
+	*/
 	//gui->addImage(device->loadTextureFromFile(modification.getPath() + "sys/gfx/wrenchItem.png", true), math::Recti(100, 100, 400, 400));
 	//gui->addButton(device->loadTextureFromFile(modification.getPath() + "sys/gfx/bigbutton.bmp", true), device->loadTextureFromFile(modification.getPath() + "sys/gfx/bigbutton_over.bmp", true), math::Vector2i(50, 50));
 
-	std::vector<float> heightMap(5 * 5);
-	std::vector<gfx::Color> colorMap(5 * 5);
-	scene->addTerrain(4, heightMap, colorMap,
+	std::vector<float> heightMap(3 * 3, 0.0f);
+	std::vector<gfx::Color> colorMap(3 * 3);
+	scene->addTerrain(2, heightMap, colorMap,
 		device->loadTextureFromFile(
 			modification.getPath() + "sys/gfx/terraindirt.bmp"),
 		device->loadTextureFromFile(

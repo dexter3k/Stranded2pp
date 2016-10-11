@@ -17,7 +17,7 @@ namespace scene
 Camera::Camera(Node* parent, Scene* scene, int id,
 		const math::Vector3f& position, const math::Vector3f& rotation) :
 	super(parent, scene, id, position, rotation),
-	near(1.0f),
+	near(0.1f),
 	far(1000.0f),
 	fieldOfView(75.0f),
 	aspect(800.0f / 600.0f),

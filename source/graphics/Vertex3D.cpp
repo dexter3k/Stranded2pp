@@ -63,6 +63,9 @@ Vertex3D2TCoords::Vertex3D2TCoords(const math::Vector3f& position,
 	textureCoords2(textureCoords2)
 {}
 
+Vertex3D2TCoords::~Vertex3D2TCoords()
+{}
+
 bool Vertex3D2TCoords::operator==(const Vertex3D2TCoords& other) const
 {
 	return (

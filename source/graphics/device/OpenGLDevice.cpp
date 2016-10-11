@@ -5,6 +5,8 @@
 
 #include <SFML/OpenGL.hpp>
 
+#include "../MeshBuffer.h"
+
 #include "common/math/MathUtility.h"
 #include "common/FileSystem.h"
 
@@ -337,6 +339,17 @@ void OpenGLDevice::drawIndexedPrimitiveList(const void* vertices,
 		return;
 	}
 
+	std::cout << "Drawing new primitive" << std::endl;
+
+	for (unsigned i = 0; i < primitiveCount * 3; ++i)
+	{
+		unsigned index = static_cast<const uint16_t*>(indices)[i];
+		const auto& vertex = static_cast<const Vertex3D2TCoords*>(vertices)[index];
+
+		std::cout << index << std::endl;
+		std::cout << vertex.position.x << " " << vertex.position.y << " " << vertex.position.z << std::endl;
+	}
+
 	set3DRenderMode();
 
 	setClientStates(true, true, true, true);
@@ -465,7 +478,38 @@ void OpenGLDevice::drawIndexedPrimitiveList(const void* vertices,
 		glActiveTexture(GL_TEXTURE1);
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-		glActiveTexture(GL_TEXTURE1);
+		glActiveTexture(GL_TEXTURE0);
+	}
+}
+
+
+// Mesh buffers
+
+
+void OpenGLDevice::drawMeshBuffer(const MeshBuffer* meshBuffer)
+{
+	if (meshBuffer == nullptr)
+	{
+		return;
+	}
+
+	std::cout << "Drawing mesh buffer: vc: " << meshBuffer->getVertexCount() << std::endl;
+	std::cout << "Drawing mesh buffer: ic: " << meshBuffer->getIndexCount() << std::endl;
+
+	std::cout << meshBuffer->getVertexType() << " " << meshBuffer->getIndexSize() << std::endl;
+
+	// TOOD
+
+	if (false)
+	{
+
+	}
+	else
+	{
+		drawIndexedPrimitiveList(meshBuffer->getVertices(),
+			meshBuffer->getVertexCount(), meshBuffer->getIndices(),
+			meshBuffer->getIndexCount() / 3,
+			meshBuffer->getVertexType(), meshBuffer->getIndexSize());
 	}
 }
 

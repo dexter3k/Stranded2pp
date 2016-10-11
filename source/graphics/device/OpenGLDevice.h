@@ -70,7 +70,9 @@ public:
 
 	void clearZBuffer() override;
 
+
 	// Rendering properties
+
 
 	void setTransform(TransformType transformType,
 		const math::Matrix4& transform) override;
@@ -88,6 +90,12 @@ public:
 		const void* indices, uint32_t primitiveCount,
 		Vertex3D::VertexType vertexType = Vertex3D::Standard,
 		IndexSize indexSize = Index32Bit) override;
+
+
+	// Mesh buffers
+
+
+	void drawMeshBuffer(const MeshBuffer* meshBuffer) override;
 
 
 	// 2D Rendering

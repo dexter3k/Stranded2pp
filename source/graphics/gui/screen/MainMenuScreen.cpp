@@ -53,7 +53,7 @@ void MainMenuScreen::create()
 
 	button1 = gui.addButton(textures[0], textures[1], math::Vector2i(50, 50));
 
-	gui.addImage(device->loadTextureFromFile(gui.getModPath() + "sys/gfx/wrenchItem.png"), math::Recti(100, 100, 500, 500));
+	//gui.addImage(device->loadTextureFromFile(gui.getModPath() + "sys/gfx/wrenchItem.png"), math::Recti(100, 100, 500, 500));
 
 	inputHandler->init();
 

@@ -35,12 +35,14 @@ MAIN_OBJECTS = main.o \
 	GuiImage.o \
 	Image.o \
 	Input.o \
+	IndexBuffer.o \
 	IntroScreen.o \
 	Keyboard.o \
 	MainMenuScreen.o \
 	Material.o \
 	Matrix4.o \
 	Mesh.o \
+	MeshBuffer.o \
 	MeshNode.o \
 	Modification.o \
 	Mouse.o \
@@ -56,6 +58,7 @@ MAIN_OBJECTS = main.o \
 	Terrain.o \
 	Texture.o \
 	Vertex3D.o \
+	VertexBuffer.o \
 	Timer.o \
 	Window.o
 
@@ -169,6 +172,10 @@ Input.o: input/Input.cpp input/Input.h \
 		window/Window.h
 	$(CXX) $(CXXFLAGS) -c input/Input.cpp
 
+IndexBuffer.o: graphics/IndexBuffer.cpp graphics/IndexBuffer.h \
+		graphics/IndexSize.h
+	$(CXX) $(CXXFLAGS) -c graphics/IndexBuffer.cpp
+
 IntroScreen.o: graphics/gui/screen/IntroScreen.cpp \
 	graphics/gui/screen/IntroScreen.h \
 		graphics/gui/Gui.h \
@@ -193,6 +200,9 @@ Matrix4.o: common/math/Matrix4.cpp common/math/Matrix4.h
 Mesh.o: graphics/Mesh.cpp graphics/Mesh.h \
 		graphics/MeshBuffer.h
 	$(CXX) $(CXXFLAGS) -c graphics/Mesh.cpp
+
+MeshBuffer.o: graphics/MeshBuffer.cpp graphics/MeshBuffer.h
+	$(CXX) $(CXXFLAGS) -c graphics/MeshBuffer.cpp
 
 MeshNode.o: graphics/scene/MeshNode.cpp graphics/scene/MeshNode.h \
 		graphics/scene/Node.h \
@@ -247,6 +257,10 @@ Vertex3D.o: graphics/Vertex3D.cpp graphics/Vertex3D.h \
 		common/math/Vector3.h \
 		graphics/Color.h
 	$(CXX) $(CXXFLAGS) -c graphics/Vertex3D.cpp
+
+VertexBuffer.o: graphics/VertexBuffer.cpp graphics/VertexBuffer.h \
+		graphics/Vertex3D.h
+	$(CXX) $(CXXFLAGS) -c graphics/VertexBuffer.cpp
 
 Timer.o: common/Timer.cpp common/Timer.h
 	$(CXX) $(CXXFLAGS) -c common/Timer.cpp

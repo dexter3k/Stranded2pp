@@ -5,6 +5,7 @@
 #include "Node.h"
 
 #include "../Color.h"
+#include "../MeshBuffer.h"
 #include "../Texture.h"
 #include "../Material.h"
 #include "../Vertex3D.h"
@@ -31,8 +32,10 @@ public:
 
 	void render() override;
 private:
-	void createTerrain(const std::vector<float>& heightMap,
-		const std::vector<gfx::Color>& colorMap);
+	void createTerrain(const std::vector<float>& heightMap);
+	void createColorMapTexture(const std::vector<gfx::Color>& colorMap);
+
+	void preRenderIndicesRecalculation();
 private:
 	unsigned terrainSize;
 
@@ -41,8 +44,11 @@ private:
 
 	Material terrainMaterial;
 
-	std::vector<Vertex3D> vertices;
-	std::vector<uint32_t> indices;
+	// Buffer with original terrain data
+	MeshBuffer dataBuffer;
+
+	// Buffer with modified terrain (i.e. with LOD applied)
+	MeshBuffer renderBuffer;
 };
 
 } // namespace scene

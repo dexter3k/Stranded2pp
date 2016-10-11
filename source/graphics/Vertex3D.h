@@ -26,7 +26,7 @@ public:
 		const Color& color, float u, float v);
 	Vertex3D(const math::Vector3f& position, const math::Vector3f& normal,
 		const Color& color, const math::Vector2f& textureCoords);
-	~Vertex3D();
+	virtual ~Vertex3D();
 
 	bool operator==(const Vertex3D& other) const;
 	bool operator!=(const Vertex3D& other) const;

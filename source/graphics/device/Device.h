@@ -16,6 +16,7 @@ namespace gfx
 
 class Image;
 class Material;
+class MeshBuffer;
 class Texture;
 class Vertex3D;
 
@@ -108,6 +109,12 @@ public:
 		uint32_t vertexCount, const void* indices, uint32_t primitiveCount,
 		Vertex3D::VertexType vertexType = Vertex3D::Standard,
 		IndexSize indexSize = Index32Bit) = 0;
+
+
+	// Mesh buffers
+
+
+	virtual void drawMeshBuffer(const MeshBuffer* meshBuffer) = 0;
 
 
 	// 2D Drawing

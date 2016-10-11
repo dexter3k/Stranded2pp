@@ -3,23 +3,46 @@
 #include <cstdint>
 #include <vector>
 
+#include "HardwareMappingHint.h"
 #include "IndexSize.h"
 #include "Material.h"
 #include "Vertex3D.h"
+
+#include "common/math/Vector2.h"
+#include "common/math/Vector3.h"
 
 namespace gfx
 {
 
 class IndexBuffer;
+class VertexBuffer;
 
 class MeshBuffer
 {
 public:
-	MeshBuffer();
+	MeshBuffer(Vertex3D::VertexType vertexType, IndexSize indexSize);
 	~MeshBuffer();
+
+	MeshBuffer(const MeshBuffer&) = delete;
+
+	VertexBuffer& getVertexBuffer() const;
+	IndexBuffer& getIndexBuffer() const;
+
+	void setVertexBuffer(VertexBuffer* newVertexBuffer);
+	void setIndexBuffer(IndexBuffer* newIndexBuffer);
 
 	const Material& getMaterial() const;
 	Material& getMaterial();
+
+	HardwareMappingHint getVertexBufferMappingHint() const;
+	HardwareMappingHint getIndexBufferMappingHint() const;
+
+	void setVertexBufferMappingHint(HardwareMappingHint mappingHint);
+	void setIndexBufferMappingHint(HardwareMappingHint mappingHint);
+
+	void setDirty();
+	void setVertexBufferDirty();
+	void setIndexBufferDirty();
 
 	Vertex3D::VertexType getVertexType() const;
 
@@ -35,17 +58,25 @@ public:
 
 	unsigned getIndexCount() const;
 
-	const Vector3f& getPosition(unsigned index) const;
-	Vector3f& getPosition(unsigned index);
+	const math::Vector3f& getPosition(unsigned index) const;
+	math::Vector3f& getPosition(unsigned index);
 
-	const Vector3f& getNormal(unsigned index) const;
-	Vector3f& getNormal(unsigned index);
+	const math::Vector3f& getNormal(unsigned index) const;
+	math::Vector3f& getNormal(unsigned index);
 
-	const Vector2f& getTextureCoord(unsigned index) const;
-	Vector2f& getTextureCoord(unsigned index);
+	const math::Vector2f& getTextureCoord(unsigned index) const;
+	math::Vector2f& getTextureCoord(unsigned index);
 private:
 	VertexBuffer* vertexBuffer;
 	IndexBuffer* indexBuffer;
+
+	Vertex3D::VertexType vertexType;
+	IndexSize indexSize;
+
+	HardwareMappingHint vertexBufferMappingHint;
+	HardwareMappingHint indexBufferMappingHint;
+
+	Material material;
 };
 
 } // namespace gfx

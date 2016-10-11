@@ -194,6 +194,12 @@ bool Scene::registerNodeForRendering(Node* node, SceneNodeRenderPass pass)
 
 			break;
 		}
+		case RenderPassSolid:
+		{
+			solidObjects.push_back(node);
+
+			break;
+		}
 		default:
 		{
 			break;
