@@ -63,11 +63,16 @@ Material::Material() :
 	wireframe(false),
 	lighting(false),
 	zWriteEnabled(true),
-	backFaceCulling(true),
+	backFaceCulling(false),
 	frontFaceCulling(false),
 	fogEnabled(false),
 	useMipMaps(false)
-{}
+{
+	for (unsigned i = 0; i < maxTexturesPerMaterial; ++i)
+	{
+		textureLayers[i] = TextureLayer();
+	}
+}
 
 Material::~Material()
 {}

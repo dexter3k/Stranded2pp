@@ -83,8 +83,13 @@ void Camera::updateMatrices()
 	math::Vector3f rotation = getAbsoluteTransformation().getRotationDegrees();
 
 	// Instead of finding inverse of the camera’s transformation matrix
-	view.setRotationDegrees(-rotation);
-	view.setTranslation(-position);
+	//view.setRotationDegrees(rotation);
+
+	//math::Matrix4 translation;
+	//translation.setTranslation(-position);
+	//view *= translation;
+
+	view.buildFirstPersonCameraMatrix(position, rotation);
 }
 
 } // namespace scene

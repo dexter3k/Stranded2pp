@@ -59,6 +59,8 @@ public:
 		float far);
 	Matrix4& buildProjectionMatrixPerspective(float fieldOfViewDegrees,
 		float aspectRatio, float near, float far);
+	Matrix4& buildFirstPersonCameraMatrix(const math::Vector3f(position),
+		const math::Vector3f(rotation));
 private:
 	float matrix[16];
 };

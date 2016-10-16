@@ -1,6 +1,7 @@
 #include "IndexBuffer.h"
 
 #include <cassert>
+#include <cstdint>
 
 namespace gfx
 {

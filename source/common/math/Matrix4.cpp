@@ -393,4 +393,44 @@ Matrix4& Matrix4::buildProjectionMatrixPerspective(float fieldOfViewDegrees,
 	return *this;
 }
 
+Matrix4& Matrix4::buildFirstPersonCameraMatrix(const math::Vector3f(position),
+	const math::Vector3f(rotation))
+{
+	math::Vector3f rotationRadians = rotation * degreesToRadians;
+
+	float pitchCos = std::cos(rotationRadians.x);
+	float pitchSin = std::sin(rotationRadians.x);
+	float yawCos = std::cos(rotationRadians.y);
+	float yawSin = std::sin(rotationRadians.y);
+	float rollCos = std::cos(rotationRadians.z);
+	float rollSin = std::sin(rotationRadians.z);
+
+	matrix[0] = yawCos * rollCos;
+	matrix[1] = pitchSin * yawSin * rollCos + pitchCos * rollSin;
+	matrix[2] = -pitchCos * yawSin * rollCos + pitchSin * rollSin;
+	matrix[3] = 0;
+
+	matrix[4] = -yawCos * rollSin;
+	matrix[5] = -pitchSin * yawSin * rollSin + pitchCos * rollCos;
+	matrix[6] = pitchCos * yawSin * rollSin + pitchSin * rollCos;
+	matrix[7] = 0;
+
+	matrix[8] = yawSin;
+	matrix[9] = -yawCos * pitchSin;
+	matrix[10] = pitchCos * yawCos;
+	matrix[11] = 0;
+
+	matrix[12] = 0;
+	matrix[13] = 0;
+	matrix[14] = 0;
+	matrix[15] = 1;
+
+	Matrix4 translation;
+	translation.setTranslation(-position);
+
+	(*this) *= translation;
+
+	return *this;
+}
+
 } // namespace math

@@ -32,8 +32,8 @@ Terrain::Terrain(unsigned terrainSize, const std::vector<float>& heightMap,
 {
 	assert(terrainSize < 16);
 
-	std::cout << terrainSize << std::endl;
-	std::cout << heightMap.size() << std::endl;
+	//std::cout << terrainSize << std::endl;
+	//std::cout << heightMap.size() << std::endl;
 
 	dataBuffer.setVertexBufferMappingHint(HardwareMappingNever);
 	dataBuffer.setIndexBufferMappingHint(HardwareMappingNever);
@@ -90,9 +90,9 @@ void Terrain::createTerrain(const std::vector<float>& heightMap)
 	{
 		for (unsigned z = 0; z < heightMapSize; ++z)
 		{
-			std::cout << heightMap[x + heightMapSize * z] << " ";
+			//std::cout << heightMap[x + heightMapSize * z] << " ";
 		}
-		std::cout << std::endl;
+		//std::cout << std::endl;
 	}
 
 	unsigned dataSize = heightMapSize * heightMapSize;
@@ -105,8 +105,8 @@ void Terrain::createTerrain(const std::vector<float>& heightMap)
 	float fz2 = 0.0f;
 	unsigned index = 0;
 
-	std::cout << "fx: " << fx << std::endl;
-	std::cout << "test: " << 0.0f << std::endl;
+	//std::cout << "fx: " << fx << std::endl;
+	//std::cout << "test: " << 0.0f << std::endl;
 
 	auto dataBufferVertices =
 		static_cast<Vertex3D2TCoords*>(dataBuffer.getVertices());
@@ -124,7 +124,7 @@ void Terrain::createTerrain(const std::vector<float>& heightMap)
 
 			vertex.textureCoords = math::Vector2f(1.0f - fx2, fz2);
 
-			std::cout << fx << " " << heightMap[x + heightMapSize * z] << " " << fz << std::endl;
+			//std::cout << fx << " " << heightMap[x + heightMapSize * z] << " " << fz << std::endl;
 
 			++fz;
 			fz2 += tdSize;
@@ -174,7 +174,7 @@ void Terrain::preRenderIndicesRecalculation()
 			buffer.pushBack(index + terrainSize + 1);
 			buffer.pushBack(index + terrainSize + 1 + 1);
 
-			std::cout << index << std::endl;
+			//std::cout << index << std::endl;
 		}
 	}
 }
