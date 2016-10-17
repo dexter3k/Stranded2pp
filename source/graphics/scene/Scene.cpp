@@ -74,9 +74,6 @@ void Scene::drawAll()
 
 	debug();
 
-	currentRenderPass = RenderPassNone;
-	return;
-
 	// Render solid objects
 	{
 		currentRenderPass = RenderPassSolid;
@@ -95,14 +92,14 @@ void Scene::drawAll()
 void Scene::debug()
 {
 
-	MeshBuffer buffer(Vertex3D::Standard, Index16Bit);
+	MeshBuffer buffer(Vertex3D::DoubleTCoords, Index16Bit);
 	buffer.getVertexBuffer().setUsed(4);
 
-	auto vertices = static_cast<Vertex3D*>(buffer.getVertices());
-	vertices[0] = Vertex3D(-1.0f, -1.0f, 0.0f, 0, 0, 1.0f, Color(255, 255, 255), 0.0f, 1.0f);
-	vertices[1] = Vertex3D( 1.0f, -1.0f, 0.0f, 0, 0, 1.0f, Color(255, 255, 255), 1.0f, 1.0f);
-	vertices[2] = Vertex3D( 1.0f,  1.0f, 0.0f, 0, 0, 1.0f, Color(255, 255, 255), 1.0f, 0.0f);
-	vertices[3] = Vertex3D(-1.0f,  1.0f, 0.0f, 0, 0, 1.0f, Color(255, 255, 255), 0.0f, 0.0f);
+	auto vertices = static_cast<Vertex3D2TCoords*>(buffer.getVertices());
+	vertices[0] = Vertex3D2TCoords(-1.0f, -1.0f, 0.0f, 0, 0, 1.0f, Color(255, 255, 255), 0.0f, 1.0f, 0.0f, 1.0f);
+	vertices[1] = Vertex3D2TCoords( 1.0f, -1.0f, 0.0f, 0, 0, 1.0f, Color(255, 255, 255), 1.0f, 1.0f, 1.0f, 1.0f);
+	vertices[2] = Vertex3D2TCoords( 1.0f,  1.0f, 0.0f, 0, 0, 1.0f, Color(255, 255, 255), 1.0f, 0.0f, 1.0f, 0.0f);
+	vertices[3] = Vertex3D2TCoords(-1.0f,  1.0f, 0.0f, 0, 0, 1.0f, Color(255, 255, 255), 0.0f, 0.0f, 0.0f, 0.0f);
 /*
 	vertices[0] = Vertex3D(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
 		Color(255, 255, 255), 0.0f, 0.0f);

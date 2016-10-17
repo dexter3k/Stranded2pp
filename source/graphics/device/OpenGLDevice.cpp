@@ -386,7 +386,7 @@ void OpenGLDevice::drawIndexedPrimitiveList(const void* vertices,
 
 			if (bindedTextures[1] != nullptr)
 			{
-				glActiveTexture(GL_TEXTURE1);
+				glClientActiveTexture(GL_TEXTURE1);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 				if (vertices != nullptr)
@@ -421,7 +421,7 @@ void OpenGLDevice::drawIndexedPrimitiveList(const void* vertices,
 					&((static_cast<const Vertex3D2TCoords*>(vertices))[0]
 						.position));
 
-				glActiveTexture(GL_TEXTURE1);
+				glClientActiveTexture(GL_TEXTURE1);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D2TCoords),
 					&((static_cast<const Vertex3D2TCoords*>(vertices))[0]
@@ -438,7 +438,7 @@ void OpenGLDevice::drawIndexedPrimitiveList(const void* vertices,
 				glVertexPointer(3, GL_FLOAT, sizeof(Vertex3D2TCoords),
 					buffer_offset(0));
 
-				glActiveTexture(GL_TEXTURE1);
+				glClientActiveTexture(GL_TEXTURE1);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D2TCoords),
 					buffer_offset(36));
@@ -478,10 +478,10 @@ void OpenGLDevice::drawIndexedPrimitiveList(const void* vertices,
 	if (bindedTextures[1] != nullptr ||
 		vertexType == Vertex3D::DoubleTCoords)
 	{
-		glActiveTexture(GL_TEXTURE1);
+		glClientActiveTexture(GL_TEXTURE1);
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-		glActiveTexture(GL_TEXTURE0);
+		glClientActiveTexture(GL_TEXTURE0);
 	}
 }
 
@@ -1063,6 +1063,8 @@ void OpenGLDevice::setClientStates(bool vertex, bool normal, bool color,
 
 	if (clientStateTexCoord0 != texCoord0)
 	{
+		glActiveTexture(GL_TEXTURE0);
+
 		if (texCoord0)
 		{
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);

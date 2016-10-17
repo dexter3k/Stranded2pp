@@ -40,8 +40,8 @@ bool Graphics::init(const Modification& modification)
 		return false;
 	}
 
-	scene->addCamera(nullptr, math::Vector3f(0.0f, 0.0f, 5.0f),
-		math::Vector3f(0.0f, 0.0f, 0.0f));
+	scene->addCamera(nullptr, math::Vector3f(0.0f, 10.0f, 10.0f),
+		math::Vector3f(30.0f, 0.0f, 0.0f));
 	
 	scene->addSkybox(
 		device->loadTextureFromFile(
@@ -62,11 +62,11 @@ bool Graphics::init(const Modification& modification)
 
 	std::vector<float> heightMap(3 * 3, 0.0f);
 	std::vector<gfx::Color> colorMap(3 * 3);
-	//scene->addTerrain(2, heightMap, colorMap,
-	//	device->loadTextureFromFile(
-	//		modification.getPath() + "sys/gfx/terraindirt.bmp"),
-	//	device->loadTextureFromFile(
-	//		modification.getPath() + "sys/gfx/terrainstructure.bmp"));
+	scene->addTerrain(2, heightMap, colorMap,
+		device->loadTextureFromFile(
+			modification.getPath() + "sys/gfx/terraindirt.bmp"),
+		device->loadTextureFromFile(
+			modification.getPath() + "sys/gfx/terrainstructure.bmp"));
 
 	return true;
 }
@@ -77,7 +77,7 @@ void Graphics::update(float deltaTime)
 	if (camera != nullptr)
 	{
 		auto rotation = camera->getRotation();
-		rotation.y -= 1.0f;
+		//rotation.y -= 1.0f;
 		camera->setRotation(rotation);
 
 		auto position = camera->getPosition();
