@@ -31,9 +31,6 @@ Terrain::Terrain(unsigned terrainSize, const std::vector<float>& heightMap,
 	renderBuffer(Vertex3D::DoubleTCoords,
 		terrainSize < 256 ? Index16Bit : Index32Bit)
 {
-	std::cout << terrainSize << std::endl;
-	std::cout << heightMap.size() << std::endl;
-
 	dataBuffer.setVertexBufferMappingHint(HardwareMappingNever);
 	dataBuffer.setIndexBufferMappingHint(HardwareMappingNever);
 
@@ -44,15 +41,25 @@ Terrain::Terrain(unsigned terrainSize, const std::vector<float>& heightMap,
 	createColorMapTexture(colorMap);
 
 	terrainMaterial.materialType = Material::DetailMap;
+	terrainMaterial.textureLayers[0].texture = colorMapTexture;
 	terrainMaterial.textureLayers[1].texture = firstDetailTexture;
-	terrainMaterial.textureLayers[0].texture = colorMapTexture; //firstDetailTexture;
 	terrainMaterial.lighting = false;
 	terrainMaterial.wireframe = false;
 	terrainMaterial.backFaceCulling = false;
 }
 
 Terrain::~Terrain()
-{}
+{
+	if (colorMapTexture != nullptr)
+	{
+		device::Device* device = scene->getDevice();
+		if (device != nullptr)
+		{
+			device->releaseTexture("terrainColorMap");
+			colorMapTexture = nullptr;
+		}
+	}
+}
 
 void Terrain::onRegisterNode()
 {
@@ -92,15 +99,6 @@ void Terrain::createTerrain(const std::vector<float>& heightMap)
 	assert(heightMap.size() == ((terrainSize + 1) * (terrainSize + 1)));
 
 	unsigned heightMapSize = terrainSize + 1;
-	for (unsigned x = 0; x < heightMapSize; ++x)
-	{
-		for (unsigned z = 0; z < heightMapSize; ++z)
-		{
-			//std::cout << heightMap[x + heightMapSize * z] << " ";
-		}
-		//std::cout << std::endl;
-	}
-
 	unsigned dataSize = heightMapSize * heightMapSize;
 	dataBuffer.getVertexBuffer().setUsed(dataSize);
 
@@ -125,12 +123,8 @@ void Terrain::createTerrain(const std::vector<float>& heightMap)
 			vertex.position =
 				math::Vector3f(fx, heightMap[x + heightMapSize * z], fz);
 
-			vertex.textureCoords2 = math::Vector2f(fx / 4.0f, fz / 4.0f);
-			//vertex.textureCoords2 = math::Vector2f(fx / 4.0f, fz / 4.0f);
 			vertex.textureCoords = math::Vector2f(1.0f - fx2, fz2);
-
-			//std::cout << fx << " " << heightMap[x + heightMapSize * z] << " " << fz << std::endl;
-			//std::cout << fx2 << " " << fz2 << std::endl;
+			vertex.textureCoords2 = math::Vector2f(fx / 4.0f, fz / 4.0f);
 
 			++fz;
 			fz2 += tdSize;
@@ -177,8 +171,6 @@ void Terrain::createColorMapTexture(const std::vector<gfx::Color>& colorMap)
 
 void Terrain::preRenderIndicesRecalculation()
 {
-	//unsigned vertexCount = (terrainSize + 1) * (terrainSize + 1);
-
 	renderBuffer.getIndexBuffer().clear();
 
 	auto& buffer = renderBuffer.getIndexBuffer();
@@ -198,8 +190,6 @@ void Terrain::preRenderIndicesRecalculation()
 			buffer.pushBack(index + 1);
 			buffer.pushBack(index + terrainSize + 1);
 			buffer.pushBack(index + terrainSize + 1 + 1);
-
-			//std::cout << index << std::endl;
 		}
 	}
 }

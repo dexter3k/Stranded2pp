@@ -329,8 +329,6 @@ void OpenGLDevice::drawIndexedPrimitiveList(const void* vertices,
 {
 	if (vertexCount == 0 || primitiveCount == 0)
 	{
-		std::cout << "Skipping empty" << std::endl;
-
 		return;
 	}
 
@@ -340,17 +338,6 @@ void OpenGLDevice::drawIndexedPrimitiveList(const void* vertices,
 			") limit: " << 0x7fffffff << std::endl;
 
 		return;
-	}
-
-	//std::cout << "Drawing new primitive" << std::endl;
-
-	for (unsigned i = 0; i < primitiveCount * 3; ++i)
-	{
-		unsigned index = static_cast<const uint16_t*>(indices)[i];
-		const auto& vertex = static_cast<const Vertex3D2TCoords*>(vertices)[index];
-
-		//std::cout << index << std::endl;
-		//std::cout << vertex.position.x << " " << vertex.position.y << " " << vertex.position.z << std::endl;
 	}
 
 	set3DRenderMode();
@@ -478,8 +465,8 @@ void OpenGLDevice::drawIndexedPrimitiveList(const void* vertices,
 	if (bindedTextures[1] != nullptr ||
 		vertexType == Vertex3D::DoubleTCoords)
 	{
-		//glClientActiveTexture(GL_TEXTURE1);
-		//glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		glClientActiveTexture(GL_TEXTURE1);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 		glClientActiveTexture(GL_TEXTURE0);
 	}
@@ -495,11 +482,6 @@ void OpenGLDevice::drawMeshBuffer(const MeshBuffer* meshBuffer)
 	{
 		return;
 	}
-
-	//std::cout << "Drawing mesh buffer: vc: " << meshBuffer->getVertexCount() << std::endl;
-	//std::cout << "Drawing mesh buffer: ic: " << meshBuffer->getIndexCount() << std::endl;
-
-	//std::cout << meshBuffer->getVertexType() << " " << meshBuffer->getIndexSize() << std::endl;
 
 	// TOOD
 
