@@ -113,8 +113,6 @@ public:
 
 	void render();
 private:
-	void debug();
-private:
 	Graphics& graphics;
 	device::Device* device;
 

@@ -72,8 +72,6 @@ void Scene::drawAll()
 		skyboxes.clear();
 	}
 
-	debug();
-
 	// Render solid objects
 	{
 		currentRenderPass = RenderPassSolid;
@@ -87,96 +85,6 @@ void Scene::drawAll()
 	}
 
 	currentRenderPass = RenderPassNone;
-}
-
-void Scene::debug()
-{
-
-	MeshBuffer buffer(Vertex3D::DoubleTCoords, Index16Bit);
-	buffer.getVertexBuffer().setUsed(4);
-
-	auto vertices = static_cast<Vertex3D2TCoords*>(buffer.getVertices());
-	vertices[0] = Vertex3D2TCoords(-1.0f, -1.0f, 0.0f, 0, 0, 1.0f, Color(255, 255, 255), 0.0f, 1.0f, 0.0f, 1.0f);
-	vertices[1] = Vertex3D2TCoords( 1.0f, -1.0f, 0.0f, 0, 0, 1.0f, Color(255, 255, 255), 1.0f, 1.0f, 1.0f, 1.0f);
-	vertices[2] = Vertex3D2TCoords( 1.0f,  1.0f, 0.0f, 0, 0, 1.0f, Color(255, 255, 255), 1.0f, 0.0f, 1.0f, 0.0f);
-	vertices[3] = Vertex3D2TCoords(-1.0f,  1.0f, 0.0f, 0, 0, 1.0f, Color(255, 255, 255), 0.0f, 0.0f, 0.0f, 0.0f);
-/*
-	vertices[0] = Vertex3D(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		Color(255, 255, 255), 0.0f, 0.0f);
-	vertices[1] = Vertex3D(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		Color(255, 255, 255), 0.0f, 1.0f);
-	vertices[2] = Vertex3D(1.0f, 0.0f,-1.0f, 0.0f, 1.0f, 0.0f,
-		Color(255, 255, 255), 1.0f, 1.0f);
-	vertices[3] = Vertex3D(0.0f, 0.0f,-1.0f, 0.0f, 1.0f, 0.0f,
-		Color(255, 255, 255), 1.0f, 0.0f);
-*/
-	buffer.getIndexBuffer().setUsed(6);
-
-	auto indices = static_cast<uint16_t*>(buffer.getIndices());
-	indices[0] = 0;
-	indices[1] = 1;
-	indices[2] = 3;
-	indices[3] = 1;
-	indices[4] = 2;
-	indices[5] = 3;
-
-	Material material;
-	material.textureLayers[0].texture = device->loadTextureFromFile("mods/Stranded II/sys/gfx/iconbutton.bmp");
-
-	static float rot;
-	if (rot > 360.0f)
-	{
-		rot = 0.0f;
-	}
-	else if (rot < 0.0f)
-	{
-		rot = 360.0f;
-	}
-
-	rot += 4;
-
-	math::Matrix4 transform;
-	transform.setRotationDegrees(math::Vector3f(0.0f, rot, 0.0f));
-	transform.setTranslation(math::Vector3f(0.0f, 0.0f, 0.0f));
-	device->setTransform(device::Device::Model, transform);
-	device->setMaterial(material);
-
-	device->drawMeshBuffer(&buffer);
-
-	device->releaseTexture("mods/Stranded II/sys/gfx/iconbutton.bmp");
-
-
-/*
-	MeshBuffer buffer(Vertex3D::Standard, Index16Bit);
-	buffer.getVertexBuffer().setUsed(4);
-
-	auto vertices = static_cast<Vertex3D*>(buffer.getVertices());
-	vertices[0] = Vertex3D(-1.0f, -1.0f, 0.0f, 0, 0, 1.0f, Color(255, 255, 255), 0.0f, 1.0f);
-	vertices[1] = Vertex3D( 1.0f, -1.0f, 0.0f, 0, 0, 1.0f, Color(255, 255, 255), 1.0f, 1.0f);
-	vertices[2] = Vertex3D( 1.0f,  1.0f, 0.0f, 0, 0, 1.0f, Color(255, 255, 255), 1.0f, 0.0f);
-	vertices[3] = Vertex3D(-1.0f,  1.0f, 0.0f, 0, 0, 1.0f, Color(255, 255, 255), 0.0f, 0.0f);
-
-	buffer.getIndexBuffer().setUsed(6);
-
-	auto indices = static_cast<uint16_t*>(buffer.getIndices());
-	indices[0] = 0;
-	indices[1] = 1;
-	indices[2] = 3;
-	indices[3] = 1;
-	indices[4] = 2;
-	indices[5] = 3;
-
-	Material material;
-	material.textureLayers[0].texture = device->loadTextureFromFile("mods/Stranded II/sys/gfx/tutor.bmp");
-
-	device->setTransform(device::Device::Model, math::Matrix4());
-	device->setMaterial(material);
-	//device->drawIndexedPrimitiveList(vertices, 4, indices, 2,
-	//	Vertex3D::Standard, Index16Bit);
-	device->drawMeshBuffer(&buffer);
-
-	device->releaseTexture("mods/Stranded II/sys/gfx/tutor.bmp");
-*/
 }
 
 device::Device* Scene::getDevice()
