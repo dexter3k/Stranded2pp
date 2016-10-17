@@ -28,6 +28,8 @@ public:
 	void flipHorizontally();
 
 	void applyColorKey(const Color& color = Color(255, 0, 255));
+
+	void setPixel(unsigned x, unsigned y, const Color& color);
 private:
 	sf::Image image;
 };

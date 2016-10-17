@@ -52,4 +52,9 @@ void Image::applyColorKey(const Color& color)
 		color.getBlue()));
 }
 
+void Image::setPixel(unsigned x, unsigned y, const Color& color)
+{
+	image.setPixel(x, y, sf::Color(color.getAsRGBA32()));
+}
+
 } // namespace gfx

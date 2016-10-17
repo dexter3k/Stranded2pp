@@ -478,8 +478,8 @@ void OpenGLDevice::drawIndexedPrimitiveList(const void* vertices,
 	if (bindedTextures[1] != nullptr ||
 		vertexType == Vertex3D::DoubleTCoords)
 	{
-		glClientActiveTexture(GL_TEXTURE1);
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		//glClientActiveTexture(GL_TEXTURE1);
+		//glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 		glClientActiveTexture(GL_TEXTURE0);
 	}
@@ -1667,10 +1667,6 @@ void OpenGLDevice::onSetMaterial()
 
 			break;
 		}
-		case Material::DetailMap:
-		{
-			break;
-		}
 		case Material::Reflection:
 		{
 			break;
@@ -1695,6 +1691,16 @@ void OpenGLDevice::onSetMaterial()
 
 			break;
 		}
+		case Material::DetailMap:
+		{
+			disableTextures(2);
+			setBasicRenderStates(currentMaterial, lastMaterial,
+				shouldResetRenderStates);
+
+			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+			break;
+		}
 		default:
 		{
 			break;
@@ -1711,7 +1717,6 @@ void OpenGLDevice::onUnsetMaterial()
 		case Material::DoubleLightMap:
 		case Material::LightMapLighting:
 		case Material::DoubleLightMapLighting:
-		case Material::DetailMap:
 		case Material::Reflection:
 		case Material::SemiTransparent:
 		{
@@ -1721,6 +1726,10 @@ void OpenGLDevice::onUnsetMaterial()
 		{
 			glDisable(GL_ALPHA_TEST);
 
+			break;
+		}
+		case Material::DetailMap:
+		{
 			break;
 		}
 		default:

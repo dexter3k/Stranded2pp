@@ -121,7 +121,7 @@ void Scene::debug()
 	indices[5] = 3;
 
 	Material material;
-	material.textureLayers[0].texture = device->loadTextureFromFile("mods/Stranded II/sys/gfx/tutor.bmp");
+	material.textureLayers[0].texture = device->loadTextureFromFile("mods/Stranded II/sys/gfx/iconbutton.bmp");
 
 	static float rot;
 	if (rot > 360.0f)
@@ -137,13 +137,13 @@ void Scene::debug()
 
 	math::Matrix4 transform;
 	transform.setRotationDegrees(math::Vector3f(0.0f, rot, 0.0f));
-	transform.setTranslation(math::Vector3f(0.0f, 0.0f,-5.0f));
+	transform.setTranslation(math::Vector3f(0.0f, 0.0f, 0.0f));
 	device->setTransform(device::Device::Model, transform);
 	device->setMaterial(material);
 
 	device->drawMeshBuffer(&buffer);
 
-	device->releaseTexture("mods/Stranded II/sys/gfx/tutor.bmp");
+	device->releaseTexture("mods/Stranded II/sys/gfx/iconbutton.bmp");
 
 
 /*

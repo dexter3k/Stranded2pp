@@ -39,6 +39,7 @@ private:
 private:
 	unsigned terrainSize;
 
+	Texture* colorMapTexture;
 	Texture* firstDetailTexture;
 	Texture* secondDetailTexture;
 
