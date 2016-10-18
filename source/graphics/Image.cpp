@@ -24,6 +24,11 @@ bool Image::loadFromFile(const std::string& filename)
 	return image.loadFromFile(filename);;
 }
 
+bool Image::saveToFile(const std::string& filename) const
+{
+	return image.saveToFile(filename);
+}
+
 math::Vector2u Image::getSize() const
 {
 	auto size = image.getSize();

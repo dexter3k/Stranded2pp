@@ -3,6 +3,8 @@
 #include <cassert>
 #include <iostream>
 
+#include "SaveGameUtils.h"
+
 #include "common/Modification.h"
 #include "graphics/gui/Gui.h"
 #include "graphics/Graphics.h"
@@ -13,7 +15,8 @@ Engine::Engine(Input& input, gfx::Graphics& graphics, Network& network,
 	graphics(graphics),
 	network(network),
 	sound(sound),
-	gameState(Intro)
+	gameState(Intro),
+	modBaseDirectory("")
 {
 	graphics.getGui().connectEngine(this);
 }
@@ -23,6 +26,8 @@ Engine::~Engine()
 
 bool Engine::init(const Modification& modification)
 {
+	modBaseDirectory = modification.getPath();
+
 	setGameState(Intro);
 
 	return true;
@@ -92,12 +97,23 @@ void Engine::setGameState(GameState newGameState)
 	{
 		case Intro:
 		{
-			//gui->setScreen(Screen::Intro);
+			graphics.getGui().setScreen(gfx::gui::Screen::Intro);
 
 			break;
 		}
 		case MainMenu:
 		{
+			if (!save::loadFromFile(
+				modBaseDirectory + "maps/menu/menu.s2", *this))
+			{
+				std::cout << "Error occured while loading menu map!" <<
+					std::endl;
+
+				//input.raiseEvent(closed) ?
+
+				break;
+			}
+
 			graphics.getGui().setScreen(gfx::gui::Screen::MainMenu);
 
 			break;

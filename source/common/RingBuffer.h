@@ -20,12 +20,16 @@ public:
 	//void allocateMore(size_t byteCount);
 
 	size_t getFreeSpace() const;
+	size_t getDataSize() const;
 
 	bool readBool(bool& value);
+	bool readUint8(uint8_t& value);
 	bool readUint16(uint16_t& value);
+	bool readUint32(uint32_t& value);
 	bool readFloat(float& value);
 
 	bool readNewlineTerminatedString(std::string& string);
+	bool readLengthPrefixedString(std::string& string);
 
 	void debug() const;
 private:

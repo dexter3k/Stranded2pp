@@ -43,4 +43,6 @@ private:
 	Sound&		sound;
 
 	GameState gameState;
+
+	std::string modBaseDirectory;
 };

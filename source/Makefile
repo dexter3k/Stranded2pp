@@ -51,6 +51,7 @@ MAIN_OBJECTS = main.o \
 	OpenGLDevice.o \
 	RawInputHandler.o \
 	RingBuffer.o \
+	SaveGameUtils.o \
 	Scene.o \
 	Screen.o \
 	Skybox.o \
@@ -117,7 +118,8 @@ Device.o: graphics/device/Device.cpp graphics/device/Device.h \
 	$(CXX) $(CXXFLAGS) -c graphics/device/Device.cpp
 
 Engine.o: engine/Engine.cpp engine/Engine.h \
-		common/Modification.h
+		common/Modification.h \
+		engine/SaveGameUtils.h
 	$(CXX) $(CXXFLAGS) -c engine/Engine.cpp
 
 FileSystem.o: common/FileSystem.cpp common/FileSystem.h \
@@ -231,6 +233,16 @@ RawInputHandler.o: input/RawInputHandler.cpp input/RawInputHandler.h
 
 RingBuffer.o: common/RingBuffer.cpp common/RingBuffer.h
 	$(CXX) $(CXXFLAGS) -c common/RingBuffer.cpp
+
+SaveGameUtils.o: engine/SaveGameUtils.cpp engine/SaveGameUtils.h \
+		engine/Engine.h \
+		common/FileSystem.h \
+		common/RingBuffer.h \
+		common/math/Vector2.h \
+		common/math/Vector3.h \
+		graphics/Image.h \
+		graphics/Color.h
+	$(CXX) $(CXXFLAGS) -c engine/SaveGameUtils.cpp
 
 Scene.o: graphics/scene/Scene.cpp graphics/scene/Scene.h \
 		graphics/Graphics.h

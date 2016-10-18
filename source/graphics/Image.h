@@ -19,6 +19,7 @@ public:
 		const Color& color = Color(255, 32, 128));
 
 	bool loadFromFile(const std::string& filename);
+	bool saveToFile(const std::string& filename) const;
 
 	math::Vector2u getSize() const;
 

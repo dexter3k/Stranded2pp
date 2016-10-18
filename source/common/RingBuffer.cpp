@@ -124,7 +124,17 @@ size_t RingBuffer::getFreeSpace() const
 	return bufferSize - dataSize;
 }
 
+size_t RingBuffer::getDataSize() const
+{
+	return dataSize;
+}
+
 bool RingBuffer::readBool(bool& value)
+{
+	return read(&value, 1);
+}
+
+bool RingBuffer::readUint8(uint8_t& value)
 {
 	return read(&value, 1);
 }
@@ -132,6 +142,11 @@ bool RingBuffer::readBool(bool& value)
 bool RingBuffer::readUint16(uint16_t& value)
 {
 	return read(&value, 2);
+}
+
+bool RingBuffer::readUint32(uint32_t& value)
+{
+	return read(&value, 4);
 }
 
 bool RingBuffer::readFloat(float& value)
@@ -181,6 +196,37 @@ bool RingBuffer::readNewlineTerminatedString(std::string& string)
 
 	//std::cout << "Newline string read: '" << string << "'" << std::endl;
 	//std::cout << "ds: " << dataSize << std::endl;
+
+	return true;
+}
+
+bool RingBuffer::readLengthPrefixedString(std::string& string)
+{
+	string.clear();
+
+	if (dataSize == 0)
+	{
+		std::cout << "No data" << std::endl;
+
+		return false;
+	}
+
+	uint32_t stringSize = 0;
+	if (!readUint32(stringSize))
+	{
+		return false;
+	}
+
+	char currentByte = 0;
+	for (unsigned i = 0; i < stringSize; ++i)
+	{
+		if (!read(&currentByte, 1))
+		{
+			return false;
+		}
+
+		string.push_back(currentByte);
+	}
 
 	return true;
 }

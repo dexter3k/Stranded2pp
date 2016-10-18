@@ -76,8 +76,6 @@ bool Gui::init(const Modification& modification)
 
 	screenSize = device->getRenderTargetSize();
 
-	setScreen(Screen::Intro);
-
 	inputHandler.init();
 
 	return true;
