@@ -119,7 +119,7 @@ Camera* Scene::addCamera(Node* parent, const math::Vector3f& position,
 	return camera;
 }
 
-Node* Scene::addSkybox(Texture* top, Texture* bottom, Texture* left,
+Skybox* Scene::addSkybox(Texture* top, Texture* bottom, Texture* left,
 	Texture* right, Texture* front, Texture* back, Node* parent, int id)
 {
 	if (parent == nullptr)
@@ -127,28 +127,19 @@ Node* Scene::addSkybox(Texture* top, Texture* bottom, Texture* left,
 		parent = this;
 	}
 
-	Node* skybox = new Skybox(top, bottom, left, right, front, back, parent,
+	Skybox* skybox = new Skybox(top, bottom, left, right, front, back, parent,
 		this, id);
 	sceneNodes.push_back(skybox);
 
 	return skybox;
 }
 
-Node* Scene::addTerrain(unsigned terrainSize,
-	const std::vector<float>& heightMap,
-	const std::vector<gfx::Color>& colorMap, Texture* firstDetailTexture,
-	Texture* secondDetailTexture, Node* parent, int id,
-	const math::Vector3f& position, const math::Vector3f& rotation,
-	const math::Vector3f& scale)
+Terrain* Scene::addTerrain(unsigned terrainSize, const std::vector<float>& heightMap,
+	unsigned colorMapSize, const std::vector<gfx::Color>& colorMap,
+	const math::Vector2f& scale, int id)
 {
-	if (parent == nullptr)
-	{
-		parent = this;
-	}
-
-	Node* terrain = new Terrain(terrainSize, heightMap, colorMap,
-		firstDetailTexture, secondDetailTexture, parent, this, id, position, rotation,
-		scale);
+	Terrain* terrain = new Terrain(terrainSize, heightMap, colorMapSize, colorMap,
+		this, this, id, scale);
 
 	sceneNodes.push_back(terrain);
 

@@ -150,3 +150,24 @@ void Engine::skipIntro()
 		setGameState(MainMenu);
 	}
 }
+
+void Engine::setupGame(uint32_t day, uint8_t hour, uint8_t minute,
+	bool timeIsFreezed, const std::string& skybox, bool multiplayerMap,
+	uint8_t climate, const std::string& music, const std::string& briefScript)
+{
+
+}
+
+void Engine::setupQuickslots(const std::vector<std::string>& quickslots)
+{
+	// Setup those quickslots
+}
+
+void Engine::setupTerrain(unsigned terrainSize,
+	const std::vector<float>& heightMap, unsigned colorMapSize,
+	const std::vector<gfx::Color>& colorMap,
+	const std::vector<uint8_t>& grassMap)
+{
+	graphics.setTerrain(terrainSize, heightMap, colorMapSize, colorMap,
+		grassMap);
+}

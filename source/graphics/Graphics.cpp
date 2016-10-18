@@ -22,7 +22,8 @@ Graphics::Graphics(Input& input) :
 	input(input),
 	device(new device::OpenGLDevice()),
 	scene(new scene::Scene(*this, device.get())),
-	gui(new gui::Gui(input, device.get()))
+	gui(new gui::Gui(input, device.get())),
+	terrainNode(nullptr)
 {}
 
 Graphics::~Graphics()
@@ -40,22 +41,22 @@ bool Graphics::init(const Modification& modification)
 		return false;
 	}
 
-	scene->addCamera(nullptr, math::Vector3f(0.0f, 50.f, 50.0f),
-		math::Vector3f(20.0f, 0.0f, 0.0f));
+	scene->addCamera(nullptr, math::Vector3f(0.0f, 15.f, 15.0f),
+		math::Vector3f(35.0f, 0.0f, 0.0f));
 	
-	scene->addSkybox(
-		device->loadTextureFromFile(
-			modification.getPath() + "skies/sky_up.jpg"),
-		device->loadTextureFromFile(
-			modification.getPath() + "skies/sky_dn.jpg"),
-		device->loadTextureFromFile(
-			modification.getPath() + "skies/sky_lf.jpg"),
-		device->loadTextureFromFile(
-			modification.getPath() + "skies/sky_rt.jpg"),
-		device->loadTextureFromFile(
-			modification.getPath() + "skies/sky_fr.jpg"),
-		device->loadTextureFromFile(
-			modification.getPath() + "skies/sky_bk.jpg"), nullptr);
+	//scene->addSkybox(
+	//	device->loadTextureFromFile(
+	//		modification.getPath() + "skies/sky_up.jpg"),
+	//	device->loadTextureFromFile(
+	//		modification.getPath() + "skies/sky_dn.jpg"),
+	//	device->loadTextureFromFile(
+	//		modification.getPath() + "skies/sky_lf.jpg"),
+	//	device->loadTextureFromFile(
+	//		modification.getPath() + "skies/sky_rt.jpg"),
+	//	device->loadTextureFromFile(
+	//		modification.getPath() + "skies/sky_fr.jpg"),
+	//	device->loadTextureFromFile(
+	//		modification.getPath() + "skies/sky_bk.jpg"), nullptr);
 
 	return true;
 }
@@ -89,6 +90,15 @@ void Graphics::drawAll()
 gui::Gui& Graphics::getGui()
 {
 	return *gui;
+}
+
+void Graphics::setTerrain(unsigned terrainSize,
+	const std::vector<float>& heightMap, unsigned colorMapSize,
+	const std::vector<gfx::Color>& colorMap,
+	const std::vector<uint8_t>& grassMap)
+{
+	terrainNode = scene->addTerrain(terrainSize, heightMap, colorMapSize,
+		colorMap);
 }
 
 } // namespace gfx

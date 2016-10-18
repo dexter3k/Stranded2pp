@@ -15,7 +15,104 @@ namespace save
 {
 	namespace impl
 	{
-		// TODO: divide loadFromFile into several methods and place them here
+		struct MainHeader
+		{
+			std::string identificationString = "";
+			std::string gameVersion = "";
+			std::string date = "";
+			std::string time = "";
+			std::string format = "";
+			std::string mode = "";
+		};
+
+		struct ColorMapData
+		{
+			uint32_t size;
+
+			std::vector<gfx::Color> colorMap;
+		};
+
+		bool readMainHeader(RingBuffer& buffer, MainHeader& mainHeader)
+		{
+			if (!buffer.readNewlineTerminatedString(
+				mainHeader.identificationString)) return false;
+
+			if (mainHeader.identificationString.substr(0, 15) !=
+				"### Stranded II")
+			{
+				std::cout << "Wrong (corrupted?) header" << std::endl;
+
+				return false;
+			}
+
+			return (
+				buffer.readNewlineTerminatedString(mainHeader.gameVersion) &&
+				buffer.readNewlineTerminatedString(mainHeader.date) &&
+				buffer.readNewlineTerminatedString(mainHeader.time) &&
+				buffer.readNewlineTerminatedString(mainHeader.format) &&
+				buffer.readNewlineTerminatedString(mainHeader.mode));
+		}
+
+		bool readPreviewImage(RingBuffer& buffer, gfx::Image& image)
+		{
+			image.create(math::Vector2u(96, 72), gfx::Color(255, 255, 255));
+
+			for (unsigned x = 0; x < 96; ++x)
+			{
+				for (unsigned y = 0; y < 72; ++y)
+				{
+					uint8_t red, green, blue;
+					red = green = blue = 0;
+
+					if (!buffer.readUint8(red)) return false;
+					if (!buffer.readUint8(green)) return false;
+					if (!buffer.readUint8(blue)) return false;
+
+					image.setPixel(x, y, gfx::Color(red, green, blue));
+				}
+			}
+
+			return true;
+		}
+
+		bool readColorMap(RingBuffer& buffer, ColorMapData& data)
+		{
+			unsigned colorMapSize = 0;
+			if (!buffer.readUint32(colorMapSize))
+			{
+				return false;
+			}
+			data.size = colorMapSize;
+
+			data.colorMap.resize(colorMapSize * colorMapSize,
+				gfx::Color(255, 255, 255));
+
+			gfx::Image debugImage;
+			debugImage.create(math::Vector2u(colorMapSize, colorMapSize),
+				gfx::Color(255, 255, 255));
+
+			for (unsigned x = 0; x < colorMapSize; ++x)
+			{
+				for (unsigned y = 0; y < colorMapSize; ++y)
+				{
+					uint8_t red, green, blue;
+					red = green = blue = 0;
+
+					if (!buffer.readUint8(red)) return false;
+					if (!buffer.readUint8(green)) return false;
+					if (!buffer.readUint8(blue)) return false;
+
+					data.colorMap[x + y * colorMapSize] = gfx::Color(red, green,
+						blue);
+
+					debugImage.setPixel(x, y, gfx::Color(red, green, blue));
+				}
+			}
+
+			debugImage.saveToFile("colorMapDebug.png");
+
+			return true;
+		}
 	}
 
 	bool loadFromFile(const std::string& filename, Engine& engine)
@@ -45,30 +142,18 @@ namespace save
 		}
 
 		// Main header data
-		std::string identificationString = "";
-		std::string gameVersion = "";
-		std::string date = "";
-		std::string time = "";
-		std::string format = "";
-		std::string mode = "";
-
-		if (!buffer.readNewlineTerminatedString(identificationString)) return false;
-		if (identificationString.substr(0, 15) != "### Stranded II")
+		impl::MainHeader mainHeader;
+		if (!impl::readMainHeader(buffer, mainHeader))
 		{
-			std::cout << "Wrong (corrupted?) header" << std::endl;
+			std::cout << "Unable to read main header in '" << filename << "'!"
+				<< std::endl;
 
 			return false;
 		}
 
-		if (!buffer.readNewlineTerminatedString(gameVersion)) return false;
-		if (!buffer.readNewlineTerminatedString(date)) return false;
-		if (!buffer.readNewlineTerminatedString(time)) return false;
-		if (!buffer.readNewlineTerminatedString(format)) return false;
-		if (!buffer.readNewlineTerminatedString(mode)) return false;
-
-		std::cout << "Loading map:\n" <<
-			"[" << gameVersion << "] " << date << " " << time << " " << format <<
-			" " << mode << std::endl;
+		std::cout << "Loading map:\n" << "[" << mainHeader.gameVersion << "] "
+			<< mainHeader.date << " " << mainHeader.time << " " <<
+			mainHeader.format << " " << mainHeader.mode << std::endl;
 
 		// Header OK
 
@@ -97,22 +182,10 @@ namespace save
 		}
 
 		// Load 96 x 72 R8G8B8 raw image
-		gfx::Image image;
-		image.create(math::Vector2u(96, 72), gfx::Color(255, 255, 255));
-
-		for (unsigned x = 0; x < 96; ++x)
+		gfx::Image previewImage;
+		if (!impl::readPreviewImage(buffer, previewImage))
 		{
-			for (unsigned y = 0; y < 72; ++y)
-			{
-				uint8_t red, green, blue;
-				red = green = blue = 0;
-
-				if (!buffer.readUint8(red)) return false;
-				if (!buffer.readUint8(green)) return false;
-				if (!buffer.readUint8(blue)) return false;
-
-				image.setPixel(x, y, gfx::Color(red, green, blue));
-			}
+			return false;
 		}
 
 		uint8_t passKey = 0;
@@ -148,45 +221,31 @@ namespace save
 		if (!buffer.readUint8(fog[3])) return false;
 		if (!buffer.readUint8(reservedByte)) return false;
 
+		engine.setupGame(day, hour, minute, freezeTime, skybox, multiplayer,
+			climate, music, brief);
+
 		// Quickslots
-		std::string quickslots[10] = {"", "", "", "", "", "", "", "", "", ""};
+		std::vector<std::string> quickslots(10, "");
 		for (unsigned i = 0; i < 10; ++i)
 		{
 			if (!buffer.readLengthPrefixedString(quickslots[i])) return false;
 		}
 
+		engine.setupQuickslots(quickslots);
+
 		// Color map
-		uint32_t colorMapSize = 0;
-		if (!buffer.readUint32(colorMapSize)) return false;
-
-		gfx::Image image2;
-		image2.create(math::Vector2u(colorMapSize, colorMapSize), gfx::Color(255, 255, 255));
-
-		std::vector<gfx::Color> colorMap(colorMapSize * colorMapSize,
-			gfx::Color(255, 255, 255));
-		for (unsigned x = 0; x < colorMapSize; ++x)
+		impl::ColorMapData colorMapData;
+		if (!impl::readColorMap(buffer, colorMapData))
 		{
-			for (unsigned y = 0; y < colorMapSize; ++y)
-			{
-				uint8_t red, green, blue;
-				red = green = blue = 0;
+			std::cout << "Unable to load color map" << std::endl;
 
-				if (!buffer.readUint8(red)) return false;
-				if (!buffer.readUint8(green)) return false;
-				if (!buffer.readUint8(blue)) return false;
-
-				colorMap[x + y * colorMapSize] = gfx::Color(red, green, blue);
-
-				image2.setPixel(x, y, gfx::Color(red, green, blue));
-			}
+			return false;
 		}
-
-		image2.saveToFile("colorMapDebug.png");
 
 		uint32_t mapSize = 0;
 		if (!buffer.readUint32(mapSize)) return false;
 
-		std::cout << colorMapSize << std::endl;
+		std::cout << colorMapData.size << std::endl;
 		std::cout << mapSize << std::endl;
 
 		uint32_t heightMapSize = mapSize + 1;
@@ -201,7 +260,7 @@ namespace save
 			}
 		}
 
-		uint32_t grassMapSize = colorMapSize + 1;
+		uint32_t grassMapSize = colorMapData.size + 1;
 
 		std::vector<uint8_t> grassMap(grassMapSize * grassMapSize, 0);
 		for (unsigned x = 0; x < grassMapSize; ++x)
@@ -211,6 +270,9 @@ namespace save
 				if (!buffer.readUint8(grassMap[x + y * grassMapSize])) return false;
 			}
 		}
+
+		engine.setupTerrain(mapSize, heightMap, colorMapData.size,
+			colorMapData.colorMap, grassMap);
 
 		// "Stuff"
 
@@ -256,10 +318,10 @@ namespace save
 			if (!buffer.readFloat(maxHealth)) return false;
 			if (!buffer.readUint32(dayTimer)) return false;
 
-			std::cout << "Object " << i << " [" << objectId << "] t: " << objectType
-				<< " x: " << position.x << " z: " << position.z << " yaw: " << yaw
-				<< " h: " << health << " mH: " << maxHealth << " age: " << dayTimer
-				<< std::endl;
+			//std::cout << "Object " << i << " [" << objectId << "] t: " << objectType
+			//	<< " x: " << position.x << " z: " << position.z << " yaw: " << yaw
+			//	<< " h: " << health << " mH: " << maxHealth << " age: " << dayTimer
+			//	<< std::endl;
 		}
 
 		// Units
@@ -312,10 +374,10 @@ namespace save
 			if (!buffer.readFloat(aiCenter.x)) return false;
 			if (!buffer.readFloat(aiCenter.z)) return false;
 
-			std::cout << "Unit " << i << " [" << unitId << "] t: " << unitType
-				<< " x: " << position.x << " y: " << position.y << " z: " <<
-				position.z << " yaw: " << yaw << " h: " << health << " mH: " <<
-				maxHealth << std::endl;
+			//std::cout << "Unit " << i << " [" << unitId << "] t: " << unitType
+			//	<< " x: " << position.x << " y: " << position.y << " z: " <<
+			//	position.z << " yaw: " << yaw << " h: " << health << " mH: " <<
+			//	maxHealth << std::endl;
 		}
 
 		// Items
@@ -361,12 +423,12 @@ namespace save
 			if (!buffer.readUint8(parentMode)) return false;
 			if (!buffer.readUint32(parentId)) return false;
 
-			std::cout << "Item " << i << " [" << itemId << "] t: " << itemType
-				<< " x: " << position.x << " y: " << position.y << " z: " <<
-				position.z << " yaw: " << yaw << " h: " << health << " c: " << count
-				<< " pC: " << static_cast<uint16_t>(parentClass) << " pM: " <<
-				static_cast<uint16_t>(parentMode) << " pId: " << parentId <<
-				std::endl;
+			//std::cout << "Item " << i << " [" << itemId << "] t: " << itemType
+			//	<< " x: " << position.x << " y: " << position.y << " z: " <<
+			//	position.z << " yaw: " << yaw << " h: " << health << " c: " << count
+			//	<< " pC: " << static_cast<uint16_t>(parentClass) << " pM: " <<
+			//	static_cast<uint16_t>(parentMode) << " pId: " << parentId <<
+			//	std::endl;
 		}
 
 
@@ -397,10 +459,10 @@ namespace save
 			if (!buffer.readFloat(yaw)) return false;
 			if (!buffer.readLengthPrefixedString(vars)) return false;
 
-			std::cout << "Info " << i << " [" << infoId << "] t: " << static_cast<uint16_t>(infoType)
-				<< " x: " << position.x << " y: " << position.y << " z: " <<
-				position.z << " pitch: " << pitch << " yaw: " << yaw << " vars: "
-				<< vars << std::endl;
+			//std::cout << "Info " << i << " [" << infoId << "] t: " <<
+			//	static_cast<uint16_t>(infoType) << " x: " << position.x <<
+			//	" y: " << position.y << " z: " << position.z << " pitch: " <<
+			//	pitch << " yaw: " << yaw << " vars: " << vars << std::endl;
 		}
 
 		// States
@@ -437,7 +499,7 @@ namespace save
 			if (!buffer.readFloat(fvalue)) return false;
 			if (!buffer.readLengthPrefixedString(strvalue)) return false;
 
-			std::cout << "State " << i << std::endl;
+			//std::cout << "State " << i << std::endl;
 		}
 
 		// Extensions and vars
@@ -468,7 +530,7 @@ namespace save
 			if (!buffer.readLengthPrefixedString(stuff)) return false;
 		}
 
-		if (mode == "sav")
+		if (mainHeader.mode == "sav")
 		{
 			float cameraPitch = 0.0f;
 			float cameraYaw = 0.0f;
@@ -494,7 +556,7 @@ namespace save
 		{
 			// Load attachments
 
-			if (mode == "map")
+			if (mainHeader.mode == "map")
 			{
 				while (buffer.getDataSize() > 0)
 				{

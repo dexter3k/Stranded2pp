@@ -6,6 +6,7 @@
 #include "Node.h"
 
 #include "common/Timer.h"
+#include "common/math/Vector2.h"
 #include "common/math/Vector3.h"
 
 namespace gfx
@@ -13,6 +14,7 @@ namespace gfx
 
 class Color;
 class Graphics;
+class Mesh;
 class Texture;
 
 namespace device
@@ -24,7 +26,8 @@ namespace scene
 {
 
 class Camera;
-class Mesh;
+class Skybox;
+class Terrain;
 
 class Scene : private Node
 {
@@ -81,16 +84,13 @@ public:
 		const math::Vector3f& rotation = math::Vector3f(0.0f, 0.0f, 0.0f),
 		int id = -1, bool makeActive = true);
 
-	Node* addSkybox(Texture* top, Texture* bottom, Texture* left,
+	Skybox* addSkybox(Texture* top, Texture* bottom, Texture* left,
 		Texture* right, Texture* front, Texture* back, Node* parent = nullptr,
 		int id = -1);
 
-	Node* addTerrain(unsigned terrainSize, const std::vector<float>& heightMap,
-		const std::vector<gfx::Color>& colorMap, Texture* firstDetailTexture,
-		Texture* secondDetailTexture, Node* parent = nullptr, int id = -1,
-		const math::Vector3f& position = math::Vector3f(0.0f, 0.0f, 0.0f),
-		const math::Vector3f& rotation = math::Vector3f(0.0f, 0.0f, 0.0f),
-		const math::Vector3f& scale = math::Vector3f(1.0f, 1.0f, 1.0f));
+	Terrain* addTerrain(unsigned terrainSize, const std::vector<float>& heightMap,
+		unsigned colorMapSize, const std::vector<gfx::Color>& colorMap,
+		const math::Vector2f& scale = math::Vector2f(1.0f, 1.0f), int id = -1);
 
 	Node* addEmptyNode(Node* parent, int id = -1);
 
