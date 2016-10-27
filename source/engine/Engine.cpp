@@ -1,6 +1,7 @@
 #include "Engine.h"
 
 #include <cassert>
+#include <cmath>
 #include <iostream>
 
 #include "SaveGameUtils.h"
@@ -168,6 +169,28 @@ void Engine::setupTerrain(unsigned terrainSize,
 	const std::vector<gfx::Color>& colorMap,
 	const std::vector<uint8_t>& grassMap)
 {
-	graphics.setTerrain(terrainSize, heightMap, colorMapSize, colorMap,
+	if (terrainSize < 16 ||
+		!math::isPowerOfTwo(terrainSize))
+	{
+		std::cout << "Invalid terrain size: " << terrainSize << std::endl;
+
+		// TODO
+		return;
+	}
+
+	// Stranded uses left-handed coordinate system, so we must flip heightmap
+	// on z-axis
+	unsigned heightMapSize = terrainSize + 1;
+	std::vector<float> flippedHeightMap(heightMap.size());
+	for (unsigned x = 0; x < heightMapSize; ++x)
+	{
+		for (unsigned z = 0; z < heightMapSize; ++z)
+		{
+			flippedHeightMap[x + (heightMapSize - z - 1) * (heightMapSize)] =
+				heightMap[x + z * (heightMapSize)];
+		}
+	}
+
+	graphics.setTerrain(terrainSize, flippedHeightMap, colorMapSize, colorMap,
 		grassMap);
 }

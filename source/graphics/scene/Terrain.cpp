@@ -44,7 +44,6 @@ Terrain::Terrain(unsigned terrainSize, const std::vector<float>& heightMap,
 	terrainMaterial.textureLayers[1].texture = detailTexture;
 	terrainMaterial.lighting = false;
 	terrainMaterial.wireframe = false;
-	terrainMaterial.backFaceCulling = false;
 }
 
 Terrain::~Terrain()
@@ -125,7 +124,7 @@ void Terrain::createTerrain(const std::vector<float>& heightMap)
 			vertex.position =
 				math::Vector3f(fx, heightMap[x + heightMapSize * z], fz);
 
-			vertex.textureCoords = math::Vector2f(fx2, fz2);
+			vertex.textureCoords = math::Vector2f(fx2, 1 - fz2);
 			vertex.textureCoords2 = math::Vector2f(fx / 2.0f, fz / 2.0f);
 
 			++fz;

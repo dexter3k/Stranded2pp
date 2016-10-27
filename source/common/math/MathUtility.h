@@ -39,4 +39,9 @@ namespace math
 	{
 		return min(max(value, low), high);
 	}
+
+	inline bool isPowerOfTwo(unsigned value)
+	{
+		return ((value != 0) && ((value & (~value + 1)) == value));
+	}
 } // namespace math
