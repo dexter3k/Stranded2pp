@@ -221,6 +221,7 @@ namespace save
 		if (!buffer.readUint8(fog[3])) return false;
 		if (!buffer.readUint8(reservedByte)) return false;
 
+		engine.resetGame();
 		engine.setupGame(day, hour, minute, freezeTime, skybox, multiplayer,
 			climate, music, brief);
 

@@ -85,7 +85,7 @@ void Terrain::render()
 	math::Matrix4 transform;
 	transform.setScale(math::Vector3f(1.0f, 50.0f, 1.0f));
 	transform.setTranslation(math::Vector3f(
-		-static_cast<float>(terrainSize) / 2.0f, 0.0f,
+		-static_cast<float>(terrainSize) / 2.0f, -25.0f,
 		-static_cast<float>(terrainSize) / 2.0f));
 	device->setTransform(device::Device::Model, transform);
 	device->setMaterial(renderBuffer.getMaterial());

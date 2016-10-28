@@ -41,8 +41,8 @@ bool Graphics::init(const Modification& modification)
 		return false;
 	}
 
-	scene->addCamera(nullptr, math::Vector3f(0.0f, 50.f, 30.0f),
-		math::Vector3f(35.0f, 0.0f, 0.0f));
+	scene->addCamera(nullptr, math::Vector3f(0.0f, 00.f, 30.0f),
+		math::Vector3f(0.0f, 0.0f, 0.0f));
 	
 	//scene->addSkybox(
 	//	device->loadTextureFromFile(

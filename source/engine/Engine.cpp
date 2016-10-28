@@ -152,6 +152,11 @@ void Engine::skipIntro()
 	}
 }
 
+void Engine::resetGame()
+{
+	
+}
+
 void Engine::setupGame(uint32_t day, uint8_t hour, uint8_t minute,
 	bool timeIsFreezed, const std::string& skybox, bool multiplayerMap,
 	uint8_t climate, const std::string& music, const std::string& briefScript)
