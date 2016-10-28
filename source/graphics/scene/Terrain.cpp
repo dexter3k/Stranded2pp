@@ -41,6 +41,7 @@ Terrain::Terrain(unsigned terrainSize, const std::vector<float>& heightMap,
 
 	terrainMaterial.materialType = Material::DetailMap;
 	terrainMaterial.textureLayers[0].texture = colorMapTexture;
+	terrainMaterial.textureLayers[0].bilinearFilter = true;
 	terrainMaterial.textureLayers[1].texture = detailTexture;
 	terrainMaterial.lighting = false;
 	terrainMaterial.wireframe = false;
@@ -82,7 +83,7 @@ void Terrain::render()
 	preRenderIndicesRecalculation();
 
 	math::Matrix4 transform;
-	transform.setScale(math::Vector3f(1.0f, 20.0f, 1.0f));
+	transform.setScale(math::Vector3f(1.0f, 50.0f, 1.0f));
 	transform.setTranslation(math::Vector3f(
 		-static_cast<float>(terrainSize) / 2.0f, 0.0f,
 		-static_cast<float>(terrainSize) / 2.0f));

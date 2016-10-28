@@ -1285,6 +1285,25 @@ void OpenGLDevice::setBasicRenderStates(const Material& currentMaterial,
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, color);
 	}
 
+	for (unsigned i = 0; i < maxTextures; ++i)
+	{
+		if (!bindedTextures[i])
+		{
+			continue;
+		}
+
+		glActiveTexture(GL_TEXTURE0 + i);
+
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+			(currentMaterial.textureLayers[i].bilinearFilter ||
+				currentMaterial.textureLayers[i].trilinearFilter) ?
+					GL_LINEAR : GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+			(currentMaterial.textureLayers[i].bilinearFilter ||
+				currentMaterial.textureLayers[i].trilinearFilter) ?
+					GL_LINEAR : GL_NEAREST);
+	}
+
 	if (shouldResetRenderStates ||
 		lastMaterial.smoothShading != currentMaterial.smoothShading)
 	{
