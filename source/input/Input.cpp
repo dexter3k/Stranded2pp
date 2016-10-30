@@ -3,6 +3,7 @@
 #include <cassert>
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
 
 #include "RawInputHandler.h"
 
@@ -10,6 +11,9 @@
 #include "window/Window.h"
 
 #include "Stranded.h"
+
+#include "common/ParseUtils.h"
+#include "common/StringUtils.h"
 
 const std::string Input::keyNameInfoPath = "sys/keys.inf";
 const std::string Input::defaultName = "null";
@@ -210,108 +214,62 @@ void Input::removeRawInputHandler(RawInputHandler* rawInputHandler)
 
 bool Input::loadKeyNames(const std::string& modificationPath)
 {
-	std::ifstream keysInfo(modificationPath + keyNameInfoPath);
-	if (keysInfo)
+	std::vector<std::pair<std::string, std::string>> entries;
+	if (!parser::loadAndTokenizeInf(modificationPath + keyNameInfoPath,
+		entries))
 	{
-		std::string line;
-		unsigned lineCounter = 0;
-		while (std::getline(keysInfo, line))
+		return false;
+	}
+
+	for (auto&& entry : entries)
+	{
+		try
 		{
-			++lineCounter;
-
-			line = line.substr(line.find_first_not_of(" \t"));
-
-			if (line.empty() ||
-				line[0] == '#' ||
-				line[0] == '\r' ||
-				line[0] == '\n')
+			if (string::startsWith(entry.first, "mouse"))
 			{
-				continue;
-			}
+				unsigned key = std::stoul(
+					entry.first.substr(std::string("mouse").size()));
 
-			std::string keyString = line.substr(0, line.find('='));
-
-			if (keyString.find("mouse") == 0)
-			{
-				keyString = keyString.substr(std::string("mouse").size());
-
-				unsigned key = 0;
-				try
+				if (key > 5)
 				{
-					key = std::stoul(keyString);
-				}
-				catch (std::exception& exception)
-				{
-					std::cout << keyNameInfoPath << ":" << lineCounter << ": "
-						<< "Unknown key" << std::endl;
-
-					return false;
-				}
-
-				if (key >= 6)
-				{
-					std::cout << keyNameInfoPath << ":" << lineCounter << ": "
+					std::cout << keyNameInfoPath << ":" << entry.first << ": "
 						<< "Key is out of bounds" << std::endl;
 
 					return false;
 				}
 
-				std::string value = line.substr(line.find('=') + 1);
-				value = value.substr(0, value.find_last_not_of(" \t\r\n") + 1);
-
-				mouseButtonNames[key] = value;
+				mouseButtonNames[key] = entry.second;
 			}
-			else if (keyString.find("mwheelup") == 0)
+			else if (string::startsWith(entry.first, "mwheelup"))
 			{
-				std::string value = line.substr(line.find('=') + 1);
-				value = value.substr(0, value.find_last_not_of(" \t\r\n") + 1);
-
-				mouseWheelUpName = value;
+				mouseWheelUpName = entry.second;
 			}
-			else if (keyString.find("mwheeldown") == 0)
+			else if (string::startsWith(entry.first, "mwheeldown"))
 			{
-				std::string value = line.substr(line.find('=') + 1);
-				value = value.substr(0, value.find_last_not_of(" \t\r\n") + 1);
-
-				mouseWheelDownName = value;
+				mouseWheelDownName = entry.second;
 			}
 			else
 			{
-				unsigned key = 0;
-				try
-				{
-					key = std::stoul(keyString);
-				}
-				catch (std::exception& exception)
-				{
-					std::cout << keyNameInfoPath << ":" << lineCounter << ": "
-						<< "Unknown key" << std::endl;
+				unsigned key = std::stoul(entry.first);
 
-					return false;
-				}
-
-				if (key >= 256)
+				if (key > 255)
 				{
-					std::cout << keyNameInfoPath << ":" << lineCounter << ": "
+					std::cout << keyNameInfoPath << ":" << entry.first << ": "
 						<< "Key is out of bounds" << std::endl;
 
 					return false;
 				}
 
-				std::string value = line.substr(line.find('=') + 1);
-				value = value.substr(0, value.find_last_not_of(" \t\r\n") + 1);
-
-				keyNames[key] = value;
+				keyNames[key] = entry.second;
 			}
 		}
+		catch (std::invalid_argument& exception)
+		{
+			std::cout << keyNameInfoPath << ":" << entry.first << ": "
+				<< "Unknown key" << std::endl;
 
-		keysInfo.close();
-	}
-	else
-	{
-		std::cout << "Unable to open file '" << modificationPath +
-			keyNameInfoPath << "'" << std::endl;
-		return false;
+			return false;
+		}
 	}
 
 	std::cout << "'" << keyNameInfoPath << "' is loaded successfully" <<

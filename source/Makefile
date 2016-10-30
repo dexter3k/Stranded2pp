@@ -49,6 +49,7 @@ MAIN_OBJECTS = main.o \
 	Network.o \
 	Node.o \
 	OpenGLDevice.o \
+	ParseUtils.o \
 	RawInputHandler.o \
 	RingBuffer.o \
 	SaveGameUtils.o \
@@ -56,6 +57,7 @@ MAIN_OBJECTS = main.o \
 	Screen.o \
 	Skybox.o \
 	Sound.o \
+	StringUtils.o \
 	Terrain.o \
 	Texture.o \
 	Vertex3D.o \
@@ -228,6 +230,9 @@ Node.o: graphics/scene/Node.cpp graphics/scene/Node.h \
 OpenGLDevice.o: graphics/device/OpenGLDevice.cpp graphics/device/OpenGLDevice.h
 	$(CXX) $(CXXFLAGS) -c graphics/device/OpenGLDevice.cpp
 
+ParseUtils.o: common/ParseUtils.cpp common/ParseUtils.h
+	$(CXX) $(CXXFLAGS) -c common/ParseUtils.cpp
+
 RawInputHandler.o: input/RawInputHandler.cpp input/RawInputHandler.h
 	$(CXX) $(CXXFLAGS) -c input/RawInputHandler.cpp
 
@@ -251,11 +256,15 @@ Scene.o: graphics/scene/Scene.cpp graphics/scene/Scene.h \
 Screen.o: graphics/gui/screen/Screen.cpp graphics/gui/screen/Screen.h \
 		graphics/gui/Gui.h
 	$(CXX) $(CXXFLAGS) -c graphics/gui/screen/Screen.cpp
+
 Skybox.o: graphics/scene/Skybox.cpp graphics/scene/Skybox.h
 	$(CXX) $(CXXFLAGS) -c graphics/scene/Skybox.cpp
 
 Sound.o: sound/Sound.cpp sound/Sound.h
 	$(CXX) $(CXXFLAGS) -c sound/Sound.cpp
+
+StringUtils.o: common/StringUtils.cpp common/StringUtils.h
+	$(CXX) $(CXXFLAGS) -c common/StringUtils.cpp
 
 Terrain.o: graphics/scene/Terrain.cpp graphics/scene/Terrain.h \
 		graphics/scene/Node.h
