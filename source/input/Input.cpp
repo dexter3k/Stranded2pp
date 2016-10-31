@@ -214,8 +214,8 @@ void Input::removeRawInputHandler(RawInputHandler* rawInputHandler)
 
 bool Input::loadKeyNames(const std::string& modificationPath)
 {
-	std::vector<std::pair<std::string, std::string>> entries;
-	if (!parser::loadAndTokenizeInf(modificationPath + keyNameInfoPath,
+	std::vector<parser::inf::Entry> entries;
+	if (!parser::inf::loadAndTokenize(modificationPath + keyNameInfoPath,
 		entries))
 	{
 		return false;
@@ -223,49 +223,57 @@ bool Input::loadKeyNames(const std::string& modificationPath)
 
 	for (auto&& entry : entries)
 	{
+		if (entry.type != parser::inf::Entry::Value)
+		{
+			std::cout << keyNameInfoPath << ":" << entry.key << ": " <<
+				"Value expected" << std::endl;
+
+			return false;
+		}
+
 		try
 		{
-			if (string::startsWith(entry.first, "mouse"))
+			if (string::startsWith(entry.key, "mouse"))
 			{
 				unsigned key = std::stoul(
-					entry.first.substr(std::string("mouse").size()));
+					entry.key.substr(std::string("mouse").size()));
 
 				if (key > 5)
 				{
-					std::cout << keyNameInfoPath << ":" << entry.first << ": "
+					std::cout << keyNameInfoPath << ":" << entry.key << ": "
 						<< "Key is out of bounds" << std::endl;
 
 					return false;
 				}
 
-				mouseButtonNames[key] = entry.second;
+				mouseButtonNames[key] = entry.value;
 			}
-			else if (string::startsWith(entry.first, "mwheelup"))
+			else if (string::startsWith(entry.key, "mwheelup"))
 			{
-				mouseWheelUpName = entry.second;
+				mouseWheelUpName = entry.value;
 			}
-			else if (string::startsWith(entry.first, "mwheeldown"))
+			else if (string::startsWith(entry.key, "mwheeldown"))
 			{
-				mouseWheelDownName = entry.second;
+				mouseWheelDownName = entry.value;
 			}
 			else
 			{
-				unsigned key = std::stoul(entry.first);
+				unsigned key = std::stoul(entry.key);
 
 				if (key > 255)
 				{
-					std::cout << keyNameInfoPath << ":" << entry.first << ": "
+					std::cout << keyNameInfoPath << ":" << entry.key << ": "
 						<< "Key is out of bounds" << std::endl;
 
 					return false;
 				}
 
-				keyNames[key] = entry.second;
+				keyNames[key] = entry.value;
 			}
 		}
 		catch (std::invalid_argument& exception)
 		{
-			std::cout << keyNameInfoPath << ":" << entry.first << ": "
+			std::cout << keyNameInfoPath << ":" << entry.key << ": "
 				<< "Unknown key" << std::endl;
 
 			return false;

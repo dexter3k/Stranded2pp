@@ -6,6 +6,22 @@
 
 namespace parser
 {
-	bool loadAndTokenizeInf(const std::string& filename,
-		std::vector<std::pair<std::string, std::string>>& tokens);
+	namespace inf
+	{
+		struct Entry
+		{
+			enum PropertyType
+			{
+				Value,
+				Script
+			} type;
+
+			std::string key;
+
+			std::string value;
+		};
+
+		bool loadAndTokenize(const std::string& filename,
+			std::vector<Entry>& data);
+	} // namespace inf
 } // namespace parser

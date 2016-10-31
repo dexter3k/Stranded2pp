@@ -1,5 +1,6 @@
 #include "ParseUtils.h"
 
+#include <cassert>
 #include <fstream>
 #include <iostream>
 
@@ -7,45 +8,90 @@
 
 namespace parser
 {
-	bool loadAndTokenizeInf(const std::string& filename,
-		std::vector<std::pair<std::string, std::string>>& tokens)
+	namespace inf
 	{
-		std::ifstream file(filename);
-		if (file)
+		bool loadAndTokenize(const std::string& filename,
+			std::vector<Entry>& data)
 		{
-			std::string line;
-			while (std::getline(file, line))
+			std::ifstream file(filename);
+			if (file)
 			{
-				line = string::trimLeft(line);
-
-				if (line.empty() ||
-					line[0] == '#' ||
-					line[0] == '\r' ||
-					line[0] == '\n')
+				std::string line;
+				while (std::getline(file, line))
 				{
-					continue;
+					line = string::trimLeft(line);
+
+					if (line.empty() ||
+						line[0] == '#' ||
+						line[0] == '\r' ||
+						line[0] == '\n')
+					{
+						continue;
+					}
+
+					std::string keyString = line.substr(0, line.find('='));
+					keyString = string::trim(keyString);
+
+					std::string valueString = line.substr(line.find('=') + 1);
+					valueString = string::trim(valueString);
+
+					if (keyString == "script")
+					{
+						if (valueString == "start")
+						{
+							std::string script = "";
+
+							while (std::getline(file, line))
+							{
+								keyString = line.substr(0, line.find('='));
+								keyString = string::trim(keyString);
+								valueString = line.substr(line.find('=') + 1);
+								valueString = string::trim(valueString);
+
+								if (keyString == "script" &&
+									valueString == "end")
+								{
+									break;	
+								}
+
+								script = script + "\n" + line;
+							}
+
+							Entry entry;
+							entry.type = Entry::Script;
+							entry.key = "script";
+							entry.value = script;
+							data.push_back(entry);
+
+							continue;
+						}
+						else
+						{
+							std::cout << filename << ": " << "expected 'start'"
+								<< std::endl;
+
+							return false;
+						}
+					}
+
+					Entry entry;
+					entry.type = Entry::Value;
+					entry.key = keyString;
+					entry.value = valueString;
+					data.push_back(entry);
 				}
 
-				std::string keyString = line.substr(0, line.find('='));
-				keyString = string::trim(keyString);
+				file.close();
+			}
+			else
+			{
+				std::cout << "Unable to open file '" << filename << "'" <<
+					std::endl;
 
-				std::string valueString = line.substr(line.find('=') + 1);
-				valueString = string::trim(valueString);
-
-				tokens.push_back(
-					std::pair<std::string, std::string>(
-						keyString,
-						valueString));
+				return false;
 			}
 
-			file.close();
+			return true;
 		}
-		else
-		{
-			std::cout << "Unable to open file '" << filename << "'" << std::endl;
-			return false;
-		}
-
-		return true;
-	}
+	} // namespace inf
 } // namespace parser
