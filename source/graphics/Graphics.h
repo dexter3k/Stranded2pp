@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <vector>
+#include <string>
 
 class Input;
 class Modification;
@@ -52,6 +53,10 @@ public:
 		unsigned colorMapSize, const std::vector<gfx::Color>& colorMap,
 		const std::vector<uint8_t>& grassMap);
 private:
+	bool preloadTextures();
+private:
+	static const std::vector<std::string> preloadList;
+private:
 	Input& input;
 
 	std::shared_ptr<device::Device> device;
@@ -59,6 +64,10 @@ private:
 	std::shared_ptr<gui::Gui> gui;
 
 	scene::Terrain* terrainNode;
+
+	std::vector<std::string> preloadedTextures;
+
+	std::string basePath;
 };
 
 } // namespace gfx

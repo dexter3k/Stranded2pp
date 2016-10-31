@@ -26,11 +26,12 @@ void RawInputHandler::init()
 
 void RawInputHandler::remove()
 {
-	assert(isRegistered);
-
-	input->removeRawInputHandler(this);
-
-	isRegistered = false;
+	if (isRegistered)
+	{	
+		input->removeRawInputHandler(this);
+	
+		isRegistered = false;
+	}
 }
 
 bool RawInputHandler::onClosed()
