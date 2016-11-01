@@ -10,16 +10,19 @@
 #include "common/math/MathUtility.h"
 #include "common/FileSystem.h"
 
-static inline char* buffer_offset(const long offset)
-{
-	return (static_cast<char*>(0) + offset);
-}
-
 namespace gfx
 {
 
 namespace device
 {
+
+namespace impl
+{
+	static inline char* buffer_offset(const long offset)
+	{
+		return (static_cast<char*>(0) + offset);
+	}
+} // namespace impl
 
 OpenGLDevice::OpenGLDevice() :
 	super(),
@@ -54,6 +57,12 @@ OpenGLDevice::OpenGLDevice() :
 
 OpenGLDevice::~OpenGLDevice()
 {
+	std::cout << loadedTextures.size() << " textures left loaded!" << std::endl;
+	for (const auto& texture : loadedTextures)
+	{
+		std::cout << texture.first << std::endl;
+	}
+
 	for (unsigned i = 0; i < maxTextures; ++i)
 	{
 		bindTexture(i, nullptr);
@@ -362,13 +371,13 @@ void OpenGLDevice::drawIndexedPrimitiveList(const void* vertices,
 			else
 			{
 				glNormalPointer(GL_FLOAT, sizeof(Vertex3D),
-					buffer_offset(12));
+					impl::buffer_offset(12));
 				glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex3D),
-					buffer_offset(24));
+					impl::buffer_offset(24));
 				glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D),
-					buffer_offset(28));
+					impl::buffer_offset(28));
 				glVertexPointer(3, GL_FLOAT, sizeof(Vertex3D),
-					buffer_offset(0));
+					impl::buffer_offset(0));
 			}
 
 			if (bindedTextures[1] != nullptr)
@@ -385,7 +394,7 @@ void OpenGLDevice::drawIndexedPrimitiveList(const void* vertices,
 				else
 				{
 					glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D),
-						buffer_offset(28));
+						impl::buffer_offset(28));
 				}
 			}
 
@@ -417,18 +426,18 @@ void OpenGLDevice::drawIndexedPrimitiveList(const void* vertices,
 			else
 			{
 				glNormalPointer(GL_FLOAT, sizeof(Vertex3D2TCoords),
-					buffer_offset(12));
+					impl::buffer_offset(12));
 				glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex3D2TCoords),
-					buffer_offset(24));
+					impl::buffer_offset(24));
 				glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D2TCoords),
-					buffer_offset(28));
+					impl::buffer_offset(28));
 				glVertexPointer(3, GL_FLOAT, sizeof(Vertex3D2TCoords),
-					buffer_offset(0));
+					impl::buffer_offset(0));
 
 				glClientActiveTexture(GL_TEXTURE1);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D2TCoords),
-					buffer_offset(36));
+					impl::buffer_offset(36));
 			}
 
 			break;

@@ -94,6 +94,7 @@ const std::vector<std::string> Graphics::preloadList = {
 	"sys/gfx/terraindirt.bmp",
 	"sys/gfx/rain_a.bmp",
 	"sys/gfx/snow_a.bmp",
+	"sys/gfx/logo.bmp",
 	"gfx/grasspread_a.png",
 	"gfx/water.jpg",
 	"sprites/flare0_a.bmp",
@@ -145,6 +146,18 @@ Graphics::~Graphics()
 	}
 
 	preloadedTextures.clear();
+
+	// Unload skybox textures
+
+	for (unsigned i = 0; i < 6; ++i)
+	{
+		if (currentSkyboxTextures[i] != nullptr)
+		{
+			device->releaseTexture(
+				basePath + skyboxBasePath + currentSkyboxName +
+					skyboxPostfixes[i]);
+		}
+	}
 }
 
 bool Graphics::init(const Modification& modification)
@@ -230,9 +243,6 @@ void Graphics::setSkybox(const std::string& name)
 			currentSkyboxTextures[i] = device->loadTextureFromFile(
 				basePath + skyboxBasePath + currentSkyboxName +
 					skyboxPostfixes[i]);
-
-			std::cout << "Loaded " << basePath + skyboxBasePath + currentSkyboxName +
-					skyboxPostfixes[i] << std::endl;
 		}
 	}
 
@@ -272,9 +282,6 @@ bool Graphics::preloadTextures()
 	{
 		currentSkyboxTextures[i] = device->loadTextureFromFile(
 			basePath + skyboxBasePath + currentSkyboxName + skyboxPostfixes[i]);
-
-		std::cout << "Loaded " << basePath + skyboxBasePath + currentSkyboxName +
-					skyboxPostfixes[i] << std::endl;
 	}
 
 	return true;

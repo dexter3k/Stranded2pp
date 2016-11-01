@@ -57,7 +57,7 @@ void IntroScreen::create()
 
 	Texture* texture =
 		(device != nullptr) ?
-			device->loadTextureFromFile(gui.getModPath() + "sys/gfx/logo.bmp") :
+			device->grabTexture(gui.getModPath() + "sys/gfx/logo.bmp") :
 			nullptr;
 
 	introImage = gui.addBackgroundImage(texture);
