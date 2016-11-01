@@ -28,6 +28,7 @@ Skybox::Skybox(Texture* top, Texture* bottom, Texture* left, Texture* right,
 	material.lighting = false;
 	material.depthFunction = Material::Disabled;
 	material.zWriteEnabled = false;
+	material.textureLayers[0].bilinearFilter = true;
 
 	// Top
 	float onepixel =
