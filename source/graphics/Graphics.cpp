@@ -8,6 +8,7 @@
 #include "input/Input.h"
 
 #include "scene/Camera.h"
+#include "scene/Skybox.h"
 #include "scene/Terrain.h"
 
 #include "gui/Gui.h"
@@ -15,6 +16,17 @@
 
 namespace gfx
 {
+
+const std::string Graphics::skyboxBasePath = "skies/";
+
+const std::vector<std::string> Graphics::skyboxPostfixes = {
+	"_up.jpg",
+	"_dn.jpg",
+	"_lf.jpg",
+	"_rt.jpg",
+	"_fr.jpg",
+	"_bk.jpg"
+};
 
 const std::vector<std::string> Graphics::preloadList = {
 	"sys/gfx/bigbutton.bmp",
@@ -119,15 +131,16 @@ Graphics::Graphics(Input& input) :
 	gui(new gui::Gui(input, device.get())),
 	terrainNode(nullptr),
 	preloadedTextures(),
-	basePath("")
+	basePath(""),
+	currentSkyboxTextures(),
+	currentSkyboxNode(nullptr),
+	currentSkyboxName("sky")
 {}
 
 Graphics::~Graphics()
 {
 	for (const auto& texture : preloadedTextures)
 	{
-		std::cout << "Unloading " << texture << std::endl;
-
 		device->releaseTexture(texture);
 	}
 
@@ -155,20 +168,6 @@ bool Graphics::init(const Modification& modification)
 
 	scene->addCamera(nullptr, math::Vector3f(0.0f, 00.f, 30.0f),
 		math::Vector3f(0.0f, 0.0f, 0.0f));
-	
-	//scene->addSkybox(
-	//	device->loadTextureFromFile(
-	//		modification.getPath() + "skies/sky_up.jpg"),
-	//	device->loadTextureFromFile(
-	//		modification.getPath() + "skies/sky_dn.jpg"),
-	//	device->loadTextureFromFile(
-	//		modification.getPath() + "skies/sky_lf.jpg"),
-	//	device->loadTextureFromFile(
-	//		modification.getPath() + "skies/sky_rt.jpg"),
-	//	device->loadTextureFromFile(
-	//		modification.getPath() + "skies/sky_fr.jpg"),
-	//	device->loadTextureFromFile(
-	//		modification.getPath() + "skies/sky_bk.jpg"), nullptr);
 
 	return true;
 }
@@ -204,6 +203,48 @@ gui::Gui& Graphics::getGui()
 	return *gui;
 }
 
+void Graphics::setSkybox(const std::string& name)
+{
+	if (currentSkyboxNode != nullptr)
+	{
+		scene->removeNode(currentSkyboxNode);
+		currentSkyboxNode = nullptr;
+	}
+
+	if (currentSkyboxName != name)
+	{
+		for (unsigned i = 0; i < 6; ++i)
+		{
+			if (currentSkyboxTextures[i] != nullptr)
+			{
+				device->releaseTexture(
+					basePath + skyboxBasePath + currentSkyboxName +
+						skyboxPostfixes[i]);
+			}
+		}
+
+		currentSkyboxName = name;
+
+		for (unsigned i = 0; i < 6; ++i)
+		{
+			currentSkyboxTextures[i] = device->loadTextureFromFile(
+				basePath + skyboxBasePath + currentSkyboxName +
+					skyboxPostfixes[i]);
+
+			std::cout << "Loaded " << basePath + skyboxBasePath + currentSkyboxName +
+					skyboxPostfixes[i] << std::endl;
+		}
+	}
+
+	currentSkyboxNode = scene->addSkybox(
+		currentSkyboxTextures[0],
+		currentSkyboxTextures[1],
+		currentSkyboxTextures[2],
+		currentSkyboxTextures[3],
+		currentSkyboxTextures[4],
+		currentSkyboxTextures[5], nullptr);
+}
+
 void Graphics::setTerrain(unsigned terrainSize,
 	const std::vector<float>& heightMap, unsigned colorMapSize,
 	const std::vector<gfx::Color>& colorMap,
@@ -217,8 +258,6 @@ bool Graphics::preloadTextures()
 {
 	for (const auto& filename : preloadList)
 	{
-		std::cout << "Loading " << filename << std::endl;
-
 		Texture* texture = device->loadTextureFromFile(basePath + filename,
 			false, true);
 		if (texture == nullptr)
@@ -227,6 +266,15 @@ bool Graphics::preloadTextures()
 		}
 
 		preloadedTextures.push_back(basePath + filename);
+	}
+
+	for (unsigned i = 0; i < 6; ++i)
+	{
+		currentSkyboxTextures[i] = device->loadTextureFromFile(
+			basePath + skyboxBasePath + currentSkyboxName + skyboxPostfixes[i]);
+
+		std::cout << "Loaded " << basePath + skyboxBasePath + currentSkyboxName +
+					skyboxPostfixes[i] << std::endl;
 	}
 
 	return true;

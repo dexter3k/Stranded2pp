@@ -29,6 +29,7 @@ namespace scene
 {
 
 	class Scene;
+	class Skybox;
 	class Terrain;
 
 } // namespace scene
@@ -55,6 +56,18 @@ public:
 private:
 	bool preloadTextures();
 private:
+	enum SkyboxSides
+	{
+		SkyboxUp = 0,
+		SkyboxDown = 1,
+		SkyboxLeft = 2,
+		SkyboxRight = 3,
+		SkyboxFront = 4,
+		SkyboxBack = 5
+	};
+
+	static const std::string skyboxBasePath;
+	static const std::vector<std::string> skyboxPostfixes;
 	static const std::vector<std::string> preloadList;
 private:
 	Input& input;
@@ -68,6 +81,10 @@ private:
 	std::vector<std::string> preloadedTextures;
 
 	std::string basePath;
+
+	Texture* currentSkyboxTextures[6];
+	scene::Skybox* currentSkyboxNode;
+	std::string currentSkyboxName;
 };
 
 } // namespace gfx

@@ -92,6 +92,17 @@ device::Device* Scene::getDevice()
 	return device;
 }
 
+void Scene::removeNode(Node* node)
+{
+	auto it = std::find(sceneNodes.begin(), sceneNodes.end(), node);
+	if (it != sceneNodes.end())
+	{
+		delete node;
+
+		sceneNodes.erase(it);
+	}
+}
+
 Node* Scene::addWaterSurface(Mesh* mesh, float waveHeight, float waveSpeed,
 	float waveLength, Node* parent, int id, const math::Vector3f& position,
 	const math::Vector3f& rotation, const math::Vector3f& scale)

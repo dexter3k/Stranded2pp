@@ -72,6 +72,8 @@ public:
 	// Clear scene graph and delete all nodes
 	void clearScene();
 
+	void removeNode(Node* node);
+
 	Node* addWaterSurface(Mesh* mesh, float waveHeight = 2.0f,
 		float waveSpeed = 300.0f, float waveLength = 10.0f,
 		Node* parent = nullptr, int id = -1,
