@@ -14,8 +14,7 @@ public:
 	enum Screens
 	{
 		Intro,
-		MainMenu,
-		Inventory
+		MainMenu
 	};
 public:
 	Screen(Gui& gui);

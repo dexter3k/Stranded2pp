@@ -4,7 +4,7 @@
 
 #include "input/RawInputHandler.h"
 
-#include "../../Color.h"
+#include "graphics/Color.h"
 
 class Input;
 
@@ -24,10 +24,7 @@ class IntroScreen : public Screen
 	{
 		typedef RawInputHandler super;
 	public:
-		InputHandler(Input& input, IntroScreen& introScreen) :
-			super(&input),
-			introScreen(introScreen)
-		{}
+		InputHandler(Input& input, IntroScreen& introScreen);
 
 		bool onKeyPressed(uint8_t key, bool alt, bool control, bool shift,
 			bool super) override;
@@ -47,13 +44,16 @@ public:
 private:
 	void skipIntro();
 private:
+	static const std::string logoTextureName;
+private:
 	std::shared_ptr<InputHandler> inputHandler;
+
+	const float maxShowTime;
+	const float fadeStart;
+	Color fadeColor;
 
 	GuiBackgroundImage* introImage;
 
-	Color fadeColor;
-	const float maxShowTime;
-	const float fadeStart;
 	float showTime;
 };
 

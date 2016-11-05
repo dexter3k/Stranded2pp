@@ -16,7 +16,9 @@ Screen::Screen(Gui& gui) :
 {}
 
 Screen::~Screen()
-{}
+{
+	assert(!isCreated);
+}
 
 void Screen::create()
 {
@@ -33,9 +35,7 @@ void Screen::destroy()
 }
 
 void Screen::update(float deltaTime)
-{
-
-}
+{}
 
 } // namespace gui
 

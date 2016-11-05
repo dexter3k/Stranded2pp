@@ -1,13 +1,12 @@
 #include "IntroScreen.h"
 
 #include <cstdint>
-#include <iostream>
 
 #include "../Gui.h"
 #include "../GuiBackgroundImage.h"
-#include "../../device/Device.h"
 
 #include "engine/Engine.h"
+#include "graphics/device/Device.h"
 #include "input/Input.h"
 
 namespace gfx
@@ -15,6 +14,14 @@ namespace gfx
 
 namespace gui
 {
+
+const std::string IntroScreen::logoTextureName = "sys/gfx/logo.bmp";
+
+IntroScreen::InputHandler::InputHandler(Input& input,
+		IntroScreen& introScreen) :
+	super(&input),
+	introScreen(introScreen)
+{}
 
 bool IntroScreen::InputHandler::onKeyPressed(uint8_t key, bool alt,
 	bool control, bool shift, bool super)
@@ -35,10 +42,10 @@ bool IntroScreen::InputHandler::onMouseButtonPressed(uint8_t button, int x,
 IntroScreen::IntroScreen(Gui& gui, Input& input) :
 	super(gui),
 	inputHandler(new InputHandler(input, *this)),
-	introImage(nullptr),
-	fadeColor(0, 0, 0),
 	maxShowTime(3.0f),
 	fadeStart(0.80f),
+	fadeColor(0, 0, 0),
+	introImage(nullptr),
 	showTime(0.0f)
 {}
 
@@ -47,34 +54,35 @@ IntroScreen::~IntroScreen()
 
 void IntroScreen::create()
 {
-	std::cout << "Creating intro screen" << std::endl;
+	super::create();
 
 	showTime = 0.0f;
 
 	device::Device* device = gui.getDevice();
-
-	math::Vector2u screenSize = gui.getScreenSize();
-
-	Texture* texture =
-		(device != nullptr) ?
-			device->grabTexture(gui.getModPath() + "sys/gfx/logo.bmp") :
-			nullptr;
-
-	introImage = gui.addBackgroundImage(texture);
+	if (device != nullptr)
+	{
+		introImage = gui.addBackgroundImage(
+			device->grabTexture(gui.getModPath() + logoTextureName));
+	}
 
 	inputHandler->init();
-
-	super::create();
 }
 
 void IntroScreen::destroy()
 {
-	std::cout << "Destroying intro screen" << std::endl;
-
-	gui.deleteGuiElement(introImage);
-	introImage = nullptr;
-
 	inputHandler->remove();
+
+	if (introImage != nullptr)
+	{
+		gui.deleteGuiElement(introImage);
+		introImage = nullptr;
+	}
+
+	device::Device* device = gui.getDevice();
+	if (device != nullptr)
+	{
+		device->releaseTexture(gui.getModPath() + logoTextureName);
+	}
 
 	super::destroy();
 }
@@ -104,10 +112,7 @@ void IntroScreen::update(float deltaTime)
 
 void IntroScreen::skipIntro()
 {
-	std::cout << "Skip intro!" << std::endl;
-
 	Engine* engine = gui.getEngine();
-
 	if (engine != nullptr)
 	{
 		engine->skipIntro();
