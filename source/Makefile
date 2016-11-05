@@ -36,6 +36,7 @@ MAIN_OBJECTS = main.o \
 	Image.o \
 	Input.o \
 	IndexBuffer.o \
+	InfinitePlane.o \
 	IntroScreen.o \
 	Keyboard.o \
 	MainMenuScreen.o \
@@ -179,6 +180,17 @@ Input.o: input/Input.cpp input/Input.h \
 IndexBuffer.o: graphics/IndexBuffer.cpp graphics/IndexBuffer.h \
 		graphics/IndexSize.h
 	$(CXX) $(CXXFLAGS) -c graphics/IndexBuffer.cpp
+
+InfinitePlane.o: graphics/scene/InfinitePlane.cpp \
+	graphics/scene/InfinitePlane.h \
+		graphics/scene/Node.h \
+		graphics/Material.h \
+		graphics/Vertex3D.h \
+		graphics/scene/Camera.h \
+		graphics/device/Device.h \
+		graphics/scene/Scene.h \
+		graphics/IndexSize.h
+	$(CXX) $(CXXFLAGS) -c graphics/scene/InfinitePlane.cpp
 
 IntroScreen.o: graphics/gui/screen/IntroScreen.cpp \
 	graphics/gui/screen/IntroScreen.h \

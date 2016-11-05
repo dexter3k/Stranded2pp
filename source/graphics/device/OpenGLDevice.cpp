@@ -122,21 +122,21 @@ math::Vector2u OpenGLDevice::getRenderTargetSize() const
 
 Texture* OpenGLDevice::grabTexture(const std::string& name)
 {
-	TextureHolder holder = findTexture(name);
-	if (holder.texture == nullptr)
+	auto it = loadedTextures.find(name);
+	if (it == loadedTextures.end())
 	{
 		return nullptr;
 	}
 
-	++(holder.referenceCount);
+	++(it->second.referenceCount);
 
-	return holder.texture;
+	return it->second.texture;
 }
 
 void OpenGLDevice::releaseTexture(const std::string& name)
 {
-	TextureHolder holder = findTexture(name);
-	if (holder.texture == nullptr)
+	auto it = loadedTextures.find(name);
+	if (it == loadedTextures.end())
 	{
 		std::cout << "Error: Trying to release unknown texture - '" << name <<
 			"'" << std::endl;
@@ -146,28 +146,28 @@ void OpenGLDevice::releaseTexture(const std::string& name)
 		return;
 	}
 
-	if (holder.referenceCount <= 1)
+	if (it->second.referenceCount <= 1)
 	{
-		delete holder.texture;
+		delete it->second.texture;
 
 		loadedTextures.erase(name);
 	}
 	else
 	{
-		--(holder.referenceCount);
+		--(it->second.referenceCount);
 	}
 }
 
 Texture* OpenGLDevice::loadTextureFromFile(const std::string& name,
 	bool loadEmptyIfMissing, bool applyColorKey, const Color& colorKey)
 {
-	TextureHolder holder = findTexture(name);
-	if (holder.texture != nullptr)
+	auto it = loadedTextures.find(name);
+	if (it != loadedTextures.end())
 	{
 		std::cout << "Warn: texture '" << name << "' is already loaded!" <<
 			std::endl;
 
-		return grabTexture(name);
+		return grabTexture(name);	
 	}
 
 	Image image;
@@ -207,8 +207,8 @@ Texture* OpenGLDevice::loadTextureFromFile(const std::string& name,
 Texture* OpenGLDevice::loadTextureFromImage(const std::string& name,
 	const Image& image)
 {
-	TextureHolder holder = findTexture(name);
-	if (holder.texture != nullptr)
+	auto it = loadedTextures.find(name);
+	if (it != loadedTextures.end())
 	{
 		std::cout << "Error: texture '" << name << "' is already loaded!" <<
 			std::endl;
@@ -218,7 +218,6 @@ Texture* OpenGLDevice::loadTextureFromImage(const std::string& name,
 
 	return createTextureFromImage(name, image);	
 }
-
 
 /*
 	Rendering utilities
@@ -963,18 +962,6 @@ void OpenGLDevice::onResize(const math::Vector2u& size)
 /*
 	Private utility functions
 */
-
-OpenGLDevice::TextureHolder OpenGLDevice::findTexture(const std::string& name)
-	const
-{
-	auto it = loadedTextures.find(name);
-	if (it == loadedTextures.end())
-	{
-		return TextureHolder();
-	}
-
-	return it->second;
-}
 
 void OpenGLDevice::bindTexture(unsigned textureLayer, Texture* texture)
 {

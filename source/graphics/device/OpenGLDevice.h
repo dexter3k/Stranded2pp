@@ -158,8 +158,6 @@ private:
 		Private utility functions
 	*/
 
-	TextureHolder findTexture(const std::string& name) const;
-
 	void bindTexture(unsigned textureLayer, Texture* texture);
 
 	void disableTextures(unsigned fromLayer = 0);

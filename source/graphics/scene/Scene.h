@@ -26,6 +26,7 @@ namespace scene
 {
 
 class Camera;
+class InfinitePlane;
 class Skybox;
 class Terrain;
 
@@ -93,6 +94,10 @@ public:
 	Terrain* addTerrain(unsigned terrainSize, const std::vector<float>& heightMap,
 		unsigned colorMapSize, const std::vector<gfx::Color>& colorMap,
 		const math::Vector2f& scale = math::Vector2f(1.0f, 1.0f), int id = -1);
+
+	InfinitePlane* addInfinitePlane(Texture* texture,
+		const math::Vector3f& position = math::Vector3f(0.0f),
+		Node* parent = nullptr, int id = -1);
 
 	Node* addEmptyNode(Node* parent, int id = -1);
 

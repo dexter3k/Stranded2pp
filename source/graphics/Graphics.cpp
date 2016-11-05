@@ -8,6 +8,7 @@
 #include "input/Input.h"
 
 #include "scene/Camera.h"
+#include "scene/InfinitePlane.h"
 #include "scene/Skybox.h"
 #include "scene/Terrain.h"
 
@@ -135,7 +136,8 @@ Graphics::Graphics(Input& input) :
 	basePath(""),
 	currentSkyboxTextures(),
 	currentSkyboxNode(nullptr),
-	currentSkyboxName("sky")
+	currentSkyboxName("sky"),
+	groundPlane(nullptr)
 {}
 
 Graphics::~Graphics()
@@ -147,8 +149,10 @@ Graphics::~Graphics()
 
 	preloadedTextures.clear();
 
-	// Unload skybox textures
+	// Unload ground plane texture
+	device->releaseTexture(basePath + "sys/gfx/terraindirt.bmp");
 
+	// Unload skybox textures
 	for (unsigned i = 0; i < 6; ++i)
 	{
 		if (currentSkyboxTextures[i] != nullptr)
@@ -181,6 +185,9 @@ bool Graphics::init(const Modification& modification)
 
 	scene->addCamera(nullptr, math::Vector3f(0.0f, 00.f, 30.0f),
 		math::Vector3f(0.0f, 0.0f, 0.0f));
+
+	groundPlane = scene->addInfinitePlane(
+		device->grabTexture(basePath + "sys/gfx/terraindirt.bmp"));
 
 	return true;
 }
@@ -220,6 +227,7 @@ void Graphics::setSkybox(const std::string& name)
 {
 	if (currentSkyboxNode != nullptr)
 	{
+		groundPlane->setParent(nullptr);
 		scene->removeNode(currentSkyboxNode);
 		currentSkyboxNode = nullptr;
 	}
@@ -252,7 +260,9 @@ void Graphics::setSkybox(const std::string& name)
 		currentSkyboxTextures[2],
 		currentSkyboxTextures[3],
 		currentSkyboxTextures[4],
-		currentSkyboxTextures[5], nullptr);
+		currentSkyboxTextures[5]);
+
+	groundPlane->setParent(currentSkyboxNode);
 }
 
 void Graphics::setTerrain(unsigned terrainSize,

@@ -1,6 +1,7 @@
 #include "Scene.h"
 
 #include "Camera.h"
+#include "InfinitePlane.h"
 #include "Skybox.h"
 #include "Terrain.h"
 
@@ -155,6 +156,22 @@ Terrain* Scene::addTerrain(unsigned terrainSize, const std::vector<float>& heigh
 	sceneNodes.push_back(terrain);
 
 	return terrain;
+}
+
+InfinitePlane* Scene::addInfinitePlane(Texture* texture,
+	const math::Vector3f& position, Node* parent, int id)
+{
+	if (parent == nullptr)
+	{
+		parent = this;
+	}
+
+	InfinitePlane* plane = new InfinitePlane(texture, parent, this, position,
+		id);
+
+	sceneNodes.push_back(plane);
+
+	return plane;
 }
 
 Node* Scene::addEmptyNode(Node* parent, int id)

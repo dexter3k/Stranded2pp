@@ -27,7 +27,8 @@ namespace device
 
 namespace scene
 {
-
+	
+	class InfinitePlane;
 	class Scene;
 	class Skybox;
 	class Terrain;
@@ -85,6 +86,8 @@ private:
 	Texture* currentSkyboxTextures[6];
 	scene::Skybox* currentSkyboxNode;
 	std::string currentSkyboxName;
+
+	scene::InfinitePlane* groundPlane;
 };
 
 } // namespace gfx
