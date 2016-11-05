@@ -141,6 +141,7 @@ Graphics.o: graphics/Graphics.cpp graphics/Graphics.h \
 Gui.o: graphics/gui/Gui.cpp graphics/gui/Gui.h \
 		graphics/gui/screen/Screen.h \
 		graphics/gui/screen/IntroScreen.h \
+		graphics/gui/screen/MainMenuScreen.h \
 		input/Input.h \
 		input/Keyboard.h \
 		input/Mouse.h

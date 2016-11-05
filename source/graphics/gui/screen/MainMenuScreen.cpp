@@ -1,11 +1,9 @@
 #include "MainMenuScreen.h"
 
-#include <iostream>
-
 #include "../Gui.h"
 #include "../GuiButton.h"
-#include "../../device/Device.h"
 
+#include "graphics/device/Device.h"
 #include "input/Input.h"
 
 namespace gfx
@@ -14,13 +12,14 @@ namespace gfx
 namespace gui
 {
 
+MainMenuScreen::InputHandler::InputHandler(Input& input,
+		MainMenuScreen& mainMenuScreen) :
+	super(&input),
+	mainMenuScreen(mainMenuScreen)
+{}
+
 bool MainMenuScreen::InputHandler::onMouseButtonPressed(uint8_t button, int x,
 	int y)
-{
-	return false;
-}
-
-bool MainMenuScreen::InputHandler::onMouseMoved(int x, int y)
 {
 	return false;
 }
@@ -28,7 +27,7 @@ bool MainMenuScreen::InputHandler::onMouseMoved(int x, int y)
 MainMenuScreen::MainMenuScreen(Gui& gui, Input& input) :
 	super(gui),
 	inputHandler(new InputHandler(input, *this)),
-	button1(nullptr)
+	testButton(nullptr)
 {}
 
 MainMenuScreen::~MainMenuScreen()
@@ -36,40 +35,37 @@ MainMenuScreen::~MainMenuScreen()
 
 void MainMenuScreen::create()
 {
-	std::cout << "Creating main menu screen" << std::endl;
+	super::create();
 
 	device::Device* device = gui.getDevice();
-
-	math::Vector2u screenSize = gui.getScreenSize();
-
-	Texture* textures[] = {nullptr, nullptr, nullptr};
 	if (device != nullptr)
 	{
-		textures[0] = device->grabTexture(
-			gui.getModPath() + "sys/gfx/bigbutton.bmp");
-		textures[1] = device->grabTexture(
-			gui.getModPath() + "sys/gfx/bigbutton_over.bmp");
-		textures[2] = device->grabTexture(
-			gui.getModPath() + "sys/gfx/title.bmp");
+		testButton = gui.addButton(
+			device->grabTexture(gui.getModPath() + "sys/gfx/bigbutton.bmp"),
+			device->grabTexture(
+				gui.getModPath() + "sys/gfx/bigbutton_over.bmp"),
+			math::Vector2i(50, 50));
 	}
 
-	button1 = gui.addButton(textures[0], textures[1], math::Vector2i(50, 50));
-
-	//gui.addImage(textures[2], math::Recti(100, 100, 500, 500));
-
 	inputHandler->init();
-
-	super::create();
 }
 
 void MainMenuScreen::destroy()
 {
-	std::cout << "Destroying main menu screen" << std::endl;
-
-	gui.deleteGuiElement(button1);
-	button1 = nullptr;
-
 	inputHandler->remove();
+
+	if (testButton != nullptr)
+	{
+		gui.deleteGuiElement(testButton);
+		testButton = nullptr;
+	}
+
+	device::Device* device = gui.getDevice();
+	if (device != nullptr)
+	{
+		device->releaseTexture(gui.getModPath() + "sys/gfx/bigbutton.bmp");
+		device->releaseTexture(gui.getModPath() + "sys/gfx/bigbutton_over.bmp");
+	}
 
 	super::destroy();
 }

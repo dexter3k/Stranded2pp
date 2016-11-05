@@ -22,14 +22,9 @@ class MainMenuScreen : public Screen
 	{
 		typedef RawInputHandler super;
 	public:
-		InputHandler(Input& input, MainMenuScreen& mainMenuScreen) :
-			super(&input),
-			mainMenuScreen(mainMenuScreen)
-		{}
+		InputHandler(Input& input, MainMenuScreen& mainMenuScreen);
 
 		bool onMouseButtonPressed(uint8_t button, int x, int y) override;
-
-		bool onMouseMoved(int x, int y) override;
 	private:
 		MainMenuScreen& mainMenuScreen;
 	};
@@ -45,7 +40,8 @@ public:
 private:
 	std::shared_ptr<InputHandler> inputHandler;
 
-	GuiButton* button1;
+	// Currently only used for debugging
+	GuiButton* testButton;
 };
 
 } // namespace gui
