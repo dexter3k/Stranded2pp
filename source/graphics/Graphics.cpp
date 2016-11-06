@@ -150,7 +150,7 @@ Graphics::~Graphics()
 	preloadedTextures.clear();
 
 	// Unload ground plane texture
-	device->releaseTexture(basePath + "sys/gfx/terraindirt.bmp");
+	device->releaseTexture(basePath + "gfx/water.jpg");
 
 	// Unload skybox textures
 	for (unsigned i = 0; i < 6; ++i)
@@ -183,11 +183,11 @@ bool Graphics::init(const Modification& modification)
 		return false;
 	}
 
-	scene->addCamera(nullptr, math::Vector3f(0.0f, 00.f, 30.0f),
-		math::Vector3f(0.0f, 0.0f, 0.0f));
+	scene->addCamera(nullptr, math::Vector3f(0.0f, 15.f, 30.0f),
+		math::Vector3f(25.0f, 0.0f, 0.0f));
 
 	groundPlane = scene->addInfinitePlane(
-		device->grabTexture(basePath + "sys/gfx/terraindirt.bmp"));
+		device->grabTexture(basePath + "gfx/water.jpg"));
 
 	return true;
 }

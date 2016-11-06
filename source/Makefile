@@ -40,6 +40,7 @@ MAIN_OBJECTS = main.o \
 	InfinitePlane.o \
 	IntroScreen.o \
 	Keyboard.o \
+	Line.o \
 	MainMenuScreen.o \
 	Material.o \
 	Matrix4.o \
@@ -210,6 +211,10 @@ IntroScreen.o: graphics/gui/screen/IntroScreen.cpp \
 Keyboard.o: input/Keyboard.cpp input/Keyboard.h
 	$(CXX) $(CXXFLAGS) -c input/Keyboard.cpp
 
+Line.o: common/math/Line.cpp common/math/Line.h \
+		common/math/Vector3.h
+	$(CXX) $(CXXFLAGS) -c common/math/Line.cpp
+
 MainMenuScreen.o: graphics/gui/screen/MainMenuScreen.cpp \
 	graphics/gui/screen/MainMenuScreen.h \
 		graphics/gui/Gui.h \
@@ -256,7 +261,8 @@ ParseUtils.o: common/ParseUtils.cpp common/ParseUtils.h
 
 Plane.o: common/math/Plane.cpp common/math/Plane.h \
 		common/math/MathUtility.h \
-		common/math/Vector3.h
+		common/math/Vector3.h \
+		common/math/Line.h
 	$(CXX) $(CXXFLAGS) -c common/math/Plane.cpp
 
 RawInputHandler.o: input/RawInputHandler.cpp input/RawInputHandler.h

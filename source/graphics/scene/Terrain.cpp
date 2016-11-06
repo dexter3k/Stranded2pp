@@ -199,25 +199,25 @@ void Terrain::preRenderIndicesRecalculation()
 			{
 				// First triangle
 				buffer.pushBack(index);
-				buffer.pushBack(index + terrainSize + 1 + 1);
 				buffer.pushBack(index + 1);
+				buffer.pushBack(index + terrainSize + 1 + 1);
 
 				// Second triangle
 				buffer.pushBack(index);
-				buffer.pushBack(index + terrainSize + 1);
 				buffer.pushBack(index + terrainSize + 1 + 1);
+				buffer.pushBack(index + terrainSize + 1);
 			}
 			else
 			{
 				// First triangle
 				buffer.pushBack(index);
-				buffer.pushBack(index + terrainSize + 1);
 				buffer.pushBack(index + 1);
+				buffer.pushBack(index + terrainSize + 1);
 
 				// Second triangle
 				buffer.pushBack(index + 1);
-				buffer.pushBack(index + terrainSize + 1);
 				buffer.pushBack(index + terrainSize + 1 + 1);
+				buffer.pushBack(index + terrainSize + 1);
 			}
 		}
 	}

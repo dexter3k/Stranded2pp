@@ -55,4 +55,14 @@ Vector3f Plane::getIntersectionPoint(const Plane& second, const Plane& third)
 			this->n.getCrossProduct(second.n) * third.d) / denominator);
 }
 
+Vector3f Plane::getIntersectionPoint(const Line& line) const
+{
+	return line * (-getDistanceTo(line.o) / n.getDotProduct(line.d));
+}
+
+float Plane::getDistanceTo(const math::Vector3f& point) const
+{
+	return n.getDotProduct(point) + d;
+}
+
 } // namespace math

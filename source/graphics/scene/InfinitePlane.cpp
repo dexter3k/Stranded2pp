@@ -7,7 +7,10 @@
 #include "../IndexSize.h"
 #include "../device/Device.h"
 
+#include "common/math/Frustum.h"
+#include "common/math/Line.h"
 #include "common/math/Matrix4.h"
+#include "common/math/Plane.h"
 #include "common/math/Vector3.h"
 
 namespace gfx
@@ -23,8 +26,8 @@ InfinitePlane::InfinitePlane(Texture* texture, Node* parent, Scene* scene,
 	vertices(),
 	material()
 {
-	material.depthFunction = Material::Disabled;
-	material.zWriteEnabled = false;
+	material.depthFunction = Material::Always;
+	material.zWriteEnabled = true;
 	material.textureLayers[0].texture = texture;
 	material.textureLayers[0].bilinearFilter = true;
 }
@@ -45,11 +48,8 @@ void InfinitePlane::onRegisterNode()
 
 void InfinitePlane::render()
 {
-	return;
-
 	device::Device* device = scene->getDevice();
 	Camera* camera = scene->getActiveCamera();
-
 	if (camera == nullptr || device == nullptr)
 	{
 		return;
@@ -57,13 +57,96 @@ void InfinitePlane::render()
 
 	buildVertices();
 
+	math::Matrix4 transform;
+	transform.setTranslation(position);
+	device->setTransform(device::Device::Model, transform);
+
 	device->setMaterial(material);
 	device->drawIndexedPrimitiveList(vertices, 4, indices, 2,
 		Vertex3D::Standard, Index16Bit);
 }
 
 void InfinitePlane::buildVertices()
-{}
+{
+	device::Device* device = scene->getDevice();
+	Camera* camera = scene->getActiveCamera();
+	if (camera == nullptr || device == nullptr)
+	{
+		return;
+	}
+
+	const math::Frustum& frustum = camera->getViewFrustum();
+
+	const math::Vector3f& eye = frustum.getPoint(math::Frustum::Eye);
+	if (eye.y <= 0.0f)
+	{
+		// We are below plane
+		std::cout << "Below" << std::endl;
+		return;
+	}
+
+	math::Vector3f in_verts[4] = {
+		frustum.getPoint(math::Frustum::FarTopLeft),
+		frustum.getPoint(math::Frustum::FarTopRight),
+		frustum.getPoint(math::Frustum::FarBottomRight),
+		frustum.getPoint(math::Frustum::FarBottomLeft)
+	};
+
+	math::Vector3f out_verts[5];
+
+	math::Plane plane(math::Vector3f(0.0f, 1.0f, 0.0f), 0.0f);
+
+	unsigned out_count = 0;
+
+	for (unsigned i = 0; i < 4; ++i)
+	{
+		const math::Vector3f& vert = in_verts[i];
+		const math::Vector3f& prev_vert = in_verts[(i - 1) & 3];
+
+		if (vert.y > 0.0f)
+		{
+			if (prev_vert.y <= 0.0f)
+			{
+				float t = prev_vert.y / (prev_vert.y - vert.y);
+				out_verts[out_count++] = (vert - prev_vert) * t + prev_vert;
+
+				//std::cout << out_verts[out_count - 1].x << " " <<
+				//	out_verts[out_count - 1].y << " " <<
+				//	out_verts[out_count - 1].z << std::endl;
+			}
+		}
+		else
+		{
+			if (prev_vert.y > 0.0f)
+			{
+				float t = prev_vert.y / (prev_vert.y - vert.y);
+				out_verts[out_count++] = (vert - prev_vert) * t + prev_vert;
+
+				//std::cout << out_verts[out_count - 1].x << " " <<
+				//	out_verts[out_count - 1].y << " " <<
+				//	out_verts[out_count - 1].z << std::endl;
+			}
+
+			out_verts[out_count++] = plane.getIntersectionPoint(
+				math::Line(eye, vert - eye));
+
+			//std::cout << out_verts[out_count - 1].x << " " <<
+			//	out_verts[out_count - 1].y << " " <<
+			//	out_verts[out_count - 1].z << std::endl;
+		}
+	}
+
+	if (out_count > 2 && out_count < 6)
+	{
+		for (unsigned i = 0; i < out_count; ++i)
+		{
+			const math::Vector3f& vert = out_verts[i];
+
+			vertices[i] = Vertex3D(vert, plane.n, Color(80, 255, 240), //Color(196, 190, 123)
+				math::Vector2f(vert.x, vert.z));
+		}
+	}
+}
 
 } // namespace scene
 

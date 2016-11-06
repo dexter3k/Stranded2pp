@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/math/Line.h"
 #include "common/math/Vector3.h"
 
 namespace math
@@ -21,6 +22,10 @@ public:
 
 	Vector3f getIntersectionPoint(const Plane& second, const Plane& third)
 		const;
+
+	Vector3f getIntersectionPoint(const Line& line) const;
+
+	float getDistanceTo(const math::Vector3f& point) const;
 };
 
 } // namespace math

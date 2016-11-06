@@ -82,6 +82,7 @@ bool OpenGLDevice::init()
 
 	resetTransforms();
 
+	glDepthMask(true);
 	glClearDepth(1.0);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
@@ -225,6 +226,7 @@ Texture* OpenGLDevice::loadTextureFromImage(const std::string& name,
 
 void OpenGLDevice::beginScene()
 {
+	glDepthMask(true);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
@@ -1438,6 +1440,8 @@ void OpenGLDevice::setBasicRenderStates(const Material& currentMaterial,
 			glDisable(GL_DEPTH_TEST);
 		}
 	}
+
+	glDepthMask(currentMaterial.zWriteEnabled);
 
 	if (currentMaterial.blendOperation == Material::NoBlend)
 	{
