@@ -22,7 +22,7 @@ namespace scene
 InfinitePlane::InfinitePlane(Texture* texture, Node* parent, Scene* scene,
 		const math::Vector3f& position, int id) :
 	super(parent, scene, id, position),
-	indices{0, 1, 2, 0, 2, 3},
+	indices{0, 2, 1, 0, 3, 2},
 	vertices(),
 	material()
 {
@@ -80,8 +80,7 @@ void InfinitePlane::buildVertices()
 	const math::Vector3f& eye = frustum.getPoint(math::Frustum::Eye);
 	if (eye.y <= 0.0f)
 	{
-		// We are below plane
-		std::cout << "Below" << std::endl;
+		// We are below plane - no rendering needed
 		return;
 	}
 
@@ -109,10 +108,6 @@ void InfinitePlane::buildVertices()
 			{
 				float t = prev_vert.y / (prev_vert.y - vert.y);
 				out_verts[out_count++] = (vert - prev_vert) * t + prev_vert;
-
-				//std::cout << out_verts[out_count - 1].x << " " <<
-				//	out_verts[out_count - 1].y << " " <<
-				//	out_verts[out_count - 1].z << std::endl;
 			}
 		}
 		else
@@ -121,18 +116,10 @@ void InfinitePlane::buildVertices()
 			{
 				float t = prev_vert.y / (prev_vert.y - vert.y);
 				out_verts[out_count++] = (vert - prev_vert) * t + prev_vert;
-
-				//std::cout << out_verts[out_count - 1].x << " " <<
-				//	out_verts[out_count - 1].y << " " <<
-				//	out_verts[out_count - 1].z << std::endl;
 			}
 
 			out_verts[out_count++] = plane.getIntersectionPoint(
 				math::Line(eye, vert - eye));
-
-			//std::cout << out_verts[out_count - 1].x << " " <<
-			//	out_verts[out_count - 1].y << " " <<
-			//	out_verts[out_count - 1].z << std::endl;
 		}
 	}
 

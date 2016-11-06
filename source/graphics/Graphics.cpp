@@ -137,7 +137,7 @@ Graphics::Graphics(Input& input) :
 	currentSkyboxTextures(),
 	currentSkyboxNode(nullptr),
 	currentSkyboxName("sky"),
-	groundPlane(nullptr)
+	waterPlane(nullptr)
 {}
 
 Graphics::~Graphics()
@@ -149,7 +149,7 @@ Graphics::~Graphics()
 
 	preloadedTextures.clear();
 
-	// Unload ground plane texture
+	// Unload water plane texture
 	device->releaseTexture(basePath + "gfx/water.jpg");
 
 	// Unload skybox textures
@@ -186,7 +186,7 @@ bool Graphics::init(const Modification& modification)
 	scene->addCamera(nullptr, math::Vector3f(0.0f, 15.f, 30.0f),
 		math::Vector3f(25.0f, 0.0f, 0.0f));
 
-	groundPlane = scene->addInfinitePlane(
+	waterPlane = scene->addInfinitePlane(
 		device->grabTexture(basePath + "gfx/water.jpg"));
 
 	return true;
@@ -227,7 +227,7 @@ void Graphics::setSkybox(const std::string& name)
 {
 	if (currentSkyboxNode != nullptr)
 	{
-		groundPlane->setParent(nullptr);
+		waterPlane->setParent(nullptr);
 		scene->removeNode(currentSkyboxNode);
 		currentSkyboxNode = nullptr;
 	}
@@ -262,7 +262,7 @@ void Graphics::setSkybox(const std::string& name)
 		currentSkyboxTextures[4],
 		currentSkyboxTextures[5]);
 
-	groundPlane->setParent(currentSkyboxNode);
+	waterPlane->setParent(currentSkyboxNode);
 }
 
 void Graphics::setTerrain(unsigned terrainSize,

@@ -87,7 +87,7 @@ private:
 	scene::Skybox* currentSkyboxNode;
 	std::string currentSkyboxName;
 
-	scene::InfinitePlane* groundPlane;
+	scene::InfinitePlane* waterPlane;
 };
 
 } // namespace gfx

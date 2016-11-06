@@ -63,7 +63,7 @@ Material::Material() :
 	wireframe(false),
 	lighting(false),
 	zWriteEnabled(true),
-	backFaceCulling(false),
+	backFaceCulling(true),
 	frontFaceCulling(false),
 	fogEnabled(false),
 	useMipMaps(false)

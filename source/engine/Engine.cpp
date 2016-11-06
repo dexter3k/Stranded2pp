@@ -34,20 +34,8 @@ bool Engine::init(const Modification& modification)
 	return true;
 }
 
-static float deltas;
-static unsigned index;
-
 void Engine::update(float deltaTime)
 {
-	deltas += deltaTime;
-	index = (index + 1) % 30;
-
-	if (index == 0)
-	{
-		std::cout << "Avg fps: " << 1.0f / (deltas / 30.0f) << std::endl;
-		deltas = 0;
-	}
-
 	switch (gameState)
 	{
 		case Intro:
