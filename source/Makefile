@@ -27,6 +27,7 @@ MAIN_OBJECTS = main.o \
 	Device.o \
 	Engine.o \
 	FileSystem.o \
+	Frustum.o \
 	Graphics.o \
 	Gui.o \
 	GuiBackgroundImage.o \
@@ -51,6 +52,7 @@ MAIN_OBJECTS = main.o \
 	Node.o \
 	OpenGLDevice.o \
 	ParseUtils.o \
+	Plane.o \
 	RawInputHandler.o \
 	RingBuffer.o \
 	SaveGameUtils.o \
@@ -128,6 +130,12 @@ Engine.o: engine/Engine.cpp engine/Engine.h \
 FileSystem.o: common/FileSystem.cpp common/FileSystem.h \
 		common/RingBuffer.h
 	$(CXX) $(CXXFLAGS) -c common/FileSystem.cpp
+
+Frustum.o: common/math/Frustum.cpp common/math/Frustum.h \
+		common/math/Matrix4.h \
+		common/math/Plane.h \
+		common/math/Vector3.h
+	$(CXX) $(CXXFLAGS) -c common/math/Frustum.cpp
 
 Graphics.o: graphics/Graphics.cpp graphics/Graphics.h \
 		graphics/device/Device.h \
@@ -245,6 +253,11 @@ OpenGLDevice.o: graphics/device/OpenGLDevice.cpp graphics/device/OpenGLDevice.h
 
 ParseUtils.o: common/ParseUtils.cpp common/ParseUtils.h
 	$(CXX) $(CXXFLAGS) -c common/ParseUtils.cpp
+
+Plane.o: common/math/Plane.cpp common/math/Plane.h \
+		common/math/MathUtility.h \
+		common/math/Vector3.h
+	$(CXX) $(CXXFLAGS) -c common/math/Plane.cpp
 
 RawInputHandler.o: input/RawInputHandler.cpp input/RawInputHandler.h
 	$(CXX) $(CXXFLAGS) -c input/RawInputHandler.cpp

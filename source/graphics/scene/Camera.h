@@ -2,6 +2,7 @@
 
 #include "Node.h"
 
+#include "common/math/Frustum.h"
 #include "common/math/Matrix4.h"
 
 namespace gfx
@@ -23,6 +24,8 @@ public:
 
 	float getNearValue() const;
 	float getFarValue() const;
+
+	const math::Frustum& getViewFrustum() const;
 private:
 	void updateMatrices();
 private:
@@ -33,6 +36,8 @@ private:
 
 	math::Matrix4 projection;
 	math::Matrix4 view;
+
+	math::Frustum viewFrustum;
 };
 
 } // namespace scene

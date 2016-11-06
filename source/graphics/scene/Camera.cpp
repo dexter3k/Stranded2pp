@@ -22,7 +22,8 @@ Camera::Camera(Node* parent, Scene* scene, int id,
 	fieldOfView(75.0f),
 	aspect(800.0f / 600.0f),
 	projection(),
-	view()
+	view(),
+	viewFrustum()
 {
 	device::Device* device = scene->getDevice();
 
@@ -44,7 +45,6 @@ void Camera::render()
 	updateMatrices();
 
 	device::Device* device = scene->getDevice();
-
 	if (device != nullptr)
 	{
 		auto renderTargetSize = device->getRenderTargetSize();
@@ -65,6 +65,8 @@ void Camera::render()
 		device->setTransform(device::Device::Projection, projection);
 		device->setTransform(device::Device::View, view);
 	}
+
+	viewFrustum.setMatrix(projection * view);
 }
 
 float Camera::getNearValue() const
@@ -77,17 +79,15 @@ float Camera::getFarValue() const
 	return far;
 }
 
+const math::Frustum& Camera::getViewFrustum() const
+{
+	return viewFrustum;
+}
+
 void Camera::updateMatrices()
 {
 	math::Vector3f position = getAbsolutePosition();
 	math::Vector3f rotation = getAbsoluteTransformation().getRotationDegrees();
-
-	// Instead of finding inverse of the camera’s transformation matrix
-	//view.setRotationDegrees(rotation);
-
-	//math::Matrix4 translation;
-	//translation.setTranslation(-position);
-	//view *= translation;
 
 	view.buildFirstPersonCameraMatrix(position, rotation);
 }

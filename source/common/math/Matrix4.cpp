@@ -26,6 +26,20 @@ Matrix4::Matrix4(MatrixConstructor constructor) :
 	}
 }
 
+float& Matrix4::operator()(unsigned row, unsigned column)
+{
+	assert(row < 4 && column < 4);
+
+	return matrix[row + column * 4];
+}
+
+const float& Matrix4::operator()(unsigned row, unsigned column) const
+{
+	assert(row < 4 && column < 4);
+
+	return matrix[row + column * 4];
+}
+
 float& Matrix4::operator[](unsigned index)
 {
 	assert(index < 16);
@@ -369,15 +383,16 @@ Matrix4& Matrix4::buildProjectionMatrixPerspective(float fieldOfViewDegrees,
 
 	matrix[8] = 0.0f;
 	matrix[9] = 0.0f;
-	matrix[10] = -far / (far - near);
+	matrix[10] = -(far + near) / (far - near);
 	matrix[11] = -1.0f;
 
 	matrix[12] = 0.0f;
 	matrix[13] = 0.0f;
 	matrix[14] = - (2 * near * far / (far - near));
 	matrix[15] = 0.0f;
+
 /*
-	// std::cout -- best debugging tool ever (nah, vaglrind is better sometimes)
+	std::cout << std::endl;
 	for (unsigned y = 0; y < 4; ++y)
 	{
 		for (unsigned x = 0; x < 4; ++x)
