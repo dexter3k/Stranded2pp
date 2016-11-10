@@ -55,7 +55,10 @@ void InfinitePlane::render()
 		return;
 	}
 
-	buildVertices();
+	if (!buildVertices())
+	{
+		return;
+	}
 
 	math::Matrix4 transform;
 	transform.setTranslation(position);
@@ -66,29 +69,30 @@ void InfinitePlane::render()
 		Vertex3D::Standard, Index16Bit);
 }
 
-void InfinitePlane::buildVertices()
+bool InfinitePlane::buildVertices()
 {
 	device::Device* device = scene->getDevice();
 	Camera* camera = scene->getActiveCamera();
 	if (camera == nullptr || device == nullptr)
 	{
-		return;
+		return false;
 	}
 
 	const math::Frustum& frustum = camera->getViewFrustum();
 
-	const math::Vector3f& eye = frustum.getPoint(math::Frustum::Eye);
+	math::Vector3f eye = frustum.getPoint(math::Frustum::Eye);
+	eye -= position;
 	if (eye.y <= 0.0f)
 	{
 		// We are below plane - no rendering needed
-		return;
+		return false;
 	}
 
 	math::Vector3f in_verts[4] = {
-		frustum.getPoint(math::Frustum::FarTopLeft),
-		frustum.getPoint(math::Frustum::FarTopRight),
-		frustum.getPoint(math::Frustum::FarBottomRight),
-		frustum.getPoint(math::Frustum::FarBottomLeft)
+		frustum.getPoint(math::Frustum::FarTopLeft) - position,
+		frustum.getPoint(math::Frustum::FarTopRight) - position,
+		frustum.getPoint(math::Frustum::FarBottomRight) - position,
+		frustum.getPoint(math::Frustum::FarBottomLeft) - position
 	};
 
 	math::Vector3f out_verts[5];
@@ -133,6 +137,8 @@ void InfinitePlane::buildVertices()
 				math::Vector2f(vert.x, vert.z));
 		}
 	}
+
+	return true;
 }
 
 } // namespace scene

@@ -27,7 +27,7 @@ public:
 
 	void render() override;
 private:
-	void buildVertices();
+	bool buildVertices();
 private:
 	uint16_t indices[6];
 	Vertex3D vertices[4];

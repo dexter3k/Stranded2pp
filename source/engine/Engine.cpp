@@ -198,4 +198,6 @@ void Engine::setupTerrain(unsigned terrainSize,
 
 	graphics.setTerrain(terrainSize, flippedHeightMap, colorMapSize, colorMap,
 		grassMap);
+	//graphics.setWaterLevel(1.0f);
+	//graphics.setGroundLevel(1.0f);
 }

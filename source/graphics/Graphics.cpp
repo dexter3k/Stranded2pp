@@ -202,6 +202,12 @@ void Graphics::update(float deltaTime)
 		camera->setRotation(rotation);
 
 		auto position = camera->getPosition();
+
+		{
+			auto position = waterPlane->getPosition();
+			//position.y = 1.0f;
+			waterPlane->setPosition(position);
+		}
 	}
 
 	gui->update(deltaTime);
