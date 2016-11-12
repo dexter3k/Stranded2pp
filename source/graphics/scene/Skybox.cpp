@@ -38,10 +38,10 @@ Skybox::Skybox(Texture* top, Texture* bottom, Texture* left, Texture* right,
 
 	materials[0] = material;
 	materials[0].textureLayers[0].texture = top;
-	vertices[0 * 4 + 0] = Vertex3D( 1,  1, -1, 0, -1, 0, Color(255, 255, 255), t, t);
-	vertices[0 * 4 + 1] = Vertex3D( 1,  1,  1, 0, -1, 0, Color(255, 255, 255), o, t);
-	vertices[0 * 4 + 2] = Vertex3D(-1,  1,  1, 0, -1, 0, Color(255, 255, 255), o, o);
-	vertices[0 * 4 + 3] = Vertex3D(-1,  1, -1, 0, -1, 0, Color(255, 255, 255), t, o);
+	vertices[0 * 4 + 0] = Vertex3D( 1,  1, -1, 0, -1, 0, Color(255, 255, 255), o, o);
+	vertices[0 * 4 + 1] = Vertex3D( 1,  1,  1, 0, -1, 0, Color(255, 255, 255), t, o);
+	vertices[0 * 4 + 2] = Vertex3D(-1,  1,  1, 0, -1, 0, Color(255, 255, 255), t, t);
+	vertices[0 * 4 + 3] = Vertex3D(-1,  1, -1, 0, -1, 0, Color(255, 255, 255), o, t);
 
 	// Bottom
 	onepixel =
@@ -51,9 +51,9 @@ Skybox::Skybox(Texture* top, Texture* bottom, Texture* left, Texture* right,
 
 	materials[1] = material;
 	materials[1].textureLayers[0].texture = bottom;
-	vertices[1 * 4 + 0] = Vertex3D( 1, -1, -1, 0, 1, 0, Color(255, 255, 255), t, t);
-	vertices[1 * 4 + 1] = Vertex3D(-1, -1, -1, 0, 1, 0, Color(255, 255, 255), t, o);
-	vertices[1 * 4 + 2] = Vertex3D(-1, -1,  1, 0, 1, 0, Color(255, 255, 255), o, o);
+	vertices[1 * 4 + 0] = Vertex3D( 1, -1, -1, 0, 1, 0, Color(255, 255, 255), o, o);
+	vertices[1 * 4 + 1] = Vertex3D(-1, -1, -1, 0, 1, 0, Color(255, 255, 255), o, o);
+	vertices[1 * 4 + 2] = Vertex3D(-1, -1,  1, 0, 1, 0, Color(255, 255, 255), o, t);
 	vertices[1 * 4 + 3] = Vertex3D( 1, -1,  1, 0, 1, 0, Color(255, 255, 255), o, t);
 
 	// Left
@@ -64,10 +64,10 @@ Skybox::Skybox(Texture* top, Texture* bottom, Texture* left, Texture* right,
 
 	materials[2] = material;
 	materials[2].textureLayers[0].texture = left;
-	vertices[2 * 4 + 0] = Vertex3D(-1, -1, -1,  1, 0, 0, Color(255, 255, 255), o, t);
-	vertices[2 * 4 + 1] = Vertex3D(-1,  1, -1,  1, 0, 0, Color(255, 255, 255), o, o);
-	vertices[2 * 4 + 2] = Vertex3D(-1,  1,  1,  1, 0, 0, Color(255, 255, 255), t, o);
-	vertices[2 * 4 + 3] = Vertex3D(-1, -1,  1,  1, 0, 0, Color(255, 255, 255), t, t);
+	vertices[2 * 4 + 0] = Vertex3D( 1, -1, -1, -1, 0, 0, Color(255, 255, 255), t, t);
+	vertices[2 * 4 + 1] = Vertex3D( 1, -1,  1, -1, 0, 0, Color(255, 255, 255), o, t);
+	vertices[2 * 4 + 2] = Vertex3D( 1,  1,  1, -1, 0, 0, Color(255, 255, 255), o, o);
+	vertices[2 * 4 + 3] = Vertex3D( 1,  1, -1, -1, 0, 0, Color(255, 255, 255), t, o);
 
 	// Right
 	onepixel =
@@ -77,11 +77,10 @@ Skybox::Skybox(Texture* top, Texture* bottom, Texture* left, Texture* right,
 
 	materials[3] = material;
 	materials[3].textureLayers[0].texture = right;
-	vertices[3 * 4 + 0] = Vertex3D( 1, -1, -1, -1, 0, 0, Color(255, 255, 255), t, t);
-	vertices[3 * 4 + 1] = Vertex3D( 1, -1,  1, -1, 0, 0, Color(255, 255, 255), o, t);
-	vertices[3 * 4 + 2] = Vertex3D( 1,  1,  1, -1, 0, 0, Color(255, 255, 255), o, o);
-	vertices[3 * 4 + 3] = Vertex3D( 1,  1, -1, -1, 0, 0, Color(255, 255, 255), t, o);
-	
+	vertices[3 * 4 + 0] = Vertex3D(-1, -1, -1,  1, 0, 0, Color(255, 255, 255), o, t);
+	vertices[3 * 4 + 1] = Vertex3D(-1,  1, -1,  1, 0, 0, Color(255, 255, 255), o, o);
+	vertices[3 * 4 + 2] = Vertex3D(-1,  1,  1,  1, 0, 0, Color(255, 255, 255), t, o);
+	vertices[3 * 4 + 3] = Vertex3D(-1, -1,  1,  1, 0, 0, Color(255, 255, 255), t, t);
 
 	// Front
 	onepixel =
@@ -91,10 +90,10 @@ Skybox::Skybox(Texture* top, Texture* bottom, Texture* left, Texture* right,
 
 	materials[4] = material;
 	materials[4].textureLayers[0].texture = front;
-	vertices[4 * 4 + 0] = Vertex3D(-1, -1, -1, 0, 0, 1, Color(255, 255, 255), t, t);
-	vertices[4 * 4 + 1] = Vertex3D( 1, -1, -1, 0, 0, 1, Color(255, 255, 255), o, t);
-	vertices[4 * 4 + 2] = Vertex3D( 1,  1, -1, 0, 0, 1, Color(255, 255, 255), o, o);
-	vertices[4 * 4 + 3] = Vertex3D(-1,  1, -1, 0, 0, 1, Color(255, 255, 255), t, o);
+	vertices[4 * 4 + 0] = Vertex3D(-1, -1,  1, 0, 0, -1, Color(255, 255, 255), o, t);
+	vertices[4 * 4 + 1] = Vertex3D(-1,  1,  1, 0, 0, -1, Color(255, 255, 255), o, o);
+	vertices[4 * 4 + 2] = Vertex3D( 1,  1,  1, 0, 0, -1, Color(255, 255, 255), t, o);
+	vertices[4 * 4 + 3] = Vertex3D( 1, -1,  1, 0, 0, -1, Color(255, 255, 255), t, t);
 
 	// Back
 	onepixel =
@@ -104,10 +103,10 @@ Skybox::Skybox(Texture* top, Texture* bottom, Texture* left, Texture* right,
 
 	materials[5] = material;
 	materials[5].textureLayers[0].texture = back;
-	vertices[5 * 4 + 0] = Vertex3D(-1, -1,  1, 0, 0, -1, Color(255, 255, 255), o, t);
-	vertices[5 * 4 + 1] = Vertex3D(-1,  1,  1, 0, 0, -1, Color(255, 255, 255), o, o);
-	vertices[5 * 4 + 2] = Vertex3D( 1,  1,  1, 0, 0, -1, Color(255, 255, 255), t, o);
-	vertices[5 * 4 + 3] = Vertex3D( 1, -1,  1, 0, 0, -1, Color(255, 255, 255), t, t);
+	vertices[5 * 4 + 0] = Vertex3D(-1, -1, -1, 0, 0, 1, Color(255, 255, 255), t, t);
+	vertices[5 * 4 + 1] = Vertex3D( 1, -1, -1, 0, 0, 1, Color(255, 255, 255), o, t);
+	vertices[5 * 4 + 2] = Vertex3D( 1,  1, -1, 0, 0, 1, Color(255, 255, 255), o, o);
+	vertices[5 * 4 + 3] = Vertex3D(-1,  1, -1, 0, 0, 1, Color(255, 255, 255), t, o);
 }
 
 Skybox::~Skybox()
