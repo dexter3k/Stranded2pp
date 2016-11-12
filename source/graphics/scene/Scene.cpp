@@ -104,14 +104,6 @@ void Scene::removeNode(Node* node)
 	}
 }
 
-Node* Scene::addWaterSurface(Mesh* mesh, float waveHeight, float waveSpeed,
-	float waveLength, Node* parent, int id, const math::Vector3f& position,
-	const math::Vector3f& rotation, const math::Vector3f& scale)
-{
-	// TODO
-	return nullptr;
-}
-
 Camera* Scene::addCamera(Node* parent, const math::Vector3f& position,
 	const math::Vector3f& rotation, int id, bool makeActive)
 {
@@ -159,6 +151,7 @@ Terrain* Scene::addTerrain(unsigned terrainSize, const std::vector<float>& heigh
 }
 
 InfinitePlane* Scene::addInfinitePlane(Texture* texture,
+	const Color& planeColor, float textureScale,
 	const math::Vector3f& position, Node* parent, int id)
 {
 	if (parent == nullptr)
@@ -166,8 +159,8 @@ InfinitePlane* Scene::addInfinitePlane(Texture* texture,
 		parent = this;
 	}
 
-	InfinitePlane* plane = new InfinitePlane(texture, parent, this, position,
-		id);
+	InfinitePlane* plane = new InfinitePlane(texture, parent, this, planeColor,
+		textureScale, position, id);
 
 	sceneNodes.push_back(plane);
 

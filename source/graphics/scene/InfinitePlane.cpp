@@ -20,11 +20,14 @@ namespace scene
 {
 
 InfinitePlane::InfinitePlane(Texture* texture, Node* parent, Scene* scene,
+		const Color& planeColor, float textureScale,
 		const math::Vector3f& position, int id) :
 	super(parent, scene, id, position),
 	indices{0, 2, 1, 0, 3, 2},
 	vertices(),
-	material()
+	material(),
+	color(planeColor),
+	textureScale(textureScale)
 {
 	material.depthFunction = Material::Always;
 	material.zWriteEnabled = true;
@@ -34,6 +37,11 @@ InfinitePlane::InfinitePlane(Texture* texture, Node* parent, Scene* scene,
 
 InfinitePlane::~InfinitePlane()
 {}
+
+void InfinitePlane::setColor(const Color& color)
+{
+	this->color = color;
+}
 
 void InfinitePlane::onRegisterNode()
 {
@@ -133,8 +141,8 @@ bool InfinitePlane::buildVertices()
 		{
 			const math::Vector3f& vert = out_verts[i];
 
-			vertices[i] = Vertex3D(vert, plane.n, Color(80, 255, 240), //Color(196, 190, 123)
-				math::Vector2f(vert.x, vert.z));
+			vertices[i] = Vertex3D(vert, plane.n, color,
+				math::Vector2f(vert.x / textureScale, vert.z / textureScale));
 		}
 	}
 

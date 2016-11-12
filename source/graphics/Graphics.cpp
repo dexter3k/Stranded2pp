@@ -137,7 +137,8 @@ Graphics::Graphics(Input& input) :
 	currentSkyboxTextures(),
 	currentSkyboxNode(nullptr),
 	currentSkyboxName("sky"),
-	waterPlane(nullptr)
+	waterPlane(nullptr),
+	groundPlane(nullptr)
 {}
 
 Graphics::~Graphics()
@@ -148,6 +149,9 @@ Graphics::~Graphics()
 	}
 
 	preloadedTextures.clear();
+
+	// Unload ground plane texture
+	device->releaseTexture(basePath + "sys/gfx/terraindirt.bmp");
 
 	// Unload water plane texture
 	device->releaseTexture(basePath + "gfx/water.jpg");
@@ -183,11 +187,14 @@ bool Graphics::init(const Modification& modification)
 		return false;
 	}
 
-	scene->addCamera(nullptr, math::Vector3f(0.0f, 15.f, 30.0f),
-		math::Vector3f(25.0f, 0.0f, 0.0f));
+	scene->addCamera(nullptr, math::Vector3f(0.0f, 15.0f, 30.0f),
+		math::Vector3f(0.0f, 0.0f, 0.0f));
 
 	waterPlane = scene->addInfinitePlane(
-		device->grabTexture(basePath + "gfx/water.jpg"));
+		device->grabTexture(basePath + "gfx/water.jpg"), Color(80, 255, 240),
+		3.125f);
+	groundPlane = scene->addInfinitePlane(
+		device->grabTexture(basePath + "sys/gfx/terraindirt.bmp"));
 
 	return true;
 }
@@ -200,14 +207,6 @@ void Graphics::update(float deltaTime)
 		auto rotation = camera->getRotation();
 		//rotation.y -= 1.0f;
 		camera->setRotation(rotation);
-
-		auto position = camera->getPosition();
-
-		{
-			auto position = waterPlane->getPosition();
-			//position.y = 1.0f;
-			waterPlane->setPosition(position);
-		}
 	}
 
 	gui->update(deltaTime);
@@ -234,6 +233,8 @@ void Graphics::setSkybox(const std::string& name)
 	if (currentSkyboxNode != nullptr)
 	{
 		waterPlane->setParent(nullptr);
+		groundPlane->setParent(nullptr);
+
 		scene->removeNode(currentSkyboxNode);
 		currentSkyboxNode = nullptr;
 	}
@@ -268,6 +269,7 @@ void Graphics::setSkybox(const std::string& name)
 		currentSkyboxTextures[4],
 		currentSkyboxTextures[5]);
 
+	groundPlane->setParent(currentSkyboxNode);
 	waterPlane->setParent(currentSkyboxNode);
 }
 
@@ -278,6 +280,21 @@ void Graphics::setTerrain(unsigned terrainSize,
 {
 	terrainNode = scene->addTerrain(terrainSize, heightMap, colorMapSize,
 		colorMap);
+}
+
+void Graphics::setWaterLevel(float level)
+{
+	waterPlane->setPosition(math::Vector3f(0.0f, level, 0.0f));
+}
+
+void Graphics::setGroundLevel(float level)
+{
+	groundPlane->setPosition(math::Vector3f(0.0f, level, 0.0f));
+}
+
+void Graphics::setGroundColor(const Color& color)
+{
+	groundPlane->setColor(color);
 }
 
 bool Graphics::preloadTextures()

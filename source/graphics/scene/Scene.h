@@ -8,11 +8,11 @@
 #include "common/Timer.h"
 #include "common/math/Vector2.h"
 #include "common/math/Vector3.h"
+#include "graphics/Color.h"
 
 namespace gfx
 {
 
-class Color;
 class Graphics;
 class Mesh;
 class Texture;
@@ -75,13 +75,6 @@ public:
 
 	void removeNode(Node* node);
 
-	Node* addWaterSurface(Mesh* mesh, float waveHeight = 2.0f,
-		float waveSpeed = 300.0f, float waveLength = 10.0f,
-		Node* parent = nullptr, int id = -1,
-		const math::Vector3f& position = math::Vector3f(0.0f, 0.0f, 0.0f),
-		const math::Vector3f& rotation = math::Vector3f(0.0f, 0.0f, 0.0f),
-		const math::Vector3f& scale = math::Vector3f(1.0f, 1.0f, 1.0f));
-
 	Camera* addCamera(Node* parent = nullptr,
 		const math::Vector3f& position = math::Vector3f(0.0f, 0.0f, 0.0f),
 		const math::Vector3f& rotation = math::Vector3f(0.0f, 0.0f, 0.0f),
@@ -96,6 +89,8 @@ public:
 		const math::Vector2f& scale = math::Vector2f(1.0f, 1.0f), int id = -1);
 
 	InfinitePlane* addInfinitePlane(Texture* texture,
+		const Color& planeColor = Color(255, 255, 255),
+		float textureScale = 1.0f,
 		const math::Vector3f& position = math::Vector3f(0.0f),
 		Node* parent = nullptr, int id = -1);
 
