@@ -72,6 +72,8 @@ bool Stranded::init(const std::vector<std::string>& arguments)
 		return false;
 	}
 
+	printWelcomeMessage();
+
 	return true;
 }
 
@@ -136,4 +138,21 @@ bool Stranded::parseArguments(const std::vector<std::string>& arguments)
 	}
 
 	return true;
+}
+
+void Stranded::printWelcomeMessage()
+{
+	std::cout << "\n";
+	for (unsigned i = 0; i < 80; ++i)
+	{
+		std::cout << "*";
+	}
+	std::cout << "Welcome to Stranded2++\n";
+	std::cout << "Web: www.github.com/SMemsky/Stranded2pp\n";
+	std::cout << "Mail: schooldev3000@gmail.com\n";
+	for (unsigned i = 0; i < 80; ++i)
+	{
+		std::cout << "*";
+	}
+	std::cout << "\n" << std::endl;
 }

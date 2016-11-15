@@ -52,6 +52,8 @@ private:
 	void stop();
 
 	bool parseArguments(const std::vector<std::string>& arguments);
+
+	void printWelcomeMessage();
 private:
 	static const std::string defaultModificationName;
 
