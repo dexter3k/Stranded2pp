@@ -150,6 +150,7 @@ void Stranded::printWelcomeMessage()
 	std::cout << "Welcome to Stranded2++\n";
 	std::cout << "Web: www.github.com/SMemsky/Stranded2pp\n";
 	std::cout << "Mail: schooldev3000@gmail.com\n";
+	std::cout << "Original game: www.stranded.unrealsoftware.de\n";
 	for (unsigned i = 0; i < 80; ++i)
 	{
 		std::cout << "*";
