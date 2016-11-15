@@ -246,8 +246,8 @@ namespace save
 		uint32_t mapSize = 0;
 		if (!buffer.readUint32(mapSize)) return false;
 
-		std::cout << colorMapData.size << std::endl;
-		std::cout << mapSize << std::endl;
+		std::cout << "Colormap size: " << colorMapData.size << std::endl;
+		std::cout << "Map size: " << mapSize << std::endl;
 
 		uint32_t heightMapSize = mapSize + 1;
 
@@ -272,8 +272,11 @@ namespace save
 			}
 		}
 
-		engine.setupTerrain(mapSize, heightMap, colorMapData.size,
-			colorMapData.colorMap, grassMap);
+		if (!engine.setupTerrain(mapSize, heightMap, colorMapData.size,
+			colorMapData.colorMap, grassMap))
+		{
+			return false;
+		}
 
 		// "Stuff"
 
@@ -281,7 +284,7 @@ namespace save
 		uint32_t objectCount = 0;
 		if (!buffer.readUint32(objectCount)) return false;
 
-		std::cout << objectCount << std::endl;
+		std::cout << "Object count: " << objectCount << std::endl;
 
 		for (unsigned i = 0; i < objectCount; ++i)
 		{
@@ -329,7 +332,7 @@ namespace save
 		uint32_t unitCount = 0;
 		if (!buffer.readUint32(unitCount)) return false;
 
-		std::cout << unitCount << std::endl;
+		std::cout << "Unit count: " << unitCount << std::endl;
 
 		for (unsigned i = 0; i < unitCount; ++i)
 		{
@@ -385,7 +388,7 @@ namespace save
 		uint32_t itemCount = 0;
 		if (!buffer.readUint32(itemCount)) return false;
 
-		std::cout << itemCount << std::endl;
+		std::cout << "Item count: " << itemCount << std::endl;
 
 		for (unsigned i = 0; i < itemCount; ++i)
 		{
@@ -437,7 +440,7 @@ namespace save
 		uint32_t infoCount = 0;
 		if (!buffer.readUint32(infoCount)) return false;
 
-		std::cout << infoCount << std::endl;
+		std::cout << "Info count: " << infoCount << std::endl;
 
 		for (unsigned i = 0; i < infoCount; ++i)
 		{
@@ -460,10 +463,10 @@ namespace save
 			if (!buffer.readFloat(yaw)) return false;
 			if (!buffer.readLengthPrefixedString(vars)) return false;
 
-			//std::cout << "Info " << i << " [" << infoId << "] t: " <<
-			//	static_cast<uint16_t>(infoType) << " x: " << position.x <<
-			//	" y: " << position.y << " z: " << position.z << " pitch: " <<
-			//	pitch << " yaw: " << yaw << " vars: " << vars << std::endl;
+			std::cout << "Info " << i << " [" << infoId << "] t: " <<
+				static_cast<uint16_t>(infoType) << " x: " << position.x <<
+				" y: " << position.y << " z: " << position.z << " pitch: " <<
+				pitch << " yaw: " << yaw << " vars: " << vars << std::endl;
 		}
 
 		// States
@@ -471,7 +474,7 @@ namespace save
 		uint32_t stateCount = 0;
 		if (!buffer.readUint32(stateCount)) return false;
 
-		std::cout << stateCount << std::endl;
+		std::cout << "State count: " << stateCount << std::endl;
 		for (unsigned i = 0; i < stateCount; ++i)
 		{
 			uint8_t type = 0;
@@ -508,7 +511,7 @@ namespace save
 		uint32_t extCount = 0;
 		if (!buffer.readUint32(extCount)) return false;
 
-		std::cout << extCount << std::endl;
+		std::cout << "Ext count: " << extCount << std::endl;
 		for (unsigned i = 0; i < extCount; ++i)
 		{
 			uint8_t type = 0;

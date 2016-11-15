@@ -10,6 +10,8 @@
 #include "graphics/gui/Gui.h"
 #include "graphics/Graphics.h"
 
+const unsigned Engine::gameTimeRatio = 500; // 500ms per game minute
+
 Engine::Engine(Input& input, gfx::Graphics& graphics, Network& network,
 		Sound& sound) :
 	input(input),
@@ -17,7 +19,12 @@ Engine::Engine(Input& input, gfx::Graphics& graphics, Network& network,
 	network(network),
 	sound(sound),
 	gameState(Intro),
-	modBaseDirectory("")
+	modBaseDirectory(""),
+	isTimePaused(false),
+	timeCounter(0),
+	currentDay(0),
+	dayTime(0),
+	timeChanged(false)
 {
 	graphics.getGui().connectEngine(this);
 }
@@ -46,6 +53,33 @@ void Engine::update(float deltaTime)
 		case MainMenu:
 		case Singleplayer:
 		case Multiplayer:
+		{
+			if (!isTimePaused)
+			{
+				timeCounter += static_cast<long long>(deltaTime * 1000000.0f);
+
+				if (timeCounter >= gameTimeRatio * 1000)
+				{
+					// No more than a minute per frame?
+					timeCounter -= gameTimeRatio * 1000;
+
+					++dayTime;
+
+					if (dayTime == 24 * 60)
+					{
+						dayTime = 0;
+
+						++currentDay;
+					}
+
+					timeChanged = true;
+				}
+				else
+				{
+					timeChanged = false;
+				}
+			}
+		}
 		case Editor:
 		{
 			break;
@@ -154,13 +188,25 @@ void Engine::skipIntro()
 
 void Engine::resetGame()
 {
-	
+	isTimePaused = false;
+	timeCounter = 0;
+	currentDay = 0;
+	dayTime = 0;
 }
 
 void Engine::setupGame(uint32_t day, uint8_t hour, uint8_t minute,
 	bool timeIsFreezed, const std::string& skybox, bool multiplayerMap,
 	uint8_t climate, const std::string& music, const std::string& briefScript)
 {
+	if (multiplayerMap)
+	{
+		std::cout << "Warning: loading multiplayer map in singleplayer" <<
+			std::endl;
+	}
+
+	currentDay = day;
+	dayTime = (hour < 24 ? hour : 0) * 60 + (minute < 60 ? minute : 0);
+
 	graphics.setSkybox(skybox);
 }
 
@@ -169,7 +215,7 @@ void Engine::setupQuickslots(const std::vector<std::string>& quickslots)
 	// Setup those quickslots
 }
 
-void Engine::setupTerrain(unsigned terrainSize,
+bool Engine::setupTerrain(unsigned terrainSize,
 	const std::vector<float>& heightMap, unsigned colorMapSize,
 	const std::vector<gfx::Color>& colorMap,
 	const std::vector<uint8_t>& grassMap)
@@ -179,8 +225,7 @@ void Engine::setupTerrain(unsigned terrainSize,
 	{
 		std::cout << "Invalid terrain size: " << terrainSize << std::endl;
 
-		// TODO
-		return;
+		return false;
 	}
 
 	// Stranded uses left-handed coordinate system, so we must flip heightmap
@@ -198,4 +243,6 @@ void Engine::setupTerrain(unsigned terrainSize,
 
 	graphics.setTerrain(terrainSize, flippedHeightMap, colorMapSize, colorMap,
 		grassMap);
+
+	return true;
 }

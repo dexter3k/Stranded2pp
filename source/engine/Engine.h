@@ -44,9 +44,11 @@ public:
 		uint8_t climate, const std::string& music,
 		const std::string& briefScript);
 	void setupQuickslots(const std::vector<std::string>& quickslots);
-	void setupTerrain(unsigned terrainSize, const std::vector<float>& heightMap,
+	bool setupTerrain(unsigned terrainSize, const std::vector<float>& heightMap,
 		unsigned colorMapSize, const std::vector<gfx::Color>& colorMap,
 		const std::vector<uint8_t>& grassMap);
+private:
+	static const unsigned gameTimeRatio; // game minutes / real milliseconds
 private:
 	Input&		input;
 	gfx::Graphics&	graphics;
@@ -56,4 +58,15 @@ private:
 	GameState gameState;
 
 	std::string modBaseDirectory;
+
+	// Game values
+
+	bool isTimePaused;
+
+	long long timeCounter; // Counts time until it reaches limit (gameTimeRatio)
+
+	unsigned currentDay;
+	unsigned dayTime; // in-game time in minutes
+
+	bool timeChanged;
 };
