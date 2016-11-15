@@ -151,10 +151,16 @@ Graphics::~Graphics()
 	preloadedTextures.clear();
 
 	// Unload ground plane texture
-	device->releaseTexture(basePath + "sys/gfx/terraindirt.bmp");
+	if (groundPlane != nullptr)
+	{
+		device->releaseTexture(basePath + "sys/gfx/terraindirt.bmp");
+	}
 
 	// Unload water plane texture
-	device->releaseTexture(basePath + "gfx/water.jpg");
+	if (waterPlane != nullptr)
+	{
+		device->releaseTexture(basePath + "gfx/water.jpg");
+	}
 
 	// Unload skybox textures
 	for (unsigned i = 0; i < 6; ++i)
@@ -182,19 +188,44 @@ bool Graphics::init(const Modification& modification)
 		return false;
 	}
 
+	if (!scene->init(modification))
+	{
+		return false;
+	}
+
 	if (!gui->init(modification))
 	{
 		return false;
 	}
 
-	scene->addCamera(nullptr, math::Vector3f(0.0f, 15.0f, 30.0f),
+	scene->addCamera(nullptr, math::Vector3f(0.0f, 10.0f, 30.0f),
 		math::Vector3f(0.0f, 0.0f, 0.0f));
 
 	waterPlane = scene->addInfinitePlane(
 		device->grabTexture(basePath + "gfx/water.jpg"), Color(80, 255, 240),
 		3.125f);
+	{
+		auto& material = waterPlane->getMaterial();
+		material.depthFunction = Material::Always;
+		material.zWriteEnabled = true;
+		material.textureLayers[0].bilinearFilter = true;
+		material.materialType = Material::Solid;
+	}
+
+	setWaterLevel(1.0f / 64.0f);
+
 	groundPlane = scene->addInfinitePlane(
-		device->grabTexture(basePath + "sys/gfx/terraindirt.bmp"));
+		device->grabTexture(basePath + "sys/gfx/terraindirt.bmp"),
+		Color(255, 255, 255), 2.0f);
+	{
+		auto& material = groundPlane->getMaterial();
+		material.depthFunction = Material::Disabled;
+		material.zWriteEnabled = false;
+		material.textureLayers[0].bilinearFilter = true;
+		material.materialType = Material::ColorDetailMap;
+	}
+
+	groundPlane->drawAsSkybox(true);
 
 	return true;
 }
@@ -232,8 +263,10 @@ void Graphics::setSkybox(const std::string& name)
 {
 	if (currentSkyboxNode != nullptr)
 	{
-		waterPlane->setParent(nullptr);
-		groundPlane->setParent(nullptr);
+		if (groundPlane != nullptr)
+		{
+			groundPlane->setParent(nullptr);
+		}
 
 		scene->removeNode(currentSkyboxNode);
 		currentSkyboxNode = nullptr;
@@ -269,8 +302,10 @@ void Graphics::setSkybox(const std::string& name)
 		currentSkyboxTextures[4],
 		currentSkyboxTextures[5]);
 
-	groundPlane->setParent(currentSkyboxNode);
-	waterPlane->setParent(currentSkyboxNode);
+	if (groundPlane != nullptr)
+	{
+		groundPlane->setParent(currentSkyboxNode);
+	}
 }
 
 void Graphics::setTerrain(unsigned terrainSize,
@@ -278,23 +313,42 @@ void Graphics::setTerrain(unsigned terrainSize,
 	const std::vector<gfx::Color>& colorMap,
 	const std::vector<uint8_t>& grassMap)
 {
+	if (terrainNode != nullptr)
+	{
+		scene->removeNode(terrainNode);
+		terrainNode = nullptr;
+	}
+
 	terrainNode = scene->addTerrain(terrainSize, heightMap, colorMapSize,
 		colorMap);
+
+	// TODO
+	setGroundLevel(heightMap[0] * 50.0f - 25.0f);
+	setGroundColor(colorMap[0]);
 }
 
 void Graphics::setWaterLevel(float level)
 {
-	waterPlane->setPosition(math::Vector3f(0.0f, level, 0.0f));
+	if (waterPlane != nullptr)
+	{
+		waterPlane->setPosition(math::Vector3f(0.0f, level, 0.0f));
+	}
 }
 
 void Graphics::setGroundLevel(float level)
 {
-	groundPlane->setPosition(math::Vector3f(0.0f, level, 0.0f));
+	if (groundPlane != nullptr)
+	{
+		groundPlane->setPosition(math::Vector3f(0.0f, level, 0.0f));
+	}
 }
 
 void Graphics::setGroundColor(const Color& color)
 {
-	groundPlane->setColor(color);
+	if (groundPlane != nullptr)
+	{
+		groundPlane->setColor(color);
+	}
 }
 
 bool Graphics::preloadTextures()

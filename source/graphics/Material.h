@@ -21,6 +21,7 @@ public:
 		LightMapLighting,
 		DoubleLightMapLighting,
 		DetailMap,
+		ColorDetailMap,
 		Reflection,
 		SemiTransparent,
 		SharpTransparent

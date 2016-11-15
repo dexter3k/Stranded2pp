@@ -39,24 +39,30 @@ Terrain::Terrain(unsigned terrainSize, const std::vector<float>& heightMap,
 	createColorMapTexture(colorMapSize, colorMap);
 	//createDetailTexture();
 
+	device::Device* device = scene->getDevice();
+
 	terrainMaterial.materialType = Material::DetailMap;
 	terrainMaterial.textureLayers[0].texture = colorMapTexture;
 	terrainMaterial.textureLayers[0].bilinearFilter = true;
-	terrainMaterial.textureLayers[1].texture = detailTexture;
+	terrainMaterial.textureLayers[1].texture =
+		device->grabTexture(scene->getModPath() + "sys/gfx/terraindirt.bmp");
+	terrainMaterial.textureLayers[1].bilinearFilter = true;
 	terrainMaterial.lighting = false;
 	terrainMaterial.wireframe = false;
 }
 
 Terrain::~Terrain()
 {
-	if (colorMapTexture != nullptr)
+	device::Device* device = scene->getDevice();
+	if (device != nullptr)
 	{
-		device::Device* device = scene->getDevice();
-		if (device != nullptr)
+		if (colorMapTexture != nullptr)
 		{
 			device->releaseTexture("terrainColorMap");
-			colorMapTexture = nullptr;
+			colorMapTexture = nullptr;	
 		}
+
+		device->releaseTexture(scene->getModPath() + "sys/gfx/terraindirt.bmp");
 	}
 }
 

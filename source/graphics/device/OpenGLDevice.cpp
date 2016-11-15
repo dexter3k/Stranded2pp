@@ -1700,6 +1700,46 @@ void OpenGLDevice::onSetMaterial()
 
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
+			glActiveTexture(GL_TEXTURE1);
+
+			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+
+			glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+			glTexEnvi(GL_TEXTURE_ENV, GL_SRC0_RGB, GL_TEXTURE);
+			glTexEnvi(GL_TEXTURE_ENV, GL_SRC1_RGB, GL_PREVIOUS);
+
+			glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_MODULATE);
+			glTexEnvi(GL_TEXTURE_ENV, GL_SRC0_ALPHA, GL_TEXTURE);
+			glTexEnvi(GL_TEXTURE_ENV, GL_SRC1_ALPHA, GL_PREVIOUS);
+
+			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 2.0f);
+
+			glActiveTexture(GL_TEXTURE0);
+
+			break;
+		}
+		case Material::ColorDetailMap:
+		{
+			disableTextures(1);
+			setBasicRenderStates(currentMaterial, lastMaterial,
+				shouldResetRenderStates);
+
+			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+			glActiveTexture(GL_TEXTURE0);
+
+			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+
+			glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+			glTexEnvi(GL_TEXTURE_ENV, GL_SRC0_RGB, GL_TEXTURE);
+			glTexEnvi(GL_TEXTURE_ENV, GL_SRC1_RGB, GL_PREVIOUS);
+
+			glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_MODULATE);
+			glTexEnvi(GL_TEXTURE_ENV, GL_SRC0_ALPHA, GL_TEXTURE);
+			glTexEnvi(GL_TEXTURE_ENV, GL_SRC1_ALPHA, GL_PREVIOUS);
+
+			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 2.0f);
+
 			break;
 		}
 		default:
@@ -1731,6 +1771,18 @@ void OpenGLDevice::onUnsetMaterial()
 		}
 		case Material::DetailMap:
 		{
+			glActiveTexture(GL_TEXTURE1);
+
+			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 1.0f);
+
+			glActiveTexture(GL_TEXTURE0);
+
+			break;
+		}
+		case Material::ColorDetailMap:
+		{
+			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 1.0f);
+
 			break;
 		}
 		default:

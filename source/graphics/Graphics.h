@@ -54,10 +54,11 @@ public:
 	void setTerrain(unsigned terrainSize, const std::vector<float>& heightMap,
 		unsigned colorMapSize, const std::vector<gfx::Color>& colorMap,
 		const std::vector<uint8_t>& grassMap);
+private:
 	void setWaterLevel(float level);
 	void setGroundLevel(float level);
 	void setGroundColor(const Color& color);
-private:
+
 	bool preloadTextures();
 private:
 	enum SkyboxSides

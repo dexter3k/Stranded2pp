@@ -27,12 +27,10 @@ InfinitePlane::InfinitePlane(Texture* texture, Node* parent, Scene* scene,
 	vertices(),
 	material(),
 	color(planeColor),
-	textureScale(textureScale)
+	textureScale(textureScale),
+	drawnAsSkybox(false)
 {
-	material.depthFunction = Material::Always;
-	material.zWriteEnabled = true;
 	material.textureLayers[0].texture = texture;
-	material.textureLayers[0].bilinearFilter = true;
 }
 
 InfinitePlane::~InfinitePlane()
@@ -43,12 +41,23 @@ void InfinitePlane::setColor(const Color& color)
 	this->color = color;
 }
 
+Material& InfinitePlane::getMaterial()
+{
+	return material;
+}
+
+void InfinitePlane::drawAsSkybox(bool value)
+{
+	drawnAsSkybox = value;
+}
+
 void InfinitePlane::onRegisterNode()
 {
 	if (isVisible)
 	{
 		// Rendered at the same time as skyboxes
-		scene->registerNodeForRendering(this, Scene::RenderPassSkybox);
+		scene->registerNodeForRendering(this,
+			drawnAsSkybox ? Scene::RenderPassSkybox : Scene::RenderPassSolid);
 	}
 
 	super::onRegisterNode();

@@ -12,6 +12,8 @@
 #include "../VertexBuffer.h"
 #include "../IndexBuffer.h"
 
+#include "common/Modification.h"
+
 namespace gfx
 {
 
@@ -28,8 +30,16 @@ Scene::Scene(Graphics& graphics, device::Device* device) :
 	animationDeltaTimer(),
 	currentRenderPass(RenderPassNone),
 	skyboxes(),
-	solidObjects()
+	solidObjects(),
+	modPath("")
 {}
+
+bool Scene::init(const Modification& modification)
+{
+	modPath = modification.getPath();
+
+	return true;
+}
 
 Scene::~Scene()
 {
@@ -176,7 +186,14 @@ Node* Scene::addEmptyNode(Node* parent, int id)
 
 	Node* emptyNode = new Node(parent, this, id);
 
+	sceneNodes.push_back(emptyNode);
+
 	return emptyNode;
+}
+
+const std::string& Scene::getModPath() const
+{
+	return modPath;
 }
 
 Node* Scene::getRootNode()

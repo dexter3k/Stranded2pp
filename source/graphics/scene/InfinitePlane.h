@@ -28,6 +28,10 @@ public:
 
 	void setColor(const Color& color);
 
+	Material& getMaterial();
+
+	void drawAsSkybox(bool value);
+
 	void onRegisterNode() override;
 
 	void render() override;
@@ -40,6 +44,8 @@ private:
 
 	Color color;
 	float textureScale;
+
+	bool drawnAsSkybox;
 };
 
 } // namespace scene

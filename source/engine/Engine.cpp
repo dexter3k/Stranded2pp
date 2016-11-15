@@ -191,12 +191,11 @@ void Engine::setupTerrain(unsigned terrainSize,
 	{
 		for (unsigned z = 0; z < heightMapSize; ++z)
 		{
-			flippedHeightMap[x + (heightMapSize - z - 1) * (heightMapSize)] =
-				heightMap[x + z * (heightMapSize)];
+			flippedHeightMap[x + (heightMapSize - z - 1) * heightMapSize] =
+				heightMap[x + z * heightMapSize];
 		}
 	}
 
 	graphics.setTerrain(terrainSize, flippedHeightMap, colorMapSize, colorMap,
 		grassMap);
-	graphics.setWaterLevel(1.0f / 64.0f);
 }

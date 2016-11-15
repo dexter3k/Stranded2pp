@@ -10,6 +10,8 @@
 #include "common/math/Vector3.h"
 #include "graphics/Color.h"
 
+class Modification;
+
 namespace gfx
 {
 
@@ -50,6 +52,8 @@ private:
 	friend class gfx::Graphics;
 
 	Scene(Graphics& graphics, device::Device* device);
+
+	bool init(const Modification& modification);
 public:
 	~Scene();
 public:
@@ -100,6 +104,8 @@ public:
 		Methods that are used mostly by nodes (rendering, etc)
 	*/
 
+	const std::string& getModPath() const;
+
 	device::Device* getDevice();
 
 	bool isCulled(const Node* node) const;
@@ -129,6 +135,8 @@ private:
 
 	std::list<Node*> skyboxes;
 	std::list<Node*> solidObjects;
+
+	std::string modPath;
 };
 
 } // namespace scene
