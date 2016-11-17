@@ -8,6 +8,7 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <dirent.h>
 
 /*
 
@@ -20,7 +21,23 @@ http://linux.die.net/man/2/stat
 
 namespace fs
 {
+	using Directory = DIR;
+	using DirectoryEntry = struct dirent;
 	using FileStatus = struct stat;
+
+	void scanFolder(const std::string& pathToFolder,
+		std::vector<std::string>& results)
+	{
+		Directory* directory = opendir(pathToFolder.c_str());
+
+		for (DirectoryEntry* entry = readdir(directory); entry != nullptr;
+			entry = readdir(directory))
+		{
+			results.push_back(std::string(entry->d_name));
+		}
+
+		closedir(directory);
+	}
 
 	bool checkFolderExists(const std::string& pathToFolder)
 	{

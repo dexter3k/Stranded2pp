@@ -6,9 +6,12 @@
 
 #include "SaveGameUtils.h"
 
+#include "common/FileSystem.h"
 #include "common/Modification.h"
-#include "graphics/gui/Gui.h"
+#include "common/ParseUtils.h"
+#include "common/StringUtils.h"
 #include "graphics/Graphics.h"
+#include "graphics/gui/Gui.h"
 
 const unsigned Engine::gameTimeRatio = 500; // 500ms per game minute
 
@@ -35,6 +38,11 @@ Engine::~Engine()
 bool Engine::init(const Modification& modification)
 {
 	modBaseDirectory = modification.getPath();
+
+	if (!loadGame())
+	{
+		return false;
+	}
 
 	setGameState(Intro);
 
@@ -244,5 +252,10 @@ bool Engine::setupTerrain(unsigned terrainSize,
 	graphics.setTerrain(terrainSize, flippedHeightMap, colorMapSize, colorMap,
 		grassMap);
 
+	return true;
+}
+
+bool Engine::loadGame()
+{
 	return true;
 }

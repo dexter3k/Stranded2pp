@@ -1,11 +1,15 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include "common/RingBuffer.h"
 
 namespace fs
 {
+	void scanFolder(const std::string& pathToFolder,
+		std::vector<std::string>& results);
+
 	bool checkFolderExists(const std::string& pathToFolder);
 	bool checkFileExists(const std::string& pathToFile);
 

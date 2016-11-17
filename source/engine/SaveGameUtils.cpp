@@ -463,10 +463,10 @@ namespace save
 			if (!buffer.readFloat(yaw)) return false;
 			if (!buffer.readLengthPrefixedString(vars)) return false;
 
-			std::cout << "Info " << i << " [" << infoId << "] t: " <<
-				static_cast<uint16_t>(infoType) << " x: " << position.x <<
-				" y: " << position.y << " z: " << position.z << " pitch: " <<
-				pitch << " yaw: " << yaw << " vars: " << vars << std::endl;
+			//std::cout << "Info " << i << " [" << infoId << "] t: " <<
+			//	static_cast<uint16_t>(infoType) << " x: " << position.x <<
+			//	" y: " << position.y << " z: " << position.z << " pitch: " <<
+			//	pitch << " yaw: " << yaw << " vars: " << vars << std::endl;
 		}
 
 		// States

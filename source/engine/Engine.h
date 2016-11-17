@@ -48,6 +48,8 @@ public:
 		unsigned colorMapSize, const std::vector<gfx::Color>& colorMap,
 		const std::vector<uint8_t>& grassMap);
 private:
+	bool loadGame();
+private:
 	static const unsigned gameTimeRatio; // game minutes / real milliseconds
 private:
 	Input&		input;
