@@ -257,5 +257,135 @@ bool Engine::setupTerrain(unsigned terrainSize,
 
 bool Engine::loadGame()
 {
+	std::vector<std::string> entries;
+	fs::scanFolder(modBaseDirectory + "sys/", entries);
+
+	unsigned entryCount = entries.size();
+	for (unsigned entry = 0; entry < entryCount; ++entry)
+	{
+		if (string::startsWith(entries[entry], "game") &&
+			string::endsWith(entries[entry], ".inf"))
+		{
+			if (!parseGameConfig(std::string("sys/") + entries[entry]))
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+bool Engine::parseGameConfig(const std::string& filename)
+{
+	std::vector<parser::inf::Entry> entries;
+	if (!parser::inf::loadAndTokenize(modBaseDirectory + filename, entries))
+	{
+		return false;
+	}
+
+	for (auto&& entry : entries)
+	{
+		if (entry.key == "healthsystem")
+		{}
+		else if (entry.key == "exhaust_move")
+		{}
+		else if (entry.key == "exhaust_swim")
+		{}
+		else if (entry.key == "exhaust_jump")
+		{}
+		else if (entry.key == "exhaust_attack")
+		{}
+		else if (entry.key == "exhausted_damage")
+		{}
+		else if (entry.key == "dive_time")
+		{}
+		else if (entry.key == "dive_damage")
+		{}
+		else if (entry.key == "default_itemmodel")
+		{}
+		else if (entry.key == "projectile_lifetime")
+		{}
+		else if (entry.key == "firerange")
+		{}
+		else if (entry.key == "dig_time")
+		{}
+		else if (entry.key == "fish_time")
+		{}
+		else if (entry.key == "jumptime")
+		{}
+		else if (entry.key == "jumpfactor")
+		{}
+		else if (entry.key == "rainratio")
+		{}
+		else if (entry.key == "snowratio")
+		{}
+		else if (entry.key == "gore")
+		{}
+		else if (entry.key == "waverate")
+		{}
+		else if (entry.key == "minwavespace")
+		{}
+		else if (entry.key == "combiscreen")
+		{}
+		else if (entry.key == "scriptlooptimeout")
+		{}
+		else if (entry.key == "script")
+		{}
+		else if (entry.key == "scriptkey")
+		{}
+		else if (entry.key == "limit_objects")
+		{}
+		else if (entry.key == "limit_units")
+		{}
+		else if (entry.key == "limit_items")
+		{}
+		else if (entry.key == "menu_adventure")
+		{}
+		else if (entry.key == "menu_random")
+		{}
+		else if (entry.key == "menu_loadsave")
+		{}
+		else if (entry.key == "menu_singleplayer")
+		{}
+		else if (entry.key == "menu_multiplayer")
+		{}
+		else if (entry.key == "menu_editor")
+		{}
+		else if (entry.key == "menu_credits")
+		{}
+		else if (entry.key == "firelightsize")
+		{}
+		else if (entry.key == "firelightbrightness")
+		{}
+		else if (entry.key == "terrain_color_normal")
+		{}
+		else if (entry.key == "terrain_color_desert")
+		{}
+		else if (entry.key == "terrain_color_snow")
+		{}
+		else if (entry.key == "terrain_color_swamp")
+		{}
+		else if (entry.key == "showemptybuildinggroups")
+		{}
+		else if (entry.key == "falltime")
+		{}
+		else if (entry.key == "falldamage")
+		{}
+		else if (entry.key == "falldamageminy")
+		{}
+		else if (entry.key == "falldamagemaxy")
+		{}
+		else
+		{
+			std::cout << filename << ":" << entry.key << ": " << "Unknown key"
+				<< std::endl;
+
+			return false;
+		}
+	}
+
+	std::cout << "'" << filename << "' is loaded successfully" << std::endl;
+
 	return true;
 }

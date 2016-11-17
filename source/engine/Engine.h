@@ -49,6 +49,7 @@ public:
 		const std::vector<uint8_t>& grassMap);
 private:
 	bool loadGame();
+	bool parseGameConfig(const std::string& filename);
 private:
 	static const unsigned gameTimeRatio; // game minutes / real milliseconds
 private:

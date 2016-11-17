@@ -10,5 +10,7 @@ namespace string
 
 	std::string& trim(std::string& string);
 
-	bool startsWith(std::string& string, const std::string& text);
+	bool startsWith(const std::string& string, const std::string& text);
+
+	bool endsWith(const std::string& string, const std::string& text);
 } // namespace string

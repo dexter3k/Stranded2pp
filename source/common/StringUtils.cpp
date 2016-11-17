@@ -38,8 +38,15 @@ namespace string
 		return trimLeft(trimRight(string));
 	}
 
-	bool startsWith(std::string& string, const std::string& text)
+	bool startsWith(const std::string& string, const std::string& text)
 	{
 		return string.substr(0, text.size()) == text;
 	}
+
+	bool endsWith(const std::string& string, const std::string& text)
+	{
+		return (string.size() >= text.size()) &&
+			(string.substr(string.size() - text.size()) == text);
+	}
+
 } // namespace string
