@@ -4,6 +4,9 @@
 #include <iostream>
 #include <vector>
 
+#include "script/ExecutionContext.h"
+#include "script/Program.h"
+
 class Input;
 class Modification;
 class Network;
@@ -61,6 +64,16 @@ private:
 	GameState gameState;
 
 	std::string modBaseDirectory;
+
+	// Script
+
+	// Global execution context (global vars, functions, procedures)
+	script::ExecutionContext scriptContext;
+
+	std::string gameScriptSource;
+
+	script::Program mainScript;
+	script::Program mapScript;
 
 	// Game values
 

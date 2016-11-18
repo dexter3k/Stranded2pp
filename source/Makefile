@@ -26,6 +26,7 @@ MAIN_OBJECTS = main.o \
 	Color.o \
 	Device.o \
 	Engine.o \
+	ExecutionContext.o \
 	FileSystem.o \
 	Frustum.o \
 	Graphics.o \
@@ -54,6 +55,7 @@ MAIN_OBJECTS = main.o \
 	OpenGLDevice.o \
 	ParseUtils.o \
 	Plane.o \
+	Program.o \
 	RawInputHandler.o \
 	RingBuffer.o \
 	SaveGameUtils.o \
@@ -64,9 +66,9 @@ MAIN_OBJECTS = main.o \
 	StringUtils.o \
 	Terrain.o \
 	Texture.o \
+	Timer.o \
 	Vertex3D.o \
 	VertexBuffer.o \
-	Timer.o \
 	Window.o
 
 all: debug
@@ -89,6 +91,8 @@ Stranded.o: Stranded.cpp Stranded.h \
 		common/Modification.h \
 		common/Timer.h \
 		engine/Engine.h \
+		engine/script/ExecutionContext.h \
+		engine/script/Program.h \
 		graphics/Graphics.h \
 		input/Input.h \
 		input/Keyboard.h \
@@ -125,8 +129,14 @@ Device.o: graphics/device/Device.cpp graphics/device/Device.h \
 
 Engine.o: engine/Engine.cpp engine/Engine.h \
 		common/Modification.h \
-		engine/SaveGameUtils.h
+		engine/SaveGameUtils.h \
+		engine/script/ExecutionContext.h \
+		engine/script/Program.h
 	$(CXX) $(CXXFLAGS) -c engine/Engine.cpp
+
+ExecutionContext.o: engine/script/ExecutionContext.cpp \
+	engine/script/ExecutionContext.h
+	$(CXX) $(CXXFLAGS) -c engine/script/ExecutionContext.cpp
 
 FileSystem.o: common/FileSystem.cpp common/FileSystem.h \
 		common/RingBuffer.h
@@ -265,6 +275,10 @@ Plane.o: common/math/Plane.cpp common/math/Plane.h \
 		common/math/Line.h
 	$(CXX) $(CXXFLAGS) -c common/math/Plane.cpp
 
+Program.o: engine/script/Program.cpp engine/script/Program.h \
+		engine/script/ExecutionContext.h
+	$(CXX) $(CXXFLAGS) -c engine/script/Program.cpp
+
 RawInputHandler.o: input/RawInputHandler.cpp input/RawInputHandler.h
 	$(CXX) $(CXXFLAGS) -c input/RawInputHandler.cpp
 
@@ -305,6 +319,9 @@ Terrain.o: graphics/scene/Terrain.cpp graphics/scene/Terrain.h \
 Texture.o: graphics/Texture.cpp graphics/Texture.h
 	$(CXX) $(CXXFLAGS) -c graphics/Texture.cpp
 
+Timer.o: common/Timer.cpp common/Timer.h
+	$(CXX) $(CXXFLAGS) -c common/Timer.cpp
+
 Vertex3D.o: graphics/Vertex3D.cpp graphics/Vertex3D.h \
 		common/math/Vector2.h \
 		common/math/Vector3.h \
@@ -314,9 +331,6 @@ Vertex3D.o: graphics/Vertex3D.cpp graphics/Vertex3D.h \
 VertexBuffer.o: graphics/VertexBuffer.cpp graphics/VertexBuffer.h \
 		graphics/Vertex3D.h
 	$(CXX) $(CXXFLAGS) -c graphics/VertexBuffer.cpp
-
-Timer.o: common/Timer.cpp common/Timer.h
-	$(CXX) $(CXXFLAGS) -c common/Timer.cpp
 
 Window.o: window/Window.cpp window/Window.h \
 		common/Modification.h \

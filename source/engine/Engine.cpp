@@ -23,6 +23,10 @@ Engine::Engine(Input& input, gfx::Graphics& graphics, Network& network,
 	sound(sound),
 	gameState(Intro),
 	modBaseDirectory(""),
+	scriptContext(),
+	gameScriptSource(""),
+	mainScript(&scriptContext),
+	mapScript(&scriptContext),
 	isTimePaused(false),
 	timeCounter(0),
 	currentDay(0),
@@ -68,7 +72,8 @@ void Engine::update(float deltaTime)
 
 				if (timeCounter >= gameTimeRatio * 1000)
 				{
-					// No more than a minute per frame?
+					//NOTE: No more than a minute per frame?
+					// FPS < 2 will cause problems
 					timeCounter -= gameTimeRatio * 1000;
 
 					++dayTime;
@@ -216,6 +221,8 @@ void Engine::setupGame(uint32_t day, uint8_t hour, uint8_t minute,
 	dayTime = (hour < 24 ? hour : 0) * 60 + (minute < 60 ? minute : 0);
 
 	graphics.setSkybox(skybox);
+
+	mapScript.compile(briefScript);
 }
 
 void Engine::setupQuickslots(const std::vector<std::string>& quickslots)
@@ -272,6 +279,8 @@ bool Engine::loadGame()
 			}
 		}
 	}
+
+	mainScript.compile(gameScriptSource);
 
 	return true;
 }
@@ -331,7 +340,9 @@ bool Engine::parseGameConfig(const std::string& filename)
 		else if (entry.key == "scriptlooptimeout")
 		{}
 		else if (entry.key == "script")
-		{}
+		{
+			gameScriptSource += entry.value;
+		}
 		else if (entry.key == "scriptkey")
 		{}
 		else if (entry.key == "limit_objects")
