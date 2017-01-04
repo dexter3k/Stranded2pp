@@ -1,7 +1,10 @@
 #! /bin/bash
 
-cd source/
+if [ -f source/Makefile ];
+then
+	cd source
 
-make clean
+	make clean
 
-cd ../
+	cd ..
+fi

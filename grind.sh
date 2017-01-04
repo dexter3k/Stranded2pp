@@ -1,7 +1,10 @@
 #! /bin/bash
 
-cd build/
+if [ -f build/stranded2pp ];
+then
+	cd build
 
-valgrind --leak-check=full ./stranded2pp -win
+	valgrind --leak-check=full ./stranded2pp -win
 
-cd ../
+	cd ..
+fi

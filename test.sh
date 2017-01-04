@@ -1,7 +1,10 @@
 #! /bin/bash
 
-cd build/
+if [ -f build/stranded2pp ];
+then
+	cd build
 
-./stranded2pp -win
+	./stranded2pp -win
 
-cd ../
+	cd ..
+fi

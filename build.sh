@@ -1,7 +1,13 @@
 #! /bin/bash
 
-cd source/
+# Ensure that build directory exists
+mkdir -p build
 
-make debug
+if [ -f source/Makefile ];
+then
+	cd source
 
-cd ../
+	make debug
+
+	cd ..
+fi

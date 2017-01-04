@@ -147,6 +147,7 @@ void Stranded::printWelcomeMessage()
 	{
 		std::cout << "*";
 	}
+	std::cout << "\n";
 	std::cout << "Welcome to Stranded2++\n";
 	std::cout << "Web: www.github.com/SMemsky/Stranded2pp\n";
 	std::cout << "Mail: schooldev3000@gmail.com\n";
