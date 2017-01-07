@@ -1,6 +1,9 @@
 #pragma once
 
+#include <list>
 #include <string>
+
+#include "Token.h"
 
 namespace script
 {
@@ -12,11 +15,11 @@ class Program
 public:
 	Program(ExecutionContext* context);
 
-	void execute(const std::string& event);
+	void execute(std::string const& event);
 
-	bool compile(const std::string& code);
+	bool compile(std::string const& code);
 private:
-	bool tokenize(const std::string& code);
+	std::list<script::Token> tokenize(std::string const& code) const;
 private:
 	ExecutionContext* context;
 };

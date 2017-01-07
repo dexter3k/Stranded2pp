@@ -92,6 +92,8 @@ void Engine::update(float deltaTime)
 					timeChanged = false;
 				}
 			}
+
+			break;
 		}
 		case Editor:
 		{
@@ -157,6 +159,7 @@ void Engine::setGameState(GameState newGameState)
 				std::cout << "Error occured while loading menu map!" <<
 					std::endl;
 
+				// TODO
 				//input.raiseEvent(closed) ?
 
 				break;
@@ -267,13 +270,12 @@ bool Engine::loadGame()
 	std::vector<std::string> entries;
 	fs::scanFolder(modBaseDirectory + "sys/", entries);
 
-	unsigned entryCount = entries.size();
-	for (unsigned entry = 0; entry < entryCount; ++entry)
+	for (auto&& entry : entries)
 	{
-		if (string::startsWith(entries[entry], "game") &&
-			string::endsWith(entries[entry], ".inf"))
+		if (string::startsWith(entry, "game") &&
+			string::endsWith(entry, ".inf"))
 		{
-			if (!parseGameConfig(std::string("sys/") + entries[entry]))
+			if (!parseGameConfig(std::string("sys/") + entry))
 			{
 				return false;
 			}

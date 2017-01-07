@@ -67,6 +67,7 @@ MAIN_OBJECTS = main.o \
 	Terrain.o \
 	Texture.o \
 	Timer.o \
+	Token.o \
 	Vertex3D.o \
 	VertexBuffer.o \
 	Window.o
@@ -276,7 +277,8 @@ Plane.o: common/math/Plane.cpp common/math/Plane.h \
 	$(CXX) $(CXXFLAGS) -c common/math/Plane.cpp
 
 Program.o: engine/script/Program.cpp engine/script/Program.h \
-		engine/script/ExecutionContext.h
+		engine/script/ExecutionContext.h \
+		engine/script/Token.h
 	$(CXX) $(CXXFLAGS) -c engine/script/Program.cpp
 
 RawInputHandler.o: input/RawInputHandler.cpp input/RawInputHandler.h
@@ -321,6 +323,9 @@ Texture.o: graphics/Texture.cpp graphics/Texture.h
 
 Timer.o: common/Timer.cpp common/Timer.h
 	$(CXX) $(CXXFLAGS) -c common/Timer.cpp
+
+Token.o: engine/script/Token.cpp engine/script/Token.h
+	$(CXX) $(CXXFLAGS) -c engine/script/Token.cpp
 
 Vertex3D.o: graphics/Vertex3D.cpp graphics/Vertex3D.h \
 		common/math/Vector2.h \
