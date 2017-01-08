@@ -59,8 +59,11 @@ Some keywords cannot be used as identifiers:
   * `}`
   * `:`
   * `"`
-  * `'`
   * `;`
   * `(`
   * `)`
   * `,`
+
+## Credits
+
+This document is a part of [Stranded2pp](github.com/SMemsky/Stranded2pp)
