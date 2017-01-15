@@ -19,6 +19,7 @@ public:
 		Skip,
 		Loop,
 		Identifier,
+		Variable,
 		Operator,
 		Value,
 		String,

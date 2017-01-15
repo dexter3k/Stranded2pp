@@ -24,6 +24,8 @@ MAIN_OBJECTS = main.o \
 	Stranded.o \
 	Camera.o \
 	Color.o \
+	Compiler.o \
+	CompilerUtils.o \
 	Device.o \
 	Engine.o \
 	ExecutionContext.o \
@@ -119,6 +121,15 @@ Camera.o: graphics/scene/Camera.cpp graphics/scene/Camera.h \
 Color.o: graphics/Color.cpp graphics/Color.h
 	$(CXX) $(CXXFLAGS) -c graphics/Color.cpp
 
+Compiler.o: engine/script/Compiler.cpp engine/script/Compiler.h \
+		engine/script/CompilerUtils.h \
+		engine/script/Token.h
+	$(CXX) $(CXXFLAGS) -c engine/script/Compiler.cpp
+
+CompilerUtils.o: engine/script/CompilerUtils.cpp engine/script/CompilerUtils.h \
+		engine/script/Token.h
+	$(CXX) $(CXXFLAGS) -c engine/script/CompilerUtils.cpp
+
 Device.o: graphics/device/Device.cpp graphics/device/Device.h \
 		common/math/MathUtility.h \
 		common/math/Matrix4.h \
@@ -131,6 +142,7 @@ Device.o: graphics/device/Device.cpp graphics/device/Device.h \
 Engine.o: engine/Engine.cpp engine/Engine.h \
 		common/Modification.h \
 		engine/SaveGameUtils.h \
+		engine/script/Compiler.h \
 		engine/script/ExecutionContext.h \
 		engine/script/Program.h
 	$(CXX) $(CXXFLAGS) -c engine/Engine.cpp

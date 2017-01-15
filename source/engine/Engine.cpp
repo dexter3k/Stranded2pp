@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "SaveGameUtils.h"
+#include "script/Compiler.h"
 
 #include "common/FileSystem.h"
 #include "common/Modification.h"
@@ -17,16 +18,16 @@ const unsigned Engine::gameTimeRatio = 500; // 500ms per game minute
 
 Engine::Engine(Input& input, gfx::Graphics& graphics, Network& network,
 		Sound& sound) :
-	input(input),
+	//input(input),
 	graphics(graphics),
-	network(network),
-	sound(sound),
+	//network(network),
+	//sound(sound),
 	gameState(Intro),
 	modBaseDirectory(""),
 	scriptContext(),
 	gameScriptSource(""),
-	mainScript(&scriptContext),
-	mapScript(&scriptContext),
+	mainScript(),
+	mapScript(),
 	isTimePaused(false),
 	timeCounter(0),
 	currentDay(0),
@@ -225,7 +226,7 @@ void Engine::setupGame(uint32_t day, uint8_t hour, uint8_t minute,
 
 	graphics.setSkybox(skybox);
 
-	mapScript.compile(briefScript);
+	//mapScript.compile(briefScript);
 }
 
 void Engine::setupQuickslots(const std::vector<std::string>& quickslots)
@@ -282,7 +283,16 @@ bool Engine::loadGame()
 		}
 	}
 
-	mainScript.compile(gameScriptSource);
+	try
+	{
+		mainScript = script::compile(gameScriptSource);
+	}
+	catch (std::exception & exception)
+	{
+		std::cout << exception.what() << std::endl;
+
+		return false;
+	}
 
 	return true;
 }
@@ -294,6 +304,8 @@ bool Engine::parseGameConfig(const std::string& filename)
 	{
 		return false;
 	}
+
+	gameScriptSource.clear();
 
 	for (auto&& entry : entries)
 	{

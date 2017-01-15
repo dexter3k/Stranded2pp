@@ -56,10 +56,10 @@ private:
 private:
 	static const unsigned gameTimeRatio; // game minutes / real milliseconds
 private:
-	Input&		input;
+	//Input&		input;
 	gfx::Graphics&	graphics;
-	Network&	network;
-	Sound&		sound;
+	//Network&	network;
+	//Sound&		sound;
 
 	GameState gameState;
 

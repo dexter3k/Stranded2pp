@@ -1,27 +1,24 @@
 #pragma once
 
-#include <list>
 #include <string>
-
-#include "Token.h"
+#include <vector>
 
 namespace script
 {
 
-class ExecutionContext;
-
 class Program
 {
 public:
-	Program(ExecutionContext* context);
+	Program();
+	Program(Program const& other);
+	Program(Program && other);
 
-	void execute(std::string const& event);
+	Program & operator=(Program const& other);
+	Program & operator=(Program && other);
 
-	bool compile(std::string const& code);
+	bool getIsAssembled() const;
 private:
-	std::list<script::Token> tokenize(std::string const& code) const;
-private:
-	ExecutionContext* context;
+	bool isAssembled;
 };
 
 } // namespace script
