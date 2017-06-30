@@ -42,7 +42,7 @@ bool Input::init(const Modification& modification)
 	return true;
 }
 
-void Input::update(float deltaTime)
+void Input::update(float)
 {
 	window.pollEvents();
 }
