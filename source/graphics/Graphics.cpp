@@ -311,7 +311,7 @@ void Graphics::setSkybox(const std::string& name)
 void Graphics::setTerrain(unsigned terrainSize,
 	const std::vector<float>& heightMap, unsigned colorMapSize,
 	const std::vector<gfx::Color>& colorMap,
-	const std::vector<uint8_t>& grassMap)
+	const std::vector<uint8_t>&)
 {
 	if (terrainNode != nullptr)
 	{
