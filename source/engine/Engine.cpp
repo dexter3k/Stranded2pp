@@ -16,8 +16,7 @@
 
 const unsigned Engine::gameTimeRatio = 500; // 500ms per game minute
 
-Engine::Engine(Input& input, gfx::Graphics& graphics, Network& network,
-		Sound& sound) :
+Engine::Engine(Input&, gfx::Graphics& graphics, Network&, Sound&) :
 	//input(input),
 	graphics(graphics),
 	//network(network),
@@ -212,8 +211,8 @@ void Engine::resetGame()
 }
 
 void Engine::setupGame(uint32_t day, uint8_t hour, uint8_t minute,
-	bool timeIsFreezed, const std::string& skybox, bool multiplayerMap,
-	uint8_t climate, const std::string& music, const std::string& briefScript)
+	bool, const std::string& skybox, bool multiplayerMap,
+	uint8_t, const std::string&, const std::string&)
 {
 	if (multiplayerMap)
 	{
@@ -229,7 +228,7 @@ void Engine::setupGame(uint32_t day, uint8_t hour, uint8_t minute,
 	//mapScript.compile(briefScript);
 }
 
-void Engine::setupQuickslots(const std::vector<std::string>& quickslots)
+void Engine::setupQuickslots(const std::vector<std::string>&)
 {
 	// Setup those quickslots
 }
