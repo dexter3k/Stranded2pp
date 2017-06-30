@@ -1,16 +1,12 @@
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
 
 #include "Stranded.h"
 
-int main(int argc, char* argv[])
+int main(int argc, char * argv[])
 {
-	std::vector<std::string> arguments;
-	for (int i = 1; i < argc; ++i)
-	{
-		arguments.push_back(std::string(argv[i]));
-	}
+	std::vector<std::string> arguments(argv+1, argv+argc);
 
 	Stranded game;
 	if (game.init(arguments))
