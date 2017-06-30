@@ -43,7 +43,7 @@ class Stranded
 	};
 	friend class QuitEventHandler;
 public:
-	Stranded();
+	Stranded(std::vector<std::string> const & arguments);
 	~Stranded();
 
 	bool init(const std::vector<std::string>& arguments);
@@ -72,5 +72,5 @@ private:
 
 	std::shared_ptr<Engine>		engine;
 
-	bool isRunning;
+	bool shouldStop;
 };

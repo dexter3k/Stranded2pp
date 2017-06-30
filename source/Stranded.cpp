@@ -13,7 +13,7 @@
 
 const std::string Stranded::defaultModificationName = "Stranded II";
 
-Stranded::Stranded() :
+Stranded::Stranded(std::vector<std::string> const & arguments) :
 	modification(new Modification(defaultModificationName)),
 	window(new Window()),
 	input(new Input(*window)),
@@ -22,8 +22,10 @@ Stranded::Stranded() :
 	network(new Network()),
 	sound(new Sound()),
 	engine(new Engine(*input, *graphics, *network, *sound)),
-	isRunning(false)
-{}
+	shouldStop(false)
+{
+	this->init(arguments);
+}
 
 Stranded::~Stranded()
 {}
@@ -72,19 +74,18 @@ bool Stranded::init(const std::vector<std::string>& arguments)
 		return false;
 	}
 
-	printWelcomeMessage();
-
 	return true;
 }
 
 void Stranded::run()
 {
+	printWelcomeMessage();
+
 	float deltaTime = 0.0f;
 
 	Timer deltaTimer;
 
-	isRunning = true;
-	while (isRunning)
+	while (!shouldStop)
 	{
 		deltaTime = deltaTimer.restart();
 
@@ -102,7 +103,7 @@ void Stranded::run()
 
 void Stranded::stop()
 {
-	isRunning = false;
+	shouldStop = true;
 }
 
 bool Stranded::parseArguments(const std::vector<std::string>& arguments)
