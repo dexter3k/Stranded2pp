@@ -9,7 +9,7 @@ LinuxLinkerFlags = -lGL
 MacLinkerFlags = -framework OpenGL
 
 CXX = g++
-CXXFLAGS = -Wall -Wextra -pedantic -std=c++14 -I./
+CXXFLAGS = -Wall -Wextra -Werror -pedantic -std=c++14 -I./
 LDFLAGS = $(SFMLDeps) -lpthread
 
 UNAME_S := $(shell uname -s)
