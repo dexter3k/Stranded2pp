@@ -18,8 +18,7 @@ MainMenuScreen::InputHandler::InputHandler(Input& input,
 	mainMenuScreen(mainMenuScreen)
 {}
 
-bool MainMenuScreen::InputHandler::onMouseButtonPressed(uint8_t button, int x,
-	int y)
+bool MainMenuScreen::InputHandler::onMouseButtonPressed(uint8_t, int, int)
 {
 	return false;
 }
