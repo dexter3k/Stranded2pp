@@ -182,8 +182,6 @@ void Input::addRawInputHandler(RawInputHandler* rawInputHandler)
 {
 	assert(rawInputHandler != nullptr);
 
-	std::cout << "Adding handler: " << rawInputHandler << std::endl;
-
 	unsigned size = rawInputHandlers.size();
 	for (unsigned i = 0; i < size; ++i)
 	{
@@ -196,8 +194,6 @@ void Input::addRawInputHandler(RawInputHandler* rawInputHandler)
 void Input::removeRawInputHandler(RawInputHandler* rawInputHandler)
 {
 	assert(rawInputHandler != nullptr);
-
-	std::cout << "Removing handler: " << rawInputHandler << std::endl;
 
 	unsigned size = rawInputHandlers.size();
 	for (unsigned i = 0; i < size; ++i)
