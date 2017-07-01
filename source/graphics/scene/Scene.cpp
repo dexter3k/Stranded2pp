@@ -256,7 +256,7 @@ Scene::SceneNodeRenderPass Scene::getCurrentRenderPass() const
 	return currentRenderPass;
 }
 
-bool Scene::isCulled(const Node* node) const
+bool Scene::isCulled(const Node*) const
 {
 	// TODO
 	return false;
