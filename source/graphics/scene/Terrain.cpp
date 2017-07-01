@@ -17,7 +17,7 @@ namespace scene
 
 Terrain::Terrain(unsigned terrainSize, const std::vector<float>& heightMap,
 		unsigned colorMapSize, const std::vector<gfx::Color>& colorMap,
-		Node* parent, Scene* scene, int id, const math::Vector2f& scale) :
+		Node* parent, Scene* scene, int id, math::Vector2f const &) :
 	super(parent, scene, id, math::Vector3f(0.0f, 0.0f, 0.0f),
 		math::Vector3f(0.0f, 0.0f, 0.0f), math::Vector3f(0.0f, 0.0f, 0.0f)),
 	terrainSize(terrainSize),
