@@ -34,7 +34,7 @@ void Screen::destroy()
 	isCreated = false;
 }
 
-void Screen::update(float deltaTime)
+void Screen::update(float)
 {}
 
 } // namespace gui
