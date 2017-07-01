@@ -34,12 +34,12 @@ IndexBuffer& MeshBuffer::getIndexBuffer() const
 	return *indexBuffer;
 }
 
-void MeshBuffer::setVertexBuffer(VertexBuffer* newVertexBuffer)
+void MeshBuffer::setVertexBuffer(VertexBuffer*)
 {
 	assert(!"TODO");
 }
 
-void MeshBuffer::setIndexBuffer(IndexBuffer* newIndexBuffer)
+void MeshBuffer::setIndexBuffer(IndexBuffer*)
 {
 	assert(!"TODO");
 }
@@ -130,32 +130,32 @@ unsigned MeshBuffer::getIndexCount() const
 	return indexBuffer->getSize();
 }
 
-const math::Vector3f& MeshBuffer::getPosition(unsigned index) const
+const math::Vector3f& MeshBuffer::getPosition(unsigned) const
 {
 	assert(!"TODO");
 }
 
-math::Vector3f& MeshBuffer::getPosition(unsigned index)
+math::Vector3f& MeshBuffer::getPosition(unsigned)
 {
 	assert(!"TODO");
 }
 
-const math::Vector3f& MeshBuffer::getNormal(unsigned index) const
+const math::Vector3f& MeshBuffer::getNormal(unsigned) const
 {
 	assert(!"TODO");
 }
 
-math::Vector3f& MeshBuffer::getNormal(unsigned index)
+math::Vector3f& MeshBuffer::getNormal(unsigned)
 {
 	assert(!"TODO");
 }
 
-const math::Vector2f& MeshBuffer::getTextureCoord(unsigned index) const
+const math::Vector2f& MeshBuffer::getTextureCoord(unsigned) const
 {
 	assert(!"TODO");
 }
 
-math::Vector2f& MeshBuffer::getTextureCoord(unsigned index)
+math::Vector2f& MeshBuffer::getTextureCoord(unsigned)
 {
 	assert(!"TODO");
 }
