@@ -8,7 +8,7 @@ Sound::Sound()
 Sound::~Sound()
 {}
 
-bool Sound::init(const Modification& modification)
+bool Sound::init(const Modification&)
 {
 	return true;
 }
