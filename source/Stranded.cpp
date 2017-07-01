@@ -2,74 +2,53 @@
 
 #include <iostream>
 
-#include "common/Modification.h"
 #include "common/Timer.h"
 #include "engine/Engine.h"
 #include "graphics/Graphics.h"
 #include "input/Input.h"
 #include "network/Network.h"
 #include "sound/Sound.h"
-#include "window/Window.h"
-
-const std::string Stranded::defaultModificationName = "Stranded II";
 
 Stranded::Stranded(std::vector<std::string> const & arguments) :
-	modification(new Modification(defaultModificationName)),
-	window(new Window()),
-	input(new Input(*window)),
+	cmdLineArgs(arguments),
+	modification(cmdLineArgs.modificationName()),
+	window(cmdLineArgs.shouldForceWindowedMode()),
+	input(new Input(window)),
 	quitEventHandler(new QuitEventHandler(input.get(), *this)),
 	graphics(new gfx::Graphics(*input)),
-	network(new Network()),
-	sound(new Sound()),
+	network(),
+	sound(),
 	engine(new Engine(*input, *graphics, *network, *sound)),
 	shouldStop(false)
 {
-	this->init(arguments);
+	this->init();
 }
 
-Stranded::~Stranded()
-{}
-
-bool Stranded::init(const std::vector<std::string>& arguments)
+bool Stranded::init()
 {
-	if (!parseArguments(arguments))
+	if (!modification.init())
 	{
 		return false;
 	}
 
-	if (!modification->init())
+	if (!window.init(modification))
 	{
 		return false;
 	}
 
-	if (!window->init(*modification))
-	{
-		return false;
-	}
-
-	if (!input->init(*modification))
+	if (!input->init(modification))
 	{
 		return false;
 	}
 
 	quitEventHandler->init();
 
-	if (!graphics->init(*modification))
+	if (!graphics->init(modification))
 	{
 		return false;
 	}
 
-	if (!network->init(*modification))
-	{
-		return false;
-	}
-
-	if (!sound->init(*modification))
-	{
-		return false;
-	}
-
-	if (!engine->init(*modification))
+	if (!engine->init(modification))
 	{
 		return false;
 	}
@@ -97,48 +76,13 @@ void Stranded::run()
 
 		graphics->drawAll();
 
-		window->display();
+		window.display();
 	}
 }
 
 void Stranded::stop()
 {
 	shouldStop = true;
-}
-
-bool Stranded::parseArguments(const std::vector<std::string>& arguments)
-{
-	unsigned argumentCount = arguments.size();
-	for (unsigned i = 0; i < argumentCount; ++i)
-	{
-		if (arguments[i] == "-win")
-		{
-			window->startInWindowedMode(true);
-		}
-		else if (arguments[i] == "-mod")
-		{
-			if (++i != argumentCount)
-			{
-				modification->setName(arguments[i]);
-			}
-			else
-			{
-				std::cout << "Error: argument for '" << arguments[i-1] <<
-					"' is missing!" << std::endl;
-
-				return false;
-			}
-		}
-		else
-		{
-			std::cout << "Error: argument '" << arguments[i] << "' is invalid!"
-				<< std::endl;
-
-			return false;
-		}
-	}
-
-	return true;
 }
 
 void Stranded::printWelcomeMessage()

@@ -1,18 +1,19 @@
 #pragma once
 
+#include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
-#include <iostream>
 
+#include "common/CmdLineArgs.h"
+#include "common/Modification.h"
 #include "input/RawInputHandler.h"
+#include "window/Window.h"
 
 class Engine;
 class Input;
-class Modification;
 class Network;
 class Sound;
-class Window;
 
 namespace gfx
 {
@@ -39,27 +40,24 @@ class Stranded
 			return false;
 		}
 	private:
-		Stranded& stranded;
+		Stranded & stranded;
 	};
 	friend class QuitEventHandler;
 public:
 	Stranded(std::vector<std::string> const & arguments);
-	~Stranded();
 
-	bool init(const std::vector<std::string>& arguments);
+	bool init();
 	void run();
 private:
 	void stop();
 
-	bool parseArguments(const std::vector<std::string>& arguments);
-
 	void printWelcomeMessage();
 private:
-	static const std::string defaultModificationName;
+	common::CmdLineArgs cmdLineArgs;
 
-	std::shared_ptr<Modification> modification;
+	Modification modification;
 
-	std::shared_ptr<Window>		window;
+	Window window;
 
 	std::shared_ptr<Input>		input;
 	std::shared_ptr<QuitEventHandler> quitEventHandler;

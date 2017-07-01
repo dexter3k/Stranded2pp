@@ -10,8 +10,7 @@ class Modification;
 class Window
 {
 public:
-	Window();
-	~Window();
+	Window(bool forceWindowedMode);
 
 	bool init(const Modification& modification);
 

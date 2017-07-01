@@ -7,13 +7,10 @@
 #include "input/Input.h"
 #include "input/Keyboard.h"
 
-Window::Window() :
+Window::Window(bool forceWindowedMode) :
 	window(),
-	shouldStartInWindowedMode(false),
+	shouldStartInWindowedMode(forceWindowedMode),
 	input(nullptr)
-{}
-
-Window::~Window()
 {}
 
 bool Window::init(const Modification& modification)
