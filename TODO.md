@@ -10,7 +10,7 @@ ASAP!
 ## Medium priority
 Just after High priority tasks
 
-* Nope
+* Write COMPILING.md
 
 ## Low priority
 U probably got that logic
