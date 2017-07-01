@@ -3,9 +3,9 @@
 ## High priority
 ASAP!
 
-* Move to CMake build system
 * Rewrite all the trash
 * Add details to this list
+* [Done] Move to CMake build system
 
 ## Medium priority
 Just after High priority tasks
