@@ -39,7 +39,7 @@ bool RawInputHandler::onClosed()
 	return false;
 }
 
-bool RawInputHandler::onResized(unsigned newWidth, unsigned newHeight)
+bool RawInputHandler::onResized(unsigned, unsigned)
 {
 	return false;
 }
@@ -54,37 +54,37 @@ bool RawInputHandler::onGainedFocus()
 	return false;
 }
 
-bool RawInputHandler::onTextEntered(uint32_t symbol)
+bool RawInputHandler::onTextEntered(uint32_t)
 {
 	return false;
 }
 
-bool RawInputHandler::onKeyPressed(uint8_t key, bool alt, bool control, bool shift, bool super)
+bool RawInputHandler::onKeyPressed(uint8_t, bool, bool, bool, bool)
 {
 	return false;
 }
 
-bool RawInputHandler::onKeyReleased(uint8_t key, bool alt, bool control, bool shift, bool super)
+bool RawInputHandler::onKeyReleased(uint8_t, bool, bool, bool, bool)
 {
 	return false;
 }
 
-bool RawInputHandler::onMouseWheelScrolled(float delta, int x, int y)
+bool RawInputHandler::onMouseWheelScrolled(float, int, int)
 {
 	return false;
 }
 
-bool RawInputHandler::onMouseButtonPressed(uint8_t button, int x, int y)
+bool RawInputHandler::onMouseButtonPressed(uint8_t, int, int)
 {
 	return false;
 }
 
-bool RawInputHandler::onMouseButtonReleased(uint8_t button, int x, int y)
+bool RawInputHandler::onMouseButtonReleased(uint8_t, int, int)
 {
 	return false;
 }
 
-bool RawInputHandler::onMouseMoved(int x, int y)
+bool RawInputHandler::onMouseMoved(int, int)
 {
 	return false;
 }
