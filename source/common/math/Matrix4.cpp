@@ -122,7 +122,7 @@ Matrix4 Matrix4::operator*(const Matrix4& other) const
 	return mat;
 }
 
-Matrix4 Matrix4::operator*(float scalar) const
+Matrix4 Matrix4::operator*(float) const
 {
 	assert(false && "TODO");
 }
@@ -164,7 +164,7 @@ Matrix4& Matrix4::operator*=(const Matrix4& other)
 	return *this;
 }
 
-Matrix4& Matrix4::operator*=(float scalar)
+Matrix4& Matrix4::operator*=(float)
 {
 	assert(false && "TODO");
 }
