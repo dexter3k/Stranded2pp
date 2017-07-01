@@ -1,10 +1,12 @@
 #! /bin/bash
 
-if [ -f source/Makefile ];
+if [ -d build ];
 then
-	cd source
+	cd build
 
-	make clean
-
-	cd ..
+	# Remove common CMake data
+	rm -rf CMakeFiles
+	rm -f cmake_install.cmake
+	rm -f CMakeCache.txt
+	rm -f Makefile
 fi

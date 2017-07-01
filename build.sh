@@ -1,13 +1,11 @@
 #! /bin/bash
+set -e
 
 # Ensure that build directory exists
 mkdir -p build
 
-if [ -f source/Makefile ];
-then
-	cd source
+# Launch CMake
+cd build
 
-	make debug
-
-	cd ..
-fi
+cmake ..
+make
