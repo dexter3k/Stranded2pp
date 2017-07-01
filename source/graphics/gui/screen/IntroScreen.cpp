@@ -17,22 +17,19 @@ namespace gui
 
 const std::string IntroScreen::logoTextureName = "sys/gfx/logo.bmp";
 
-IntroScreen::InputHandler::InputHandler(Input& input,
-		IntroScreen& introScreen) :
+IntroScreen::InputHandler::InputHandler(Input& input, IntroScreen& introScreen) :
 	super(&input),
 	introScreen(introScreen)
 {}
 
-bool IntroScreen::InputHandler::onKeyPressed(uint8_t key, bool alt,
-	bool control, bool shift, bool super)
+bool IntroScreen::InputHandler::onKeyPressed(uint8_t, bool, bool, bool, bool)
 {
 	introScreen.skipIntro();
 
 	return false;
 }
 
-bool IntroScreen::InputHandler::onMouseButtonPressed(uint8_t button, int x,
-	int y)
+bool IntroScreen::InputHandler::onMouseButtonPressed(uint8_t, int, int)
 {
 	introScreen.skipIntro();
 
