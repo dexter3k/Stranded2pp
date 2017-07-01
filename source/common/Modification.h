@@ -58,11 +58,7 @@ public:
 public:
 	Modification();
 	Modification(const std::string& modificationName);
-	~Modification();
 
-	bool init();
-
-	void setName(const std::string& newModificationName);
 	std::string getName() const;
 
 	std::string getPath() const;
@@ -83,14 +79,14 @@ private:
 	static const std::string scriptControlsConfigPath;
 	static const std::string settingsConfigPath;
 private:
+	bool init();
+
 	bool loadConfiguration();
 	bool loadControls();
 	bool loadScriptControls();
 	bool loadSettings();
 private:
 	std::string modificationName;
-
-	bool isInitialized;
 
 	Controls controls;
 	ScriptControls scriptControls;

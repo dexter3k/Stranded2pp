@@ -7,10 +7,10 @@
 
 #include "common/CmdLineArgs.h"
 #include "common/Modification.h"
+#include "engine/Engine.h"
 #include "input/RawInputHandler.h"
 #include "window/Window.h"
 
-class Engine;
 class Input;
 class Network;
 class Sound;
@@ -68,7 +68,7 @@ private:
 
 	std::shared_ptr<Sound>		sound;
 
-	std::shared_ptr<Engine>		engine;
+	Engine engine;
 
 	bool shouldStop;
 };

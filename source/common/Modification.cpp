@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <stdexcept>
 #include <vector>
 
 #include "common/FileSystem.h"
@@ -16,21 +17,15 @@ const std::string Modification::scriptControlsConfigPath =
 	"sys/scriptcontrols.cfg";
 const std::string Modification::settingsConfigPath = "sys/settings.cfg";
 
-Modification::Modification() :
-	modificationName(),
-	isInitialized(false),
+Modification::Modification(std::string const & modificationName) :
+	modificationName(modificationName),
 	controls(),
 	scriptControls(),
 	settings()
-{}
-
-Modification::Modification(const std::string& modificationName) :
-	modificationName(modificationName),
-	isInitialized(false)
-{}
-
-Modification::~Modification()
-{}
+{
+	if (!init())
+		throw std::runtime_error("Unable to initialize Modification");
+}
 
 bool Modification::init()
 {
@@ -48,18 +43,7 @@ bool Modification::init()
 		return false;
 	}
 
-	isInitialized = true;
-
-	//std::cout << "Mod init finished" << std::endl;
-
 	return true;
-}
-
-void Modification::setName(const std::string& newModificationName)
-{
-	assert(!isInitialized);
-
-	modificationName = newModificationName;
 }
 
 std::string Modification::getName() const

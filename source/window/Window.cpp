@@ -2,20 +2,23 @@
 
 #include <cassert>
 #include <iostream>
+#include <stdexcept>
 
 #include "common/Modification.h"
 #include "input/Input.h"
 #include "input/Keyboard.h"
 
-Window::Window(bool forceWindowedMode) :
+Window::Window(bool forceWindowedMode, Modification const & modification) :
 	window(),
-	shouldStartInWindowedMode(forceWindowedMode),
 	input(nullptr)
-{}
-
-bool Window::init(const Modification& modification)
 {
-	auto& gameSettings = modification.getSettings();
+	if (!init(forceWindowedMode, modification))
+		throw std::runtime_error("Unable to initialize Window");
+}
+
+bool Window::init(bool forceWindowedMode, const Modification& modification)
+{
+	auto & gameSettings = modification.getSettings();
 
 	// GL context settings
 	sf::ContextSettings contextSettings;
@@ -32,7 +35,7 @@ bool Window::init(const Modification& modification)
 	videoMode.bitsPerPixel = gameSettings.screen.bitsPerPixel;
 
 	// Check fullscreen video mode
-	if (!shouldStartInWindowedMode && !videoMode.isValid())
+	if (!forceWindowedMode && !videoMode.isValid())
 	{
 		std::cout << "Error: invalid video mode! Selecting default..." <<
 			std::endl;
@@ -46,7 +49,7 @@ bool Window::init(const Modification& modification)
 
 	// Create window
 	window.create(videoMode, title,
-		(shouldStartInWindowedMode ?
+		(forceWindowedMode ?
 			(sf::Style::Titlebar | sf::Style::Close) :
 			sf::Style::Fullscreen),
 		contextSettings);
@@ -59,7 +62,7 @@ bool Window::init(const Modification& modification)
 	}
 	else
 	{
-		window.setFramerateLimit(30);
+		window.setFramerateLimit(60);
 	}
 
 	return true;
@@ -168,11 +171,6 @@ void Window::pollEvents()
 			default: break;
 		}
 	}
-}
-
-void Window::startInWindowedMode(bool value)
-{
-	shouldStartInWindowedMode = value;
 }
 
 void Window::registerInput(Input* input)
