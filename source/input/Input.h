@@ -17,10 +17,8 @@ class Input
 {
 	friend class RawInputHandler;
 public:
-	Input(Window& window);
-	~Input();
+	Input(Window & window, Modification const & modification);
 
-	bool init(const Modification& modification);
 	void update(float deltaTime);
 
 	std::string getMouseButtonName(uint8_t button) const;
@@ -48,6 +46,8 @@ private:
 	static const std::string keyNameInfoPath;
 	static const std::string defaultName;
 private:
+	bool init(Modification const & modification);
+
 	void addRawInputHandler(RawInputHandler* rawInputHandler);
 	void removeRawInputHandler(RawInputHandler* rawInputHandler);
 

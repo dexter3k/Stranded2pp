@@ -4,7 +4,6 @@
 
 #include "common/Timer.h"
 #include "graphics/Graphics.h"
-#include "input/Input.h"
 #include "network/Network.h"
 #include "sound/Sound.h"
 
@@ -12,26 +11,21 @@ Stranded::Stranded(std::vector<std::string> const & arguments) :
 	cmdLineArgs(arguments),
 	modification(cmdLineArgs.modificationName()),
 	window(cmdLineArgs.shouldForceWindowedMode(), modification),
-	input(new Input(window)),
-	quitEventHandler(new QuitEventHandler(input.get(), *this)),
-	graphics(new gfx::Graphics(*input)),
+	input(window, modification),
+	quitEventHandler(new QuitEventHandler(&input, *this)),
+	graphics(new gfx::Graphics(input)),
 	network(),
 	sound(),
-	engine(*input, *graphics, *network, *sound),
+	engine(input, *graphics, *network, *sound),
 	shouldStop(false)
 {
 	this->init();
+
+	quitEventHandler->init();
 }
 
 bool Stranded::init()
 {
-	if (!input->init(modification))
-	{
-		return false;
-	}
-
-	quitEventHandler->init();
-
 	if (!graphics->init(modification))
 	{
 		return false;
@@ -57,7 +51,7 @@ void Stranded::run()
 	{
 		deltaTime = deltaTimer.restart();
 
-		input->update(deltaTime);
+		input.update(deltaTime);
 
 		engine.update(deltaTime);
 

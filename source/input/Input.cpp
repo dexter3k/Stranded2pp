@@ -18,19 +18,18 @@
 const std::string Input::keyNameInfoPath = "sys/keys.inf";
 const std::string Input::defaultName = "null";
 
-Input::Input(Window& window) :
+Input::Input(Window & window, Modification const & modification) :
 	window(window),
 	mouseButtonNames(6, defaultName),
 	mouseWheelUpName(defaultName),
 	mouseWheelDownName(defaultName),
 	keyNames(256, defaultName),
 	rawInputHandlers()
-{}
+{
+	init(modification);
+}
 
-Input::~Input()
-{}
-
-bool Input::init(const Modification& modification)
+bool Input::init(Modification const & modification)
 {
 	if (!loadKeyNames(modification.getPath()))
 	{

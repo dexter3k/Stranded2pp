@@ -8,10 +8,10 @@
 #include "common/CmdLineArgs.h"
 #include "common/Modification.h"
 #include "engine/Engine.h"
+#include "input/Input.h"
 #include "input/RawInputHandler.h"
 #include "window/Window.h"
 
-class Input;
 class Network;
 class Sound;
 
@@ -59,7 +59,7 @@ private:
 
 	Window window;
 
-	std::shared_ptr<Input>		input;
+	Input input;
 	std::shared_ptr<QuitEventHandler> quitEventHandler;
 
 	std::shared_ptr<gfx::Graphics>	graphics;
