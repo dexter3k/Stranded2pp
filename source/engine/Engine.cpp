@@ -16,7 +16,7 @@
 
 const unsigned Engine::gameTimeRatio = 500; // 500ms per game minute
 
-Engine::Engine(Input&, gfx::Graphics& graphics, Network&, Sound&) :
+Engine::Engine(Input&, gfx::Graphics& graphics, Network&, Sound&, Modification const & modification) :
 	//input(input),
 	graphics(graphics),
 	//network(network),
@@ -34,12 +34,12 @@ Engine::Engine(Input&, gfx::Graphics& graphics, Network&, Sound&) :
 	timeChanged(false)
 {
 	graphics.getGui().connectEngine(this);
+
+	if (!init(modification))
+		throw std::runtime_error("Unable to init Engine");
 }
 
-Engine::~Engine()
-{}
-
-bool Engine::init(const Modification& modification)
+bool Engine::init(Modification const & modification)
 {
 	modBaseDirectory = modification.getPath();
 

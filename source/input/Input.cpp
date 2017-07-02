@@ -26,7 +26,8 @@ Input::Input(Window & window, Modification const & modification) :
 	keyNames(256, defaultName),
 	rawInputHandlers()
 {
-	init(modification);
+	if (!init(modification))
+		throw std::runtime_error("Unable to init Input");
 }
 
 bool Input::init(Modification const & modification)

@@ -30,10 +30,8 @@ class Engine
 	};
 public:
 	Engine(Input& input, gfx::Graphics& graphics, Network& network,
-		Sound& sound);
-	~Engine();
+		Sound& sound, Modification const & modification);
 
-	bool init(const Modification& modification);
 	void update(float deltaTime);
 
 	void setGameState(GameState newGameState);
@@ -51,6 +49,8 @@ public:
 		unsigned colorMapSize, const std::vector<gfx::Color>& colorMap,
 		const std::vector<uint8_t>& grassMap);
 private:
+	bool init(Modification const & modification);
+
 	bool loadGame();
 	bool parseGameConfig(const std::string& filename);
 private:

@@ -3,9 +3,6 @@
 #include <iostream>
 
 #include "common/Timer.h"
-#include "graphics/Graphics.h"
-#include "network/Network.h"
-#include "sound/Sound.h"
 
 Stranded::Stranded(std::vector<std::string> const & arguments) :
 	cmdLineArgs(arguments),
@@ -13,30 +10,13 @@ Stranded::Stranded(std::vector<std::string> const & arguments) :
 	window(cmdLineArgs.shouldForceWindowedMode(), modification),
 	input(window, modification),
 	quitEventHandler(new QuitEventHandler(&input, *this)),
-	graphics(new gfx::Graphics(input)),
+	graphics(input, modification),
 	network(),
 	sound(),
-	engine(input, *graphics, *network, *sound),
+	engine(input, graphics, network, sound, modification),
 	shouldStop(false)
 {
-	this->init();
-
 	quitEventHandler->init();
-}
-
-bool Stranded::init()
-{
-	if (!graphics->init(modification))
-	{
-		return false;
-	}
-
-	if (!engine.init(modification))
-	{
-		return false;
-	}
-
-	return true;
 }
 
 void Stranded::run()
@@ -55,9 +35,9 @@ void Stranded::run()
 
 		engine.update(deltaTime);
 
-		graphics->update(deltaTime);
+		graphics.update(deltaTime);
 
-		graphics->drawAll();
+		graphics.drawAll();
 
 		window.display();
 	}

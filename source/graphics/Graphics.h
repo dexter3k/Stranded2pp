@@ -40,10 +40,9 @@ class Texture;
 class Graphics
 {
 public:
-	Graphics(Input& input);
+	Graphics(Input & input, Modification const & modification);
 	~Graphics();
 
-	bool init(const Modification& modification);
 	void update(float deltaTime);
 
 	void drawAll();
@@ -55,6 +54,8 @@ public:
 		unsigned colorMapSize, const std::vector<gfx::Color>& colorMap,
 		const std::vector<uint8_t>& grassMap);
 private:
+	bool init(Modification const & modification);
+
 	void setWaterLevel(float level);
 	void setGroundLevel(float level);
 	void setGroundColor(const Color& color);

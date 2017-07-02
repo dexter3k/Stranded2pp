@@ -126,7 +126,7 @@ const std::vector<std::string> Graphics::preloadList = {
 	"sprites/moon_a.png",
 };
 
-Graphics::Graphics(Input& input) :
+Graphics::Graphics(Input & input, Modification const & modification) :
 	input(input),
 	device(new device::OpenGLDevice()),
 	scene(new scene::Scene(*this, device.get())),
@@ -139,7 +139,10 @@ Graphics::Graphics(Input& input) :
 	currentSkyboxName("sky"),
 	waterPlane(nullptr),
 	groundPlane(nullptr)
-{}
+{
+	if (!init(modification))
+		throw std::runtime_error("Unable to init Graphics");
+}
 
 Graphics::~Graphics()
 {
@@ -174,7 +177,7 @@ Graphics::~Graphics()
 	}
 }
 
-bool Graphics::init(const Modification& modification)
+bool Graphics::init(Modification const & modification)
 {
 	basePath = modification.getPath();
 

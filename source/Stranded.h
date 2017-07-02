@@ -8,19 +8,12 @@
 #include "common/CmdLineArgs.h"
 #include "common/Modification.h"
 #include "engine/Engine.h"
+#include "graphics/Graphics.h"
 #include "input/Input.h"
 #include "input/RawInputHandler.h"
+#include "network/Network.h"
+#include "sound/Sound.h"
 #include "window/Window.h"
-
-class Network;
-class Sound;
-
-namespace gfx
-{
-
-	class Graphics;
-
-} // namespace gfx
 
 class Stranded
 {
@@ -46,7 +39,6 @@ class Stranded
 public:
 	Stranded(std::vector<std::string> const & arguments);
 
-	bool init();
 	void run();
 private:
 	void stop();
@@ -62,11 +54,11 @@ private:
 	Input input;
 	std::shared_ptr<QuitEventHandler> quitEventHandler;
 
-	std::shared_ptr<gfx::Graphics>	graphics;
+	gfx::Graphics graphics;
 
-	std::shared_ptr<Network>	network;
+	Network network;
 
-	std::shared_ptr<Sound>		sound;
+	Sound sound;
 
 	Engine engine;
 
