@@ -233,7 +233,7 @@ bool Graphics::init(Modification const & modification)
 	return true;
 }
 
-void Graphics::update(float deltaTime)
+void Graphics::update(double deltaTime)
 {
 	auto camera = scene->getActiveCamera();
 	if (camera != nullptr)

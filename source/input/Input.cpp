@@ -42,7 +42,7 @@ bool Input::init(Modification const & modification)
 	return true;
 }
 
-void Input::update(float)
+void Input::update(double)
 {
 	window.pollEvents();
 }

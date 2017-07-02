@@ -53,7 +53,7 @@ bool Engine::init(Modification const & modification)
 	return true;
 }
 
-void Engine::update(float deltaTime)
+void Engine::update(double deltaTime)
 {
 	switch (gameState)
 	{
@@ -68,7 +68,7 @@ void Engine::update(float deltaTime)
 		{
 			if (!isTimePaused)
 			{
-				timeCounter += static_cast<long long>(deltaTime * 1000000.0f);
+				timeCounter += static_cast<long long>(deltaTime * 1000000.0);
 
 				if (timeCounter >= gameTimeRatio * 1000)
 				{

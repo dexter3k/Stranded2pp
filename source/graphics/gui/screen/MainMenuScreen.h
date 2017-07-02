@@ -36,7 +36,7 @@ public:
 	void create() override;
 	void destroy() override;
 
-	void update(float deltaTime) override;
+	void update(double deltaTime) override;
 private:
 	std::shared_ptr<InputHandler> inputHandler;
 

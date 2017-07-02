@@ -55,7 +55,7 @@ public:
 	~Gui();
 
 	bool init(const Modification& modification);
-	void update(float deltaTime);
+	void update(double deltaTime);
 
 	void drawAll();
 

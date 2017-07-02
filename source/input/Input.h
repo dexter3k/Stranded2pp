@@ -19,7 +19,7 @@ class Input
 public:
 	Input(Window & window, Modification const & modification);
 
-	void update(float deltaTime);
+	void update(double deltaTime);
 
 	std::string getMouseButtonName(uint8_t button) const;
 	std::string getMouseWheelUpName() const;

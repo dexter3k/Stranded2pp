@@ -39,11 +39,11 @@ bool IntroScreen::InputHandler::onMouseButtonPressed(uint8_t, int, int)
 IntroScreen::IntroScreen(Gui& gui, Input& input) :
 	super(gui),
 	inputHandler(new InputHandler(input, *this)),
-	maxShowTime(3.0f),
-	fadeStart(0.80f),
+	maxShowTime(3.0),
+	fadeStart(0.80),
 	fadeColor(0, 0, 0),
 	introImage(nullptr),
-	showTime(0.0f)
+	showTime(0.0)
 {}
 
 IntroScreen::~IntroScreen()
@@ -53,7 +53,7 @@ void IntroScreen::create()
 {
 	super::create();
 
-	showTime = 0.0f;
+	showTime = 0.0;
 
 	device::Device* device = gui.getDevice();
 	if (device != nullptr)
@@ -84,7 +84,7 @@ void IntroScreen::destroy()
 	super::destroy();
 }
 
-void IntroScreen::update(float deltaTime)
+void IntroScreen::update(double deltaTime)
 {
 	showTime += deltaTime;
 	if (showTime > maxShowTime)

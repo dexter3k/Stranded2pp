@@ -23,7 +23,7 @@ public:
 	virtual void create();
 	virtual void destroy();
 
-	virtual void update(float deltaTime);
+	virtual void update(double deltaTime);
 protected:
 	Gui& gui;
 

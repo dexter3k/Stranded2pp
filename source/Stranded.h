@@ -52,7 +52,7 @@ private:
 	Window window;
 
 	Input input;
-	std::shared_ptr<QuitEventHandler> quitEventHandler;
+	QuitEventHandler quitEventHandler;
 
 	gfx::Graphics graphics;
 

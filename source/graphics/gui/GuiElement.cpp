@@ -44,7 +44,7 @@ GuiElement::~GuiElement()
 	}
 }
 
-void GuiElement::onAnimate(float deltaTime)
+void GuiElement::onAnimate(double deltaTime)
 {
 	if (isVisible)
 	{

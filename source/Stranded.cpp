@@ -9,21 +9,21 @@ Stranded::Stranded(std::vector<std::string> const & arguments) :
 	modification(cmdLineArgs.modificationName()),
 	window(cmdLineArgs.shouldForceWindowedMode(), modification),
 	input(window, modification),
-	quitEventHandler(new QuitEventHandler(&input, *this)),
+	quitEventHandler(&input, *this),
 	graphics(input, modification),
 	network(),
 	sound(),
 	engine(input, graphics, network, sound, modification),
 	shouldStop(false)
 {
-	quitEventHandler->init();
+	quitEventHandler.init();
 }
 
 void Stranded::run()
 {
 	printWelcomeMessage();
 
-	float deltaTime = 0.0f;
+	double deltaTime = 0.0f;
 
 	Timer deltaTimer;
 
@@ -52,17 +52,13 @@ void Stranded::printWelcomeMessage()
 {
 	std::cout << "\n";
 	for (unsigned i = 0; i < 80; ++i)
-	{
 		std::cout << "*";
-	}
 	std::cout << "\n";
 	std::cout << "Welcome to Stranded2++\n";
 	std::cout << "Web: www.github.com/SMemsky/Stranded2pp\n";
 	std::cout << "Mail: schooldev3000@gmail.com\n";
 	std::cout << "Original game: www.stranded.unrealsoftware.de\n";
 	for (unsigned i = 0; i < 80; ++i)
-	{
 		std::cout << "*";
-	}
 	std::cout << "\n" << std::endl;
 }

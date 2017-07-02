@@ -43,7 +43,7 @@ public:
 	Graphics(Input & input, Modification const & modification);
 	~Graphics();
 
-	void update(float deltaTime);
+	void update(double deltaTime);
 
 	void drawAll();
 

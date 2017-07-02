@@ -20,7 +20,7 @@ public:
 		const math::Vector2i& position = math::Vector2i(0, 0));
 	virtual ~GuiElement();
 
-	virtual void onAnimate(float deltaTime);
+	virtual void onAnimate(double deltaTime);
 	virtual void onDraw();
 	virtual bool onMouseButtonPressed(uint8_t button, int x, int y);
 	virtual bool onMouseMoved(int x, int y);

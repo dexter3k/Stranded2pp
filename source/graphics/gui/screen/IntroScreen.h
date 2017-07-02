@@ -40,7 +40,7 @@ public:
 	void create() override;
 	void destroy() override;
 
-	void update(float deltaTime) override;
+	void update(double deltaTime) override;
 private:
 	void skipIntro();
 private:
@@ -48,13 +48,13 @@ private:
 private:
 	std::shared_ptr<InputHandler> inputHandler;
 
-	const float maxShowTime;
-	const float fadeStart;
+	const double maxShowTime;
+	const double fadeStart;
 	Color fadeColor;
 
 	GuiBackgroundImage* introImage;
 
-	float showTime;
+	double showTime;
 };
 
 } // namespace gui

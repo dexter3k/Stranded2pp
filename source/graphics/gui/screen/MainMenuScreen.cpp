@@ -69,7 +69,7 @@ void MainMenuScreen::destroy()
 	super::destroy();
 }
 
-void MainMenuScreen::update(float deltaTime)
+void MainMenuScreen::update(double deltaTime)
 {
 	super::update(deltaTime);
 }

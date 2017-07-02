@@ -34,7 +34,7 @@ void Screen::destroy()
 	isCreated = false;
 }
 
-void Screen::update(float)
+void Screen::update(double)
 {}
 
 } // namespace gui

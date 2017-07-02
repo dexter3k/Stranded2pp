@@ -81,7 +81,7 @@ bool Gui::init(const Modification& modification)
 	return true;
 }
 
-void Gui::update(float deltaTime)
+void Gui::update(double deltaTime)
 {
 	screenSize = device->getRenderTargetSize();
 

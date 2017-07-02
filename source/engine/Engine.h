@@ -32,7 +32,7 @@ public:
 	Engine(Input& input, gfx::Graphics& graphics, Network& network,
 		Sound& sound, Modification const & modification);
 
-	void update(float deltaTime);
+	void update(double deltaTime);
 
 	void setGameState(GameState newGameState);
 	GameState getGameState() const;

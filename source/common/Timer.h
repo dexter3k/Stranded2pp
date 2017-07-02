@@ -1,32 +1,25 @@
 #pragma once
 
-#include <iostream>
-
 #include <SFML/System/Clock.hpp>
-
-
-// TODO: ASCII art that clearly explains how this class works
-
 
 class Timer
 {
 public:
 	Timer();
-	~Timer();
 
-	float getElapsedTime() const;
+	double getElapsedTime() const;
 
 	void start();
-	float restart();
-	float stop();
+	double restart();
+	double stop();
 
-	float pause();
-	float unpause();
+	double pause();
+	double unpause();
 private:
 	sf::Clock timer;
 
-	float pauseStart;
-	float overallPauseTime;
+	double pauseStart;
+	double overallPauseTime;
 
 	bool isStarted;
 	bool isPaused;

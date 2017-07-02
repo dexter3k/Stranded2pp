@@ -8,10 +8,7 @@ Timer::Timer() :
 	isPaused(false)
 {}
 
-Timer::~Timer()
-{}
-
-float Timer::getElapsedTime() const
+double Timer::getElapsedTime() const
 {
 	if (!isStarted)
 	{
@@ -33,18 +30,18 @@ void Timer::start()
 	timer.restart();
 }
 
-float Timer::restart()
+double Timer::restart()
 {
-	float runTime = stop();
+	double runTime = stop();
 
 	start();
 
 	return runTime;
 }
 
-float Timer::stop()
+double Timer::stop()
 {
-	float runTime = timer.getElapsedTime().asSeconds() - overallPauseTime;
+	double runTime = timer.getElapsedTime().asSeconds() - overallPauseTime;
 
 	isStarted = false;
 	pauseStart = 0.0f;
@@ -53,7 +50,7 @@ float Timer::stop()
 	return runTime;
 }
 
-float Timer::pause()
+double Timer::pause()
 {
 	pauseStart = getElapsedTime();
 
@@ -62,11 +59,11 @@ float Timer::pause()
 	return pauseStart;
 }
 
-float Timer::unpause()
+double Timer::unpause()
 {
 	isPaused = false;
 
-	float pauseTime = getElapsedTime() - pauseStart;
+	double pauseTime = getElapsedTime() - pauseStart;
 	overallPauseTime += pauseTime;
 
 	return pauseTime;
