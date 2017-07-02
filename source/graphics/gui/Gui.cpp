@@ -44,7 +44,6 @@ bool Gui::InputHandler::onMouseMoved(int x, int y)
 Gui::Gui(Input& input, device::Device* device) :
 	RootElement(nullptr, this),
 	inputHandler(input, *this),
-	input(input),
 	device(device),
 	engine(nullptr),
 	currentScreen(nullptr),

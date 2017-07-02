@@ -89,7 +89,6 @@ public:
 	device::Device* getDevice() const;
 	const std::string& getModPath() const;
 private:
-	Input& input;
 	device::Device* device;
 	Engine* engine;
 

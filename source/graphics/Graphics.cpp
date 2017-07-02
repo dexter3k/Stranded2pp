@@ -127,7 +127,6 @@ const std::vector<std::string> Graphics::preloadList = {
 };
 
 Graphics::Graphics(Input & input, Modification const & modification) :
-	input(input),
 	device(new device::OpenGLDevice()),
 	scene(new scene::Scene(*this, device.get())),
 	gui(new gui::Gui(input, device.get())),

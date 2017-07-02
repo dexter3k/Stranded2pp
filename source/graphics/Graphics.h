@@ -76,8 +76,6 @@ private:
 	static const std::vector<std::string> skyboxPostfixes;
 	static const std::vector<std::string> preloadList;
 private:
-	Input& input;
-
 	std::shared_ptr<device::Device> device;
 	std::shared_ptr<scene::Scene> scene;
 	std::shared_ptr<gui::Gui> gui;

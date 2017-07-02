@@ -13,9 +13,9 @@ namespace gui
 {
 
 MainMenuScreen::InputHandler::InputHandler(Input& input,
-		MainMenuScreen& mainMenuScreen) :
-	super(&input),
-	mainMenuScreen(mainMenuScreen)
+		MainMenuScreen &) :
+	super(&input)
+	//mainMenuScreen(mainMenuScreen)
 {}
 
 bool MainMenuScreen::InputHandler::onMouseButtonPressed(uint8_t, int, int)

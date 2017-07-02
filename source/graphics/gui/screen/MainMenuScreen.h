@@ -26,7 +26,7 @@ class MainMenuScreen : public Screen
 
 		bool onMouseButtonPressed(uint8_t button, int x, int y) override;
 	private:
-		MainMenuScreen& mainMenuScreen;
+		//MainMenuScreen& mainMenuScreen;
 	};
 	friend class InputHandler;
 public:
