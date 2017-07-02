@@ -10,8 +10,8 @@ public:
 	RawInputHandler(Input* input);
 	virtual ~RawInputHandler();
 
-	void init();
-	void remove();
+	void attach();
+	void detach();
 
 	virtual bool onClosed();
 	virtual bool onResized(unsigned newWidth, unsigned newHeight);

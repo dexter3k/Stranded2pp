@@ -17,14 +17,14 @@ RawInputHandler::~RawInputHandler()
 	}
 }
 
-void RawInputHandler::init()
+void RawInputHandler::attach()
 {
 	input->addRawInputHandler(this);
 
 	isRegistered = true;
 }
 
-void RawInputHandler::remove()
+void RawInputHandler::detach()
 {
 	if (isRegistered)
 	{	

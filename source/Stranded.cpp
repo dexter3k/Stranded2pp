@@ -16,7 +16,7 @@ Stranded::Stranded(std::vector<std::string> const & arguments) :
 	engine(input, graphics, network, sound, modification),
 	shouldStop(false)
 {
-	quitEventHandler.init();
+	quitEventHandler.attach();
 }
 
 void Stranded::run()

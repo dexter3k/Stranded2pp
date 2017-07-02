@@ -46,12 +46,12 @@ void MainMenuScreen::create()
 			math::Vector2i(50, 50));
 	}
 
-	inputHandler->init();
+	inputHandler->attach();
 }
 
 void MainMenuScreen::destroy()
 {
-	inputHandler->remove();
+	inputHandler->detach();
 
 	if (testButton != nullptr)
 	{

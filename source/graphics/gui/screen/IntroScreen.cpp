@@ -62,12 +62,12 @@ void IntroScreen::create()
 			device->grabTexture(gui.getModPath() + logoTextureName));
 	}
 
-	inputHandler->init();
+	inputHandler->attach();
 }
 
 void IntroScreen::destroy()
 {
-	inputHandler->remove();
+	inputHandler->detach();
 
 	if (introImage != nullptr)
 	{

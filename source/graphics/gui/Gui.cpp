@@ -57,7 +57,7 @@ Gui::Gui(Input& input, device::Device* device) :
 
 Gui::~Gui()
 {
-	inputHandler.remove();
+	inputHandler.detach();
 
 	if (currentScreen != nullptr)
 	{
@@ -76,7 +76,7 @@ bool Gui::init(const Modification& modification)
 
 	screenSize = device->getRenderTargetSize();
 
-	inputHandler.init();
+	inputHandler.attach();
 
 	return true;
 }
