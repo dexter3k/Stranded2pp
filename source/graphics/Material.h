@@ -5,7 +5,7 @@
 #include "Color.h"
 #include "Texture.h"
 
-#include "common/math/Matrix4.h"
+#include "math/Matrix4.h"
 
 namespace gfx
 {

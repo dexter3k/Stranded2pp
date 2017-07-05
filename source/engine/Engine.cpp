@@ -6,13 +6,12 @@
 
 #include "SaveGameUtils.h"
 #include "script/Compiler.h"
-
 #include "common/FileSystem.h"
 #include "common/Modification.h"
-#include "common/ParseUtils.h"
-#include "common/StringUtils.h"
 #include "graphics/Graphics.h"
 #include "graphics/gui/Gui.h"
+#include "utils/ParseUtils.h"
+#include "utils/StringUtils.h"
 
 const unsigned Engine::gameTimeRatio = 500; // 500ms per game minute
 

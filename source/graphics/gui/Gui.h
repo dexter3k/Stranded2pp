@@ -6,7 +6,7 @@
 
 #include "screen/Screen.h"
 #include "../Color.h"
-#include "common/math/Rect.h"
+#include "math/Rect.h"
 
 #include "GuiElement.h"
 

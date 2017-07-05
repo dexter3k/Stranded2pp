@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "common/math/MathUtility.h"
+#include "math/MathUtility.h"
 
 namespace math
 {

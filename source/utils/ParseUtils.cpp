@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "common/StringUtils.h"
+#include "utils/StringUtils.h"
 
 namespace parser
 {

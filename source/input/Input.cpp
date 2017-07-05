@@ -7,8 +7,8 @@
 
 #include "Stranded.h"
 #include "common/Modification.h"
-#include "common/ParseUtils.h"
-#include "common/StringUtils.h"
+#include "utils/ParseUtils.h"
+#include "utils/StringUtils.h"
 #include "window/Window.h"
 
 const std::string Input::keyNameInfoPath = "sys/keys.inf";

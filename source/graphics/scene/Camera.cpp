@@ -6,7 +6,7 @@
 #include "Scene.h"
 #include "../device/Device.h"
 
-#include "common/math/MathUtility.h"
+#include "math/MathUtility.h"
 
 namespace gfx
 {

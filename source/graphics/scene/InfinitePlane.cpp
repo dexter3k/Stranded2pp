@@ -7,11 +7,11 @@
 #include "../IndexSize.h"
 #include "../device/Device.h"
 
-#include "common/math/Frustum.h"
-#include "common/math/Line.h"
-#include "common/math/Matrix4.h"
-#include "common/math/Plane.h"
-#include "common/math/Vector3.h"
+#include "math/Frustum.h"
+#include "math/Line.h"
+#include "math/Matrix4.h"
+#include "math/Plane.h"
+#include "math/Vector3.h"
 
 namespace gfx
 {

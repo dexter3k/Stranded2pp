@@ -6,8 +6,8 @@
 
 #include "common/FileSystem.h"
 #include "common/RingBuffer.h"
-#include "common/math/Vector2.h"
-#include "common/math/Vector3.h"
+#include "math/Vector2.h"
+#include "math/Vector3.h"
 #include "graphics/Image.h"
 #include "graphics/Color.h"
 

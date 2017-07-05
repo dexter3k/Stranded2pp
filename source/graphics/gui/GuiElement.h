@@ -3,7 +3,7 @@
 #include <list>
 #include <string>
 
-#include "common/math/Vector2.h"
+#include "math/Vector2.h"
 
 namespace gfx
 {

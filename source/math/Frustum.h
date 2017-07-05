@@ -1,8 +1,8 @@
 #pragma once
 
-#include "common/math/Matrix4.h"
-#include "common/math/Plane.h"
-#include "common/math/Vector3.h"
+#include "math/Matrix4.h"
+#include "math/Plane.h"
+#include "math/Vector3.h"
 
 namespace math
 {

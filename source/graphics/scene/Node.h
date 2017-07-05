@@ -3,8 +3,8 @@
 #include <list>
 #include <string>
 
-#include "common/math/Matrix4.h"
-#include "common/math/Vector3.h"
+#include "math/Matrix4.h"
+#include "math/Vector3.h"
 
 namespace gfx
 {

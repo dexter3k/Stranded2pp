@@ -2,8 +2,8 @@
 
 #include "GuiElement.h"
 
-#include "common/math/Rect.h"
-#include "common/math/Vector2.h"
+#include "math/Rect.h"
+#include "math/Vector2.h"
 
 namespace gfx
 {

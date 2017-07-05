@@ -8,8 +8,8 @@
 #include "Material.h"
 #include "Vertex3D.h"
 
-#include "common/math/Vector2.h"
-#include "common/math/Vector3.h"
+#include "math/Vector2.h"
+#include "math/Vector3.h"
 
 namespace gfx
 {

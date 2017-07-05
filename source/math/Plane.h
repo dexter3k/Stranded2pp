@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/math/Line.h"
-#include "common/math/Vector3.h"
+#include "math/Line.h"
+#include "math/Vector3.h"
 
 namespace math
 {

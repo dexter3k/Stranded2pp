@@ -2,8 +2,8 @@
 
 #include "Node.h"
 
-#include "common/math/Frustum.h"
-#include "common/math/Matrix4.h"
+#include "math/Frustum.h"
+#include "math/Matrix4.h"
 
 namespace gfx
 {

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "graphics/Color.h"
-#include "common/math/Vector2.h"
-#include "common/math/Vector3.h"
+#include "math/Vector2.h"
+#include "math/Vector3.h"
 
 namespace gfx
 {

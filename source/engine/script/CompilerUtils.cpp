@@ -1,6 +1,6 @@
 #include "CompilerUtils.h"
 
-#include "common/ParseUtils.h"
+#include "utils/ParseUtils.h"
 
 namespace script
 {

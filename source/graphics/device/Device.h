@@ -6,10 +6,10 @@
 #include "../IndexSize.h"
 #include "../Vertex3D.h"
 
-#include "common/math/Matrix4.h"
-#include "common/math/Rect.h"
-#include "common/math/Vector2.h"
-#include "common/math/Vector3.h"
+#include "math/Matrix4.h"
+#include "math/Rect.h"
+#include "math/Vector2.h"
+#include "math/Vector3.h"
 
 namespace gfx
 {

@@ -4,7 +4,7 @@
 
 #include "Color.h"
 
-#include "common/math/Vector2.h"
+#include "math/Vector2.h"
 
 namespace gfx
 {

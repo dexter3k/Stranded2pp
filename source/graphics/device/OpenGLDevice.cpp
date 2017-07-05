@@ -7,7 +7,7 @@
 
 #include "../MeshBuffer.h"
 
-#include "common/math/MathUtility.h"
+#include "math/MathUtility.h"
 #include "common/FileSystem.h"
 
 namespace gfx

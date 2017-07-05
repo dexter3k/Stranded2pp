@@ -6,8 +6,8 @@
 #include "Node.h"
 
 #include "common/Timer.h"
-#include "common/math/Vector2.h"
-#include "common/math/Vector3.h"
+#include "math/Vector2.h"
+#include "math/Vector3.h"
 #include "graphics/Color.h"
 
 class Modification;

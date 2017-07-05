@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/math/Vector3.h"
+#include "math/Vector3.h"
 
 namespace math
 {
