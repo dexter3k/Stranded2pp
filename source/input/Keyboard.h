@@ -127,5 +127,5 @@ namespace kb
 		Menu
 	};
 
-	uint8_t sfmlToBlitz(const sf::Keyboard::Key& key);
+	uint8_t sfmlToBlitz(sf::Keyboard::Key key);
 } // namespace kb

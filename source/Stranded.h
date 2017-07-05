@@ -1,7 +1,6 @@
 #pragma once
 
 #include <iostream>
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -10,39 +9,18 @@
 #include "engine/Engine.h"
 #include "graphics/Graphics.h"
 #include "input/Input.h"
-#include "input/RawInputHandler.h"
 #include "network/Network.h"
 #include "sound/Sound.h"
 #include "window/Window.h"
 
 class Stranded
 {
-	class QuitEventHandler : public RawInputHandler
-	{
-		typedef RawInputHandler super;
-	public:
-		QuitEventHandler(Input* input, Stranded& stranded) :
-			super(input),
-			stranded(stranded)
-		{}
-
-		bool onClosed() override
-		{
-			stranded.stop();
-
-			return false;
-		}
-	private:
-		Stranded & stranded;
-	};
-	friend class QuitEventHandler;
 public:
 	Stranded(std::vector<std::string> const & arguments);
 
 	void run();
+	void stopLoop();
 private:
-	void stop();
-
 	void printWelcomeMessage();
 private:
 	common::CmdLineArgs cmdLineArgs;
@@ -52,7 +30,6 @@ private:
 	Window window;
 
 	Input input;
-	QuitEventHandler quitEventHandler;
 
 	gfx::Graphics graphics;
 

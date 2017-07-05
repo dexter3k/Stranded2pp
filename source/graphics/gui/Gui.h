@@ -10,8 +10,6 @@
 
 #include "GuiElement.h"
 
-#include "input/RawInputHandler.h"
-
 class Engine;
 class Input;
 class Modification;
@@ -38,18 +36,6 @@ class MainMenuScreen;
 class Gui : public GuiElement
 {
 	typedef GuiElement RootElement;
-
-	class InputHandler : public RawInputHandler
-	{
-		typedef RawInputHandler super;
-	public:
-		InputHandler(Input& input, Gui& gui);
-
-		bool onMouseButtonPressed(uint8_t button, int x, int y) override;
-		bool onMouseMoved(int x, int y) override;
-	private:
-		Gui& gui;
-	} inputHandler;
 public:
 	Gui(Input& input, device::Device* device);
 	~Gui();

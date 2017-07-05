@@ -22,5 +22,5 @@ namespace mouse
 		WheelDown
 	};
 
-	uint8_t sfmlToBlitz(const sf::Mouse::Button& button);
+	uint8_t sfmlToBlitz(sf::Mouse::Button button);
 } // namespace mouse

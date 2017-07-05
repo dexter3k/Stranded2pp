@@ -22,28 +22,8 @@ namespace gfx
 namespace gui
 {
 
-Gui::InputHandler::InputHandler(Input& input, Gui& gui) :
-	super(&input),
-	gui(gui)
-{}
-
-bool Gui::InputHandler::onMouseButtonPressed(uint8_t button, int x, int y)
-{
-	gui.onMouseButtonPressed(button, x, y);
-
-	return false;
-}
-
-bool Gui::InputHandler::onMouseMoved(int x, int y)
-{
-	gui.onMouseMoved(x, y);
-
-	return false;
-}
-
 Gui::Gui(Input& input, device::Device* device) :
 	RootElement(nullptr, this),
-	inputHandler(input, *this),
 	device(device),
 	engine(nullptr),
 	currentScreen(nullptr),
@@ -56,8 +36,6 @@ Gui::Gui(Input& input, device::Device* device) :
 
 Gui::~Gui()
 {
-	inputHandler.detach();
-
 	if (currentScreen != nullptr)
 	{
 		currentScreen->destroy();
@@ -74,8 +52,6 @@ bool Gui::init(const Modification& modification)
 	modPath = modification.getPath();
 
 	screenSize = device->getRenderTargetSize();
-
-	inputHandler.attach();
 
 	return true;
 }

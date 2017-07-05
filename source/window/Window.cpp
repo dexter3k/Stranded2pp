@@ -46,13 +46,10 @@ bool Window::init(bool forceWindowedMode, const Modification& modification)
 
 	std::string title = "S2++ '";
 	title += modification.getName() + "' mod";
+	auto style = forceWindowedMode ? (sf::Style::Titlebar | sf::Style::Close) : (sf::Style::Fullscreen);
 
 	// Create window
-	window.create(videoMode, title,
-		(forceWindowedMode ?
-			(sf::Style::Titlebar | sf::Style::Close) :
-			sf::Style::Fullscreen),
-		contextSettings);
+	window.create(videoMode, title, style, contextSettings);
 	window.setActive();
 
 	// Set FPS limit or VSync
@@ -76,99 +73,56 @@ void Window::display()
 void Window::pollEvents()
 {
 	sf::Event event;
-	while (window.pollEvent(event))
-	{
-		switch (event.type)
-		{
-			case sf::Event::Closed:
-			{
-				input->onRawEventClosed();
-				break;
+	while (window.pollEvent(event)) {
+		switch (event.type) {
+		case sf::Event::Closed:
+			input->onRawEventClosed(); break;
+		case sf::Event::Resized:
+			input->onRawEventResized(event.size.width, event.size.height); break;
+		case sf::Event::LostFocus:
+			input->onRawEventLostFocus(); break;
+		case sf::Event::GainedFocus:
+			input->onRawEventGainedFocus(); break;
+		case sf::Event::TextEntered:
+			input->onRawEventTextEntered(event.text.unicode); break;
+		case sf::Event::KeyPressed:
+			input->onRawEventKeyPressed(kb::sfmlToBlitz(event.key.code),
+				event.key.alt, event.key.control, event.key.shift, event.key.system);
+			break;
+		case sf::Event::KeyReleased:
+			input->onRawEventKeyReleased(kb::sfmlToBlitz(event.key.code),
+				event.key.alt, event.key.control, event.key.shift, event.key.system);
+			break;
+		case sf::Event::MouseWheelScrolled:
+			if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel) {
+				input->onRawEventMouseWheelScrolled(event.mouseWheelScroll.delta,
+					event.mouseWheelScroll.x, event.mouseWheelScroll.y);
 			}
-			case sf::Event::Resized:
-			{
-				input->onRawEventResized(event.size.width, event.size.height);
-				break;
-			}
-			case sf::Event::LostFocus:
-			{
-				input->onRawEventLostFocus();
-				break;
-			}
-			case sf::Event::GainedFocus:
-			{
-				input->onRawEventGainedFocus();
-				break;
-			}
-			case sf::Event::TextEntered:
-			{
-				input->onRawEventTextEntered(event.text.unicode);
-				break;
-			}
-			case sf::Event::KeyPressed:
-			{
-				input->onRawEventKeyPressed(
-					kb::sfmlToBlitz(event.key.code), event.key.alt,
-						event.key.control, event.key.shift, event.key.system);
-				break;
-			}
-			case sf::Event::KeyReleased:
-			{
-				input->onRawEventKeyReleased(
-					kb::sfmlToBlitz(event.key.code), event.key.alt,
-						event.key.control, event.key.shift, event.key.system);
-				break;
-			}
-			case sf::Event::MouseWheelScrolled:
-			{
-				if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
-				{
-					input->onRawEventMouseWheelScrolled(
-						event.mouseWheelScroll.delta, event.mouseWheelScroll.x,
-						event.mouseWheelScroll.y);
-				}
-				break;
-			}
-			case sf::Event::MouseButtonPressed:
-			{
-				input->onRawEventMouseButtonPressed(
-					mouse::sfmlToBlitz(event.mouseButton.button),
-					event.mouseButton.x, event.mouseButton.y);
-				break;
-			}
-			case sf::Event::MouseButtonReleased:
-			{
-				input->onRawEventMouseButtonReleased(
-					mouse::sfmlToBlitz(event.mouseButton.button),
-					event.mouseButton.x, event.mouseButton.y);
-				break;
-			}
-			case sf::Event::MouseMoved:
-			{
-				input->onRawEventMouseMoved(event.mouseMove.x,
-					event.mouseMove.y);
-				break;
-			}
-			case sf::Event::MouseEntered:
-			{
-				input->onRawEventMouseEntered();
-				break;
-			}
-			case sf::Event::MouseLeft:
-			{
-				input->onRawEventMouseLeft();
-				break;
-			}
-			case sf::Event::JoystickButtonPressed:
-			case sf::Event::JoystickButtonReleased:
-			case sf::Event::JoystickMoved:
-			case sf::Event::JoystickConnected:
-			case sf::Event::JoystickDisconnected:
-			case sf::Event::TouchBegan:
-			case sf::Event::TouchMoved:
-			case sf::Event::TouchEnded:
-			case sf::Event::SensorChanged:
-			default: break;
+			break;
+		case sf::Event::MouseButtonPressed:
+			input->onRawEventMouseButtonPressed(
+				mouse::sfmlToBlitz(event.mouseButton.button),
+				event.mouseButton.x, event.mouseButton.y);
+			break;
+		case sf::Event::MouseButtonReleased:
+			input->onRawEventMouseButtonReleased(
+				mouse::sfmlToBlitz(event.mouseButton.button),
+				event.mouseButton.x, event.mouseButton.y);
+			break;
+		case sf::Event::MouseMoved:
+			input->onRawEventMouseMoved(event.mouseMove.x, event.mouseMove.y); break;
+		case sf::Event::MouseEntered:
+		case sf::Event::MouseLeft:
+		case sf::Event::JoystickButtonPressed:
+		case sf::Event::JoystickButtonReleased:
+		case sf::Event::JoystickMoved:
+		case sf::Event::JoystickConnected:
+		case sf::Event::JoystickDisconnected:
+		case sf::Event::TouchBegan:
+		case sf::Event::TouchMoved:
+		case sf::Event::TouchEnded:
+		case sf::Event::SensorChanged:
+		default: break;
 		}
 	}
 }

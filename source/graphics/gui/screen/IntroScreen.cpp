@@ -17,28 +17,8 @@ namespace gui
 
 const std::string IntroScreen::logoTextureName = "sys/gfx/logo.bmp";
 
-IntroScreen::InputHandler::InputHandler(Input& input, IntroScreen& introScreen) :
-	super(&input),
-	introScreen(introScreen)
-{}
-
-bool IntroScreen::InputHandler::onKeyPressed(uint8_t, bool, bool, bool, bool)
-{
-	introScreen.skipIntro();
-
-	return false;
-}
-
-bool IntroScreen::InputHandler::onMouseButtonPressed(uint8_t, int, int)
-{
-	introScreen.skipIntro();
-
-	return false;
-}
-
-IntroScreen::IntroScreen(Gui& gui, Input& input) :
+IntroScreen::IntroScreen(Gui& gui, Input&) :
 	super(gui),
-	inputHandler(new InputHandler(input, *this)),
 	maxShowTime(3.0),
 	fadeStart(0.80),
 	fadeColor(0, 0, 0),
@@ -61,14 +41,10 @@ void IntroScreen::create()
 		introImage = gui.addBackgroundImage(
 			device->grabTexture(gui.getModPath() + logoTextureName));
 	}
-
-	inputHandler->attach();
 }
 
 void IntroScreen::destroy()
 {
-	inputHandler->detach();
-
 	if (introImage != nullptr)
 	{
 		gui.deleteGuiElement(introImage);

@@ -1,21 +1,18 @@
 #pragma once
 
 #include <cstdint>
-#include <memory>
 #include <string>
 #include <vector>
 
 #include "Keyboard.h"
 #include "Mouse.h"
 
-
 class Modification;
-class RawInputHandler;
 class Window;
 
 class Input
 {
-	friend class RawInputHandler;
+	friend class Window;
 public:
 	Input(Window & window, Modification const & modification);
 
@@ -25,40 +22,30 @@ public:
 	std::string getMouseWheelUpName() const;
 	std::string getMouseWheelDownName() const;
 	std::string getKeyName(uint8_t key) const;
-
-	// Raw (directly from Window) input events
+private:
+	// These onRawEvent* methods are called from Window- class
 	void onRawEventClosed();
 	void onRawEventResized(unsigned newWidth, unsigned newHeight);
 	void onRawEventLostFocus();
 	void onRawEventGainedFocus();
 	void onRawEventTextEntered(uint32_t symbol);
-	void onRawEventKeyPressed(uint8_t key, bool alt, bool control, bool shift,
-		bool super);
-	void onRawEventKeyReleased(uint8_t key, bool alt, bool control, bool shift,
-		bool super);
+	void onRawEventKeyPressed(uint8_t key, bool alt, bool control, bool shift, bool super);
+	void onRawEventKeyReleased(uint8_t key, bool alt, bool control, bool shift, bool super);
 	void onRawEventMouseWheelScrolled(float delta, int x, int y);
 	void onRawEventMouseButtonPressed(uint8_t button, int x, int y);
 	void onRawEventMouseButtonReleased(uint8_t button, int x, int y);
 	void onRawEventMouseMoved(int x, int y);
-	void onRawEventMouseEntered();
-	void onRawEventMouseLeft();
+
+	// Load key name mapping
+	bool loadKeyNames(std::string const & modificationPath);
 private:
 	static const std::string keyNameInfoPath;
 	static const std::string defaultName;
 private:
-	bool init(Modification const & modification);
-
-	void addRawInputHandler(RawInputHandler* rawInputHandler);
-	void removeRawInputHandler(RawInputHandler* rawInputHandler);
-
-	bool loadKeyNames(const std::string& modificationPath);
-private:
-	Window&	window;
+	Window & window;
 
 	std::vector<std::string> mouseButtonNames;
 	std::string mouseWheelUpName;
 	std::string mouseWheelDownName;
 	std::vector<std::string> keyNames;
-
-	std::vector<RawInputHandler*> rawInputHandlers;
 };

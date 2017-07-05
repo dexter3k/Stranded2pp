@@ -5,15 +5,11 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "RawInputHandler.h"
-
-#include "common/Modification.h"
-#include "window/Window.h"
-
 #include "Stranded.h"
-
+#include "common/Modification.h"
 #include "common/ParseUtils.h"
 #include "common/StringUtils.h"
+#include "window/Window.h"
 
 const std::string Input::keyNameInfoPath = "sys/keys.inf";
 const std::string Input::defaultName = "null";
@@ -23,36 +19,25 @@ Input::Input(Window & window, Modification const & modification) :
 	mouseButtonNames(6, defaultName),
 	mouseWheelUpName(defaultName),
 	mouseWheelDownName(defaultName),
-	keyNames(256, defaultName),
-	rawInputHandlers()
+	keyNames(256, defaultName)
 {
-	if (!init(modification))
-		throw std::runtime_error("Unable to init Input");
-}
-
-bool Input::init(Modification const & modification)
-{
+	// TODO
 	if (!loadKeyNames(modification.getPath()))
-	{
-		return false;
-	}
+		throw std::runtime_error("Unable to init Input");
 
 	window.registerInput(this);
-
-	return true;
 }
 
-void Input::processInput(double)
+void Input::processInput(double /* deltaTime */)
 {
 	window.pollEvents();
 }
 
+// Does this really belong to Input? Hmmm :thinking:
 std::string Input::getMouseButtonName(uint8_t button) const
 {
 	if (button >= mouseButtonNames.size())
-	{
 		return defaultName;
-	}
 
 	return mouseButtonNames[button];
 }
@@ -73,143 +58,42 @@ std::string Input::getKeyName(uint8_t key) const
 }
 
 void Input::onRawEventClosed()
-{
-	for (auto& handler : rawInputHandlers)
-	{
-		handler->onClosed();
-	}
-}
+{}
 
-void Input::onRawEventResized(unsigned newWidth, unsigned newHeight)
-{
-	for (auto& handler : rawInputHandlers)
-	{
-		handler->onResized(newWidth, newHeight);
-	}
-}
+void Input::onRawEventResized(unsigned /* newWidth */, unsigned /* newHeight */)
+{}
 
 void Input::onRawEventLostFocus()
-{
-	for (auto& handler : rawInputHandlers)
-	{
-		handler->onLostFocus();
-	}
-}
+{}
 
 void Input::onRawEventGainedFocus()
+{}
+
+void Input::onRawEventTextEntered(uint32_t /* symbol */)
+{}
+
+void Input::onRawEventKeyPressed(uint8_t, bool, bool, bool, bool)
+{}
+
+void Input::onRawEventKeyReleased(uint8_t, bool, bool, bool, bool)
+{}
+
+void Input::onRawEventMouseWheelScrolled(float, int, int)
+{}
+
+void Input::onRawEventMouseButtonPressed(uint8_t, int, int)
+{}
+
+void Input::onRawEventMouseButtonReleased(uint8_t, int, int)
+{}
+
+void Input::onRawEventMouseMoved(int, int)
+{}
+
+bool Input::loadKeyNames(std::string const & modificationPath)
 {
-	for (auto& handler : rawInputHandlers)
-	{
-		handler->onGainedFocus();
-	}
-}
+	// TODO: look at this function
 
-void Input::onRawEventTextEntered(uint32_t symbol)
-{
-	for (auto& handler : rawInputHandlers)
-	{
-		handler->onTextEntered(symbol);
-	}
-}
-
-void Input::onRawEventKeyPressed(uint8_t key, bool alt, bool control,
-	bool shift, bool super)
-{
-	for (auto& handler : rawInputHandlers)
-	{
-		handler->onKeyPressed(key, alt, control, shift, super);
-	}
-}
-
-void Input::onRawEventKeyReleased(uint8_t key, bool alt, bool control,
-	bool shift, bool super)
-{
-	for (auto& handler : rawInputHandlers)
-	{
-		handler->onKeyReleased(key, alt, control, shift, super);
-	}
-}
-
-void Input::onRawEventMouseWheelScrolled(float delta, int x, int y)
-{
-	for (auto& handler : rawInputHandlers)
-	{
-		handler->onMouseWheelScrolled(delta, x, y);
-	}
-}
-
-void Input::onRawEventMouseButtonPressed(uint8_t button, int x, int y)
-{
-	for (auto& handler : rawInputHandlers)
-	{
-		handler->onMouseButtonPressed(button, x, y);
-	}
-}
-
-void Input::onRawEventMouseButtonReleased(uint8_t button, int x, int y)
-{
-	for (auto& handler : rawInputHandlers)
-	{
-		handler->onMouseButtonReleased(button, x, y);
-	}
-}
-
-void Input::onRawEventMouseMoved(int x, int y)
-{
-	for (auto& handler : rawInputHandlers)
-	{
-		handler->onMouseMoved(x, y);
-	}
-}
-
-void Input::onRawEventMouseEntered()
-{
-	for (auto& handler : rawInputHandlers)
-	{
-		handler->onMouseEntered();
-	}
-}
-
-void Input::onRawEventMouseLeft()
-{
-	for (auto& handler : rawInputHandlers)
-	{
-		handler->onMouseLeft();
-	}
-}
-
-void Input::addRawInputHandler(RawInputHandler* rawInputHandler)
-{
-	assert(rawInputHandler != nullptr);
-
-	unsigned size = rawInputHandlers.size();
-	for (unsigned i = 0; i < size; ++i)
-	{
-		assert(rawInputHandlers[i] != rawInputHandler);
-	}
-
-	rawInputHandlers.push_back(rawInputHandler);
-}
-
-void Input::removeRawInputHandler(RawInputHandler* rawInputHandler)
-{
-	assert(rawInputHandler != nullptr);
-
-	unsigned size = rawInputHandlers.size();
-	for (unsigned i = 0; i < size; ++i)
-	{
-		if (rawInputHandlers[i] == rawInputHandler)
-		{
-			rawInputHandlers.erase(rawInputHandlers.begin() + i);
-			return;
-		}
-	}
-
-	assert(false);
-}
-
-bool Input::loadKeyNames(const std::string& modificationPath)
-{
 	std::vector<parser::inf::Entry> entries;
 	if (!parser::inf::loadAndTokenize(modificationPath + keyNameInfoPath,
 		entries))

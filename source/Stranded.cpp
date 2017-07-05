@@ -9,15 +9,12 @@ Stranded::Stranded(std::vector<std::string> const & arguments) :
 	modification(cmdLineArgs.modificationName()),
 	window(cmdLineArgs.shouldForceWindowedMode(), modification),
 	input(window, modification),
-	quitEventHandler(&input, *this),
 	graphics(input, modification),
 	network(),
 	sound(),
 	engine(input, graphics, network, sound, modification),
 	shouldStop(false)
-{
-	quitEventHandler.attach();
-}
+{}
 
 void Stranded::run()
 {
@@ -44,7 +41,7 @@ void Stranded::run()
 	}
 }
 
-void Stranded::stop()
+void Stranded::stopLoop()
 {
 	shouldStop = true;
 }

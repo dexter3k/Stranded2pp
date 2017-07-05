@@ -12,20 +12,8 @@ namespace gfx
 namespace gui
 {
 
-MainMenuScreen::InputHandler::InputHandler(Input& input,
-		MainMenuScreen &) :
-	super(&input)
-	//mainMenuScreen(mainMenuScreen)
-{}
-
-bool MainMenuScreen::InputHandler::onMouseButtonPressed(uint8_t, int, int)
-{
-	return false;
-}
-
-MainMenuScreen::MainMenuScreen(Gui& gui, Input& input) :
+MainMenuScreen::MainMenuScreen(Gui& gui, Input&) :
 	super(gui),
-	inputHandler(new InputHandler(input, *this)),
 	testButton(nullptr)
 {}
 
@@ -45,14 +33,10 @@ void MainMenuScreen::create()
 				gui.getModPath() + "sys/gfx/bigbutton_over.bmp"),
 			math::Vector2i(50, 50));
 	}
-
-	inputHandler->attach();
 }
 
 void MainMenuScreen::destroy()
 {
-	inputHandler->detach();
-
 	if (testButton != nullptr)
 	{
 		gui.deleteGuiElement(testButton);
