@@ -23,14 +23,11 @@ void Stranded::run()
 {
 	printWelcomeMessage();
 
-	double deltaTime = 0.0f;
-
 	Timer deltaTimer;
+	double deltaTime = 0.0;
 
 	while (!shouldStop)
 	{
-		deltaTime = deltaTimer.restart();
-
 		input.update(deltaTime);
 
 		engine.update(deltaTime);
@@ -40,6 +37,10 @@ void Stranded::run()
 		graphics.drawAll();
 
 		window.display();
+
+		// Calculate time for the next frame.
+		// This is just to make the first delta be exactly zero seconds long
+		deltaTime = deltaTimer.restart();
 	}
 }
 
