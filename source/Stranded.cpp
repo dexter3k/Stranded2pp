@@ -10,14 +10,14 @@ Stranded::Stranded(std::vector<std::string> const & arguments) :
 	window(cmdLineArgs.shouldForceWindowedMode(), modification),
 	input(window, modification),
 	graphics(input, modification),
-	network(),
-	sound(),
 	engine(input, graphics, network, sound, modification),
 	shouldStop(false)
 {}
 
 void Stranded::run()
 {
+	shouldStop = false;
+
 	printWelcomeMessage();
 
 	Timer deltaTimer;
@@ -25,14 +25,19 @@ void Stranded::run()
 
 	while (!shouldStop)
 	{
+		// Process all OS events and trigger input callbacks
 		input.processInput(deltaTime);
 
+		// Update current engine stage's logic
 		engine.update(deltaTime);
 
+		// Graphics module pre-render update
 		graphics.update(deltaTime);
 
+		// Render the scene
 		graphics.drawAll();
 
+		// Swap buffers
 		window.display();
 
 		// Calculate time for the next frame.

@@ -4,6 +4,8 @@
 
 class RingBuffer;
 
+// TODO: Repurpose or rename this?
+
 class Modification
 {
 public:
