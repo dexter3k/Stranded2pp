@@ -3,6 +3,7 @@
 ## High priority
 ASAP!
 
+* Rewrite Input system to use std::function callbacks (instead of *Handler-derived objects)
 * Rewrite all the trash
 * Add details to this list
 * [Done] Move to CMake build system

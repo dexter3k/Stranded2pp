@@ -28,7 +28,7 @@ void Stranded::run()
 
 	while (!shouldStop)
 	{
-		input.update(deltaTime);
+		input.processInput(deltaTime);
 
 		engine.update(deltaTime);
 
