@@ -1,9 +1,11 @@
 #pragma once
 
 #include <cstdint>
+#include <queue>
 #include <string>
 #include <vector>
 
+#include "Event.h"
 #include "Keyboard.h"
 #include "Mouse.h"
 
@@ -18,6 +20,8 @@ public:
 
 	void processInput(double deltaTime);
 
+	bool getEvent(Event & event);
+
 	std::string getMouseButtonName(uint8_t button) const;
 	std::string getMouseWheelUpName() const;
 	std::string getMouseWheelDownName() const;
@@ -31,7 +35,7 @@ private:
 	void onRawEventTextEntered(uint32_t symbol);
 	void onRawEventKeyPressed(uint8_t key, bool alt, bool control, bool shift, bool super);
 	void onRawEventKeyReleased(uint8_t key, bool alt, bool control, bool shift, bool super);
-	void onRawEventMouseWheelScrolled(float delta, int x, int y);
+	void onRawEventMouseWheelScrolled(double delta, int x, int y);
 	void onRawEventMouseButtonPressed(uint8_t button, int x, int y);
 	void onRawEventMouseButtonReleased(uint8_t button, int x, int y);
 	void onRawEventMouseMoved(int x, int y);
@@ -43,6 +47,8 @@ private:
 	static const std::string defaultName;
 private:
 	Window & window;
+
+	std::queue<Event> events;
 
 	std::vector<std::string> mouseButtonNames;
 	std::string mouseWheelUpName;

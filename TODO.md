@@ -3,8 +3,8 @@
 ## High priority
 ASAP!
 
+* Screen system should be moved out of Gui to Stranded
 * Add details to this list
-* Rewrite Input system to use std::function callbacks (instead of *Handler-derived objects)
 * Decide about Modification class and some resource manager
 * Rewrite all the trash
 * [Done] Move to CMake build system

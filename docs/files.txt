@@ -1,0 +1,225 @@
+# Settings
+sys\controls.cfg
+sys\scriptcontrols.cfg
+sys\settings.cfg
+
+# Strings
+sys\strings.inf
+
+# Dirs (created if not found)
+saves
+maps
+
+# BMPF (plus loading screen)
+sys\gfx\progress.bmp
+
+sys\gfx\font_tiny.bmp
+sys\gfx\font_norm.bmp
+sys\gfx\font_norm_over.bmp
+sys\gfx\font_norm_dark.bmp
+sys\gfx\font_norm_bad.bmp
+sys\gfx\font_norm_good.bmp
+sys\gfx\font_handwriting.bmp
+sys\gfx\font_tiny.bmpf
+sys\gfx\font_norm.bmpf
+
+# Media
+sys\gfx\bigbutton.bmp
+sys\gfx\bigbutton_over.bmp
+sys\gfx\iconbutton.bmp
+sys\gfx\iconbutton_over.bmp
+sys\gfx\check.bmp
+sys\gfx\check_over.bmp
+sys\gfx\check_sel.bmp
+sys\gfx\opt.bmp
+sys\gfx\opt_over.bmp
+sys\gfx\opt_sel.bmp
+sys\gfx\slider.bmp
+sys\gfx\slider_over.bmp
+sys\gfx\slider_sel.bmp
+sys\gfx\slider_sec.bmp
+sys\gfx\input_left.bmp
+sys\gfx\input_left_over.bmp
+sys\gfx\input_middle.bmp
+sys\gfx\input_middle_over.bmp
+sys\gfx\input_right.bmp
+sys\gfx\input_right_over.bmp
+sys\gfx\scroll.bmp
+sys\gfx\scroll_over.bmp
+sys\gfx\scroll_bar_top.bmp
+sys\gfx\scroll_bar_middle.bmp
+sys\gfx\scroll_bar_bottom.bmp
+sys\gfx\edscrollspace.bmp
+sys\gfx\icons.bmp
+sys\gfx\icons_passive.bmp
+sys\gfx\icons_passive.bmp
+sys\gfx\icons_passive.bmp
+sys\gfx\defaulticon.bmp
+sys\gfx\border_corn.bmp
+sys\gfx\border_hori.bmp
+sys\gfx\border_vert.bmp
+sys\gfx\cursor.bmp
+sys\gfx\cursor_height.bmp
+sys\gfx\cursor_move.bmp
+sys\gfx\cursor_paint.bmp
+sys\gfx\cursor_rotate.bmp
+sys\gfx\cursor_text.bmp
+sys\gfx\cursor_crosshair.bmp
+sys\gfx\woodback.bmp
+sys\gfx\woodback_dark.bmp
+sys\gfx\paperback.bmp
+sys\gfx\progress_small.bmp
+sys\gfx\progress_hunger.bmp
+sys\gfx\progress_thirst.bmp
+sys\gfx\progress_exhaustion.bmp
+sys\gfx\if_barback.bmp
+sys\gfx\if_itemback.bmp
+sys\gfx\if_itemshade.bmp
+sys\gfx\if_values.bmp
+sys\gfx\if_weapon.bmp
+sys\gfx\if_compass.bmp
+sys\gfx\state.bmp
+sys\gfx\states.bmp
+sys\gfx\arrows.bmp
+sys\gfx\title.bmp
+sys\gfx\editor_x.bmp
+sys\gfx\editor_y.bmp
+sys\gfx\editor_z.bmp
+sys\gfx\editor_sel.bmp
+sys\gfx\tutor.bmp
+sys\gfx\terrainstructure.bmp
+sys\gfx\structure.bmp
+sys\gfx\terraindirt.bmp
+sys\gfx\terraindirt.bmp
+gfx\grasspread_a.png
+gfx\grasspread.b3d
+gfx\water.jpg
+gfx\water.jpg
+sys\gfx\rain_a.bmp
+sys\gfx\snow_a.bmp
+sprites\flare"+i+"_a.bmp [0-2]
+sprites\bubbles"+i+"_a.bmp [0-1]
+sprites\roundwave"+i+"_a.bmp [0]
+sprites\wave"+i+"_a.bmp [0]
+sprites\smoke"+i+"_a.bmp [0-1]
+sprites\spark"+i+"_a.bmp [0]
+sprites\splatter"+i+"_a.bmp [0-2]
+sprites\woodfrag"+i+"_a.bmp [0-4]
+sprites\flames"+i+"_a.png [0]
+sprites\starflare_a.bmp
+sprites\puddle"+i+"_a.bmp [0]
+sprites\shockwave_a.bmp
+sprites\splash"+i+"_a.bmp [0]
+sprites\attack1_a.bmp
+sprites\attack2_a.bmp
+sprites\moon_a.png
+sfx\click.wav
+sfx\switch.wav
+sfx\menu.wav
+sfx\fail.wav
+sfx\build.wav
+sfx\build_finish.wav
+sfx\eat.wav
+sfx\drink.wav
+sfx\swing_fast.wav
+sfx\swing_slow.wav
+sfx\dive.wav
+sfx\collect.wav
+sfx\pistol.wav
+sfx\splash.wav
+sfx\splash2.wav
+sfx\blubb.wav
+sfx\sleep.wav
+sfx\fire.wav
+sfx\gasp.wav
+sfx\startdive.wav
+sfx\drown.wav
+sfx\treefall.wav
+sfx\fizzle.wav
+sfx\launch.wav
+sfx\fish.wav
+sfx\dig.wav
+sfx\rain.wav
+sfx\diary.wav
+sfx\step"+(i+1)+".wav [0-3]
+sfx\waterstep.wav
+sfx\woodstep1.wav
+sfx\woodstep2.wav
+sfx\stonestep1.wav
+sfx\stonestep2.wav
+sfx\swim.wav
+sfx\fountain.wav
+sfx\thunder1.wav
+sfx\thunder2.wav
+sfx\thunder3.wav
+sfx\pang.wav
+sfx\wave1.wav
+sfx\wave2.wav
+sfx\wave3.wav
+sfx\crack"+(i+1)+".wav [0-3]
+sfx\spark"+(i+1)+".wav [0-3]
+sfx\explode"+(i+1)+".wav [0-4]
+sfx\human_hit"+(i+1)+".wav [0-4]
+sfx\human_die"+(i+1)+".wav [0-2]
+sfx\mat_wood1.wav
+sfx\mat_wood2.wav
+sfx\mat_stone1.wav
+sfx\mat_dust1.wav
+sfx\mat_metal1.wav
+sfx\mat_flesh1.wav
+sfx\mat_flesh2.wav
+sfx\mat_flesh3.wav
+sfx\mat_flesh4.wav
+sfx\mat_flesh5.wav
+sfx\mat_fruit1.wav
+sfx\mat_fruit2.wav
+sfx\mat_glass1.wav
+sfx\mat_glass2.wav
+sfx\mat_leaf1.wav
+sfx\mat_leaf2.wav
+sfx\mat_leaf3.wav
+sfx\mat_leaf4.wav
+
+# Keynames
+sys\keys.inf
+
+# States
+sys\states.inf
+
+# Lightcycle
+sys\lightcycle.inf
+
+# Game
+sys\game*.inf
+
+# Groups
+sys\groups.inf
+
+# Objects
+sys\objects*.inf
+
+# Units
+sys\units*.inf
+
+# Items
+sys\items*.inf
+
+# Infos
+sys\infos*.inf
+
+# Combinations
+sys\combinations*.inf
+
+# Buildings
+sys\buildings*.inf
+
+# Resources
+sfx\*_spot.wav
+sfx\*_attack.wav
+sfx\*_idle1.wav
+sfx\*_idle2.wav
+sfx\*_idle3.wav
+sfx\*_die.wav
+sfx\*_flee.wav
+sfx\*_move.wav
+sfx\*_spot.wav

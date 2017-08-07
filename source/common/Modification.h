@@ -4,8 +4,6 @@
 
 class RingBuffer;
 
-// TODO: Repurpose or rename this?
-
 class Modification
 {
 public:
@@ -59,7 +57,7 @@ public:
 	};
 public:
 	Modification();
-	Modification(const std::string& modificationName);
+	Modification(std::string const & modificationName);
 
 	std::string getName() const;
 

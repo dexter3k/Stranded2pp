@@ -45,16 +45,6 @@ Texture::~Texture()
 	}
 }
 
-const std::string& Texture::getName() const
-{
-	return name;
-}
-
-const math::Vector2u& Texture::getSize() const
-{
-	return size;
-}
-
 GLuint Texture::getGlTextureName() const
 {
 	return glTextureName;

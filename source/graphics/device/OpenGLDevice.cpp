@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <stdexcept>
 
 #include <SFML/OpenGL.hpp>
 
@@ -53,6 +54,9 @@ OpenGLDevice::OpenGLDevice() :
 	{
 		material2D.textureLayers[i].bilinearFilter = false;
 	}
+
+	if (!init())
+		throw std::runtime_error("Unable to init OpenGLDevice");
 }
 
 OpenGLDevice::~OpenGLDevice()
@@ -857,6 +861,9 @@ void OpenGLDevice::draw2DPolygon(const math::Vector2i& center, float radius,
 void OpenGLDevice::draw2DRectangle(const math::Recti& destinationRectangle,
 	const Color& color, const math::Recti* clippingRectangle)
 {
+	if (color.getAlpha() == 0)
+		return;
+
 	math::Recti clipped = destinationRectangle;
 	if (clippingRectangle != nullptr)
 	{
@@ -952,7 +959,7 @@ void OpenGLDevice::draw2DRectangleOutline(
 	Utility events
 */
 
-void OpenGLDevice::onResize(const math::Vector2u& size)
+void OpenGLDevice::onResize(math::Vector2u size)
 {
 	screenSize = size;
 

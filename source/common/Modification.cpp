@@ -30,16 +30,14 @@ Modification::Modification(std::string const & modificationName) :
 bool Modification::init()
 {
 	// Check and load modification
-	if (!fs::checkFolderExists(getPath()))
-	{
+	if (!fs::checkFolderExists(getPath())) {
 		std::cout << "Error: mod '" << modificationName <<
 			"' is missing from 'mods' folder!" << std::endl;
 
 		return false;
 	}
 
-	if (!loadConfiguration())
-	{
+	if (!loadConfiguration()) {
 		return false;
 	}
 
@@ -88,9 +86,9 @@ const Modification::Settings& Modification::getSettings() const
 
 bool Modification::loadConfiguration()
 {
-	return loadControls() &&
-		loadScriptControls() &&
-		loadSettings();
+	return loadControls()
+		&& loadScriptControls()
+		&& loadSettings();
 }
 
 // TODO:
@@ -98,8 +96,7 @@ bool Modification::loadControls()
 {
 	RingBuffer buffer(configurationBufferSize);
 
-	if (!fs::loadFile(getPath() + controlsConfigPath, buffer))
-	{
+	if (!fs::loadFile(getPath() + controlsConfigPath, buffer)) {
 		return false;
 	}
 
@@ -107,8 +104,7 @@ bool Modification::loadControls()
 	std::string tempString = "";
 	if (!buffer.readNewlineTerminatedString(tempString)) return false;
 
-	for (unsigned i = 0; i < 21; ++i)
-	{
+	for (unsigned i = 0; i < 21; ++i) {
 		if (!buffer.readUint16(controls.inputKeys[i])) return false;
 		//std::cout << "i: " << i << " k: " << controls.inputKeys[i] << std::endl;
 	}
@@ -121,8 +117,7 @@ bool Modification::loadControls()
 	//std::cout << "b: " << 1 << " v: " << controls.mouse.invertVertically << std::endl;
 	//std::cout << "b: " << 2 << " v: " << controls.mouse.smooth << std::endl;
 
-	std::cout << "'" << controlsConfigPath << "' is loaded successfully" <<
-		std::endl;
+	std::cout << "'" << controlsConfigPath << "' is loaded successfully" << std::endl;
 
 	return true;
 }
@@ -132,8 +127,7 @@ bool Modification::loadScriptControls()
 {
 	RingBuffer buffer(configurationBufferSize);
 
-	if (!fs::loadFile(getPath() + scriptControlsConfigPath, buffer))
-	{
+	if (!fs::loadFile(getPath() + scriptControlsConfigPath, buffer)) {
 		return false;
 	}
 
@@ -141,13 +135,11 @@ bool Modification::loadScriptControls()
 	std::string tempString = "";
 	if (!buffer.readNewlineTerminatedString(tempString)) return false;
 
-	for (unsigned i = 0; i < 21; ++i)
-	{
+	for (unsigned i = 0; i < 21; ++i) {
 		if (!buffer.readUint16(scriptControls.inputKeys[i])) return false;
 	}
 
-	std::cout << "'" << scriptControlsConfigPath << "' is loaded successfully" <<
-		std::endl;
+	std::cout << "'" << scriptControlsConfigPath << "' is loaded successfully" << std::endl;
 
 	return true;
 }
@@ -156,8 +148,7 @@ bool Modification::loadSettings()
 {
 	RingBuffer buffer(configurationBufferSize);
 
-	if (!fs::loadFile(getPath() + settingsConfigPath, buffer))
-	{
+	if (!fs::loadFile(getPath() + settingsConfigPath, buffer)) {
 		return false;
 	}
 
@@ -231,8 +222,7 @@ bool Modification::loadSettings()
 	if (!buffer.readNewlineTerminatedString(tempString)) return false;
 	settings.motionBlurAplha = std::stoi(tempString);
 
-	std::cout << "'" << settingsConfigPath << "' is loaded successfully" <<
-		std::endl;
+	std::cout << "'" << settingsConfigPath << "' is loaded successfully" << std::endl;
 
 	return true;
 }

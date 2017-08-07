@@ -33,6 +33,12 @@ public:
 		y(other.y)
 	{}
 
+	template <typename R>
+	Vector2(Vector2<R> const & other) :
+		x(static_cast<T>(other.x)),
+		y(static_cast<T>(other.y))
+	{}
+
 	Vector2<T> & operator=(Vector2<T> right)
 	{
 		x = right.x;

@@ -6,6 +6,8 @@
 
 #include "SaveGameUtils.h"
 #include "script/Compiler.h"
+
+#include "Stranded.h"
 #include "common/FileSystem.h"
 #include "common/Modification.h"
 #include "graphics/Graphics.h"
@@ -13,10 +15,10 @@
 #include "utils/ParseUtils.h"
 #include "utils/StringUtils.h"
 
-const unsigned Engine::gameTimeRatio = 500; // 500ms per game minute
+unsigned const Engine::msPerGameMinute = 500;
 
-Engine::Engine(Input&, gfx::Graphics& graphics, Network&, Sound&, Modification const & modification) :
-	//input(input),
+Engine::Engine(Stranded & game, gfx::Graphics & graphics, Network &, Sound &, Modification const & modification) :
+	game(game),
 	graphics(graphics),
 	//network(network),
 	//sound(sound),
@@ -32,172 +34,40 @@ Engine::Engine(Input&, gfx::Graphics& graphics, Network&, Sound&, Modification c
 	dayTime(0),
 	timeChanged(false)
 {
-	graphics.getGui().connectEngine(this);
+	// TODO
+	modBaseDirectory = modification.getPath();
 
-	if (!init(modification))
+	if (!loadGameConfig())
 		throw std::runtime_error("Unable to init Engine");
 }
 
-bool Engine::init(Modification const & modification)
+bool Engine::processEvent(Event event)
 {
-	modBaseDirectory = modification.getPath();
-
-	if (!loadGame())
-	{
+	switch (event.type) {
+	case Event::Closed:
+		game.stopLoop();
+		return true;
+	default:
 		return false;
 	}
-
-	setGameState(Intro);
-
-	return true;
 }
 
 void Engine::update(double deltaTime)
 {
-	switch (gameState)
-	{
-		case Intro:
-		{
-			// Nothing to do
-			break;
-		}
-		case MainMenu:
-		case Singleplayer:
-		case Multiplayer:
-		{
-			if (!isTimePaused)
-			{
-				timeCounter += static_cast<long long>(deltaTime * 1000000.0);
+	switch (gameState) {
+	case Intro:
+		break;
+	case MainMenu:
+	case Singleplayer:
+	case Multiplayer:
+		timeChanged = updateTime(deltaTime);
 
-				if (timeCounter >= gameTimeRatio * 1000)
-				{
-					//NOTE: No more than a minute per frame?
-					// FPS < 2 will cause problems
-					timeCounter -= gameTimeRatio * 1000;
-
-					++dayTime;
-
-					if (dayTime == 24 * 60)
-					{
-						dayTime = 0;
-
-						++currentDay;
-					}
-
-					timeChanged = true;
-				}
-				else
-				{
-					timeChanged = false;
-				}
-			}
-
-			break;
-		}
-		case Editor:
-		{
-			break;
-		}
-		default:
-		{
-			assert(!"Reached default!");
-			break;
-		}
-	}
-}
-
-void Engine::setGameState(GameState newGameState)
-{
-	std::cout << "Setting game state" << std::endl;
-	// remove old state
-	switch (gameState)
-	{
-		case Intro:
-		{
-			// Nothing to do
-			break;
-		}
-		case MainMenu:
-		{
-			break;
-		}
-		case Singleplayer:
-		{
-			break;
-		}
-		case Multiplayer:
-		{
-			break;
-		}
-		case Editor:
-		{
-			break;
-		}
-		default:
-		{
-			assert(!"Reached default!");
-			break;
-		}
-	}
-
-	gameState = newGameState;
-
-	switch (gameState)
-	{
-		case Intro:
-		{
-			graphics.getGui().setScreen(gfx::gui::Screen::Intro);
-
-			break;
-		}
-		case MainMenu:
-		{
-			if (!save::loadFromFile(
-				modBaseDirectory + "maps/menu/menu.s2", *this))
-			{
-				std::cout << "Error occured while loading menu map!" <<
-					std::endl;
-
-				// TODO
-				//input.raiseEvent(closed) ?
-
-				break;
-			}
-
-			graphics.getGui().setScreen(gfx::gui::Screen::MainMenu);
-
-			break;
-		}
-		case Singleplayer:
-		{
-			break;
-		}
-		case Multiplayer:
-		{
-			break;
-		}
-		case Editor:
-		{
-			break;
-		}
-		default:
-		{
-			assert(!"Reached default!");
-			break;
-		}
-	}
-}
-
-Engine::GameState Engine::getGameState() const
-{
-	return gameState;
-}
-
-void Engine::skipIntro()
-{
-	if (gameState == Intro)
-	{
-		setGameState(MainMenu);
+		break;
+	case Editor:
+		break;
+	default:
+		assert(!"Reached default!");
+		break;
 	}
 }
 
@@ -210,14 +80,11 @@ void Engine::resetGame()
 }
 
 void Engine::setupGame(uint32_t day, uint8_t hour, uint8_t minute,
-	bool, const std::string& skybox, bool multiplayerMap,
-	uint8_t, const std::string&, const std::string&)
+	bool, std::string const & skybox, bool multiplayerMap,
+	uint8_t, std::string const &, std::string const &)
 {
 	if (multiplayerMap)
-	{
-		std::cout << "Warning: loading multiplayer map in singleplayer" <<
-			std::endl;
-	}
+		std::cout << "Warning: loading multiplayer map in singleplayer" << std::endl;
 
 	currentDay = day;
 	dayTime = (hour < 24 ? hour : 0) * 60 + (minute < 60 ? minute : 0);
@@ -227,66 +94,83 @@ void Engine::setupGame(uint32_t day, uint8_t hour, uint8_t minute,
 	//mapScript.compile(briefScript);
 }
 
-void Engine::setupQuickslots(const std::vector<std::string>&)
+void Engine::setupQuickslots(std::vector<std::string> const &)
 {
 	// Setup those quickslots
 }
 
 bool Engine::setupTerrain(unsigned terrainSize,
-	const std::vector<float>& heightMap, unsigned colorMapSize,
-	const std::vector<gfx::Color>& colorMap,
-	const std::vector<uint8_t>& grassMap)
+	std::vector<float> const & heightMap, unsigned colorMapSize,
+	std::vector<gfx::Color> const & colorMap,
+	std::vector<uint8_t> const & grassMap)
 {
-	if (terrainSize < 16 ||
-		!math::isPowerOfTwo(terrainSize))
+	if (terrainSize < 16
+		|| !math::isPowerOfTwo(terrainSize))
 	{
 		std::cout << "Invalid terrain size: " << terrainSize << std::endl;
 
 		return false;
 	}
 
+	// TODO
 	// Stranded uses left-handed coordinate system, so we must flip heightmap
 	// on z-axis
 	unsigned heightMapSize = terrainSize + 1;
 	std::vector<float> flippedHeightMap(heightMap.size());
 	for (unsigned x = 0; x < heightMapSize; ++x)
-	{
 		for (unsigned z = 0; z < heightMapSize; ++z)
-		{
-			flippedHeightMap[x + (heightMapSize - z - 1) * heightMapSize] =
-				heightMap[x + z * heightMapSize];
-		}
-	}
+			flippedHeightMap[x + (heightMapSize - z - 1) * heightMapSize] = heightMap[x + z * heightMapSize];
 
-	graphics.setTerrain(terrainSize, flippedHeightMap, colorMapSize, colorMap,
-		grassMap);
+	graphics.setTerrain(terrainSize, flippedHeightMap, colorMapSize, colorMap, grassMap);
 
 	return true;
 }
 
-bool Engine::loadGame()
+bool Engine::updateTime(double deltaTime)
+{
+	// Note: in-game time will only be udated once per frame
+	// This will not cause problems in normal circustanses
+
+	if (!isTimePaused)
+	{
+		// Is this precision really needed?
+		timeCounter += static_cast<long long>(deltaTime * 1000000.0);
+
+		if (timeCounter >= msPerGameMinute * 1000)
+		{
+			timeCounter -= msPerGameMinute * 1000;
+
+			++dayTime;
+
+			currentDay += dayTime / (24 * 60);
+			dayTime %= (24 * 60);
+
+			//std::cout << dayTime / 60 << ":" << dayTime % 60 << ", Day " << currentDay << std::endl;
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool Engine::loadGameConfig()
 {
 	std::vector<std::string> entries;
 	fs::scanFolder(modBaseDirectory + "sys/", entries);
 
-	for (auto&& entry : entries)
-	{
-		if (string::startsWith(entry, "game") &&
-			string::endsWith(entry, ".inf"))
+	for (auto&& entry : entries) {
+		if (string::startsWith(entry, "game")
+			&& string::endsWith(entry, ".inf"))
 		{
 			if (!parseGameConfig(std::string("sys/") + entry))
-			{
 				return false;
-			}
 		}
 	}
 
-	try
-	{
+	try {
 		mainScript = script::compile(gameScriptSource);
-	}
-	catch (std::exception & exception)
-	{
+	} catch (std::exception & exception) {
 		std::cout << exception.what() << std::endl;
 
 		return false;
@@ -295,18 +179,16 @@ bool Engine::loadGame()
 	return true;
 }
 
-bool Engine::parseGameConfig(const std::string& filename)
+bool Engine::parseGameConfig(std::string const & filename)
 {
 	std::vector<parser::inf::Entry> entries;
 	if (!parser::inf::loadAndTokenize(modBaseDirectory + filename, entries))
-	{
 		return false;
-	}
 
 	gameScriptSource.clear();
 
-	for (auto&& entry : entries)
-	{
+	// WTF is all this?
+	for (auto && entry : entries) {
 		if (entry.key == "healthsystem")
 		{}
 		else if (entry.key == "exhaust_move")
@@ -401,8 +283,7 @@ bool Engine::parseGameConfig(const std::string& filename)
 		{}
 		else
 		{
-			std::cout << filename << ":" << entry.key << ": " << "Unknown key"
-				<< std::endl;
+			std::cout << filename << ":" << entry.key << ": " << "Unknown key" << std::endl;
 
 			return false;
 		}

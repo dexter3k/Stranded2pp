@@ -10,9 +10,9 @@ namespace gfx
 namespace gui
 {
 
-GuiImage::GuiImage(Texture* texture, const math::Recti& destinationRectangle,
-		const math::Recti& sourceRectangle, GuiElement* parent, Gui* gui, int id) :
-	super(parent, gui, id),
+GuiImage::GuiImage(Gui & gui, GuiElement * parent, Texture * texture, math::Recti const & destinationRectangle,
+		const math::Recti& sourceRectangle) :
+	super(gui, parent),
 	texture(texture),
 	destinationRectangle(destinationRectangle),
 	sourceRectangle(sourceRectangle)
@@ -29,17 +29,11 @@ GuiImage::GuiImage(Texture* texture, const math::Recti& destinationRectangle,
 	}
 }
 
-GuiImage::~GuiImage()
-{}
-
-void GuiImage::onDraw()
+void GuiImage::draw()
 {
-	device::Device* device = gui->getDevice();
+	auto & device = gui.getDevice();
 
-	if (device != nullptr)
-	{
-		device->draw2DImage(texture, destinationRectangle, sourceRectangle);
-	}
+	device.draw2DImage(texture, destinationRectangle, sourceRectangle);
 }
 
 } // namespace gui

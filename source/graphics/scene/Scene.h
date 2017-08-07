@@ -51,10 +51,7 @@ public:
 private:
 	friend class gfx::Graphics;
 
-	Scene(Graphics& graphics, device::Device* device);
-
-	bool init(const Modification& modification);
-public:
+	Scene(Graphics& graphics, device::Device* device, Modification const & modification);
 	~Scene();
 public:
 

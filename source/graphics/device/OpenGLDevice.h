@@ -24,8 +24,6 @@ public:
 	OpenGLDevice();
 	~OpenGLDevice();
 
-	bool init() override;
-
 
 	// Device info
 
@@ -145,7 +143,7 @@ public:
 		Utility events
 	*/
 
-	void onResize(const math::Vector2u& size) override;
+	void onResize(math::Vector2u size) override;
 private:
 	struct TextureHolder
 	{
@@ -183,6 +181,8 @@ private:
 
 	void toGLTextureMatrix(GLfloat* glMatrix, const math::Matrix4& matrix);
 private:
+	bool init();
+
 	Texture* createTextureFromImage(const std::string& name,
 		const Image& image);
 private:

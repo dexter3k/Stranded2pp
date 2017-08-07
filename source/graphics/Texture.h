@@ -16,21 +16,21 @@ namespace device
 	class OpenGLDevice;
 }
 
+// TODO
+// WTF, this should really be OpenGLTexture
 class Texture
 {
 public:
-	Texture(const std::string& name, const Image& image,
-		device::OpenGLDevice& device);
+	Texture(std::string const & name, Image const & image, device::OpenGLDevice & device);
 	~Texture();
 
-	const std::string& getName() const;
+	std::string const & getName() const { return name; };
 
-	const math::Vector2u& getSize() const;
+	math::Vector2u getSize() const { return size; };
 
 	GLuint getGlTextureName() const;
 private:
-	void uploadTexture(bool initTexture, unsigned mipMapLevel,
-		const void* data);
+	void uploadTexture(bool initTexture, unsigned mipMapLevel, void const * data);
 private:
 	std::string name;
 

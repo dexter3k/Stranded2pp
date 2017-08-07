@@ -40,9 +40,7 @@ public:
 	static const unsigned maxTextures = 2;
 public:
 	Device();
-	virtual ~Device();
-
-	virtual bool init() = 0;
+	virtual ~Device() = default;
 
 
 	// Device info
@@ -56,12 +54,12 @@ public:
 
 	// Try to grab texture. If texture is found, increases grab count and
 	// return it. Else just return nullptr
-	virtual Texture* grabTexture(const std::string& name) = 0;
+	virtual Texture* grabTexture(std::string const & name) = 0;
 	
 	// Release texture. If texture is found, decrease grab count and if grab
 	// count is zero, then delete texture. If no texture is found, then
 	// behaviour is undefined
-	virtual void releaseTexture(const std::string& name) = 0;
+	virtual void releaseTexture(std::string const & name) = 0;
 
 
 	// Load texture from file and set grab count to one
@@ -166,7 +164,7 @@ public:
 	// Utility events
 
 
-	virtual void onResize(const math::Vector2u& size) = 0;
+	virtual void onResize(math::Vector2u size) = 0;
 protected:
 	std::string deviceName;
 };

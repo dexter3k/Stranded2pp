@@ -25,21 +25,18 @@ namespace fs
 	using DirectoryEntry = struct dirent;
 	using FileStatus = struct stat;
 
-	void scanFolder(const std::string& pathToFolder,
-		std::vector<std::string>& results)
+	void scanFolder(std::string const & pathToFolder, std::vector<std::string> & results)
 	{
-		Directory* directory = opendir(pathToFolder.c_str());
+		Directory * directory = opendir(pathToFolder.c_str());
 
-		for (DirectoryEntry* entry = readdir(directory); entry != nullptr;
-			entry = readdir(directory))
-		{
+		for (DirectoryEntry * entry = readdir(directory); entry != nullptr; entry = readdir(directory)) {
 			results.push_back(std::string(entry->d_name));
 		}
 
 		closedir(directory);
 	}
 
-	bool checkFolderExists(const std::string& pathToFolder)
+	bool checkFolderExists(std::string const & pathToFolder)
 	{
 		FileStatus status;
 
@@ -47,7 +44,7 @@ namespace fs
 		return (error == 0) && ((status.st_mode & S_IFMT) == S_IFDIR);
 	}
 
-	bool checkFileExists(const std::string& pathToFile)
+	bool checkFileExists(std::string const & pathToFile)
 	{
 		FileStatus status;
 
@@ -55,7 +52,7 @@ namespace fs
 		return (error == 0) && ((status.st_mode & S_IFMT) == S_IFREG);
 	}
 
-	size_t getFileSize(const std::string& pathToFile)
+	size_t getFileSize(std::string const & pathToFile)
 	{
 		std::ifstream file(pathToFile, std::ios::in | std::ifstream::binary);
 		if (!file)
@@ -73,13 +70,10 @@ namespace fs
 		return static_cast<size_t>(size);
 	}
 
-	bool loadFile(const std::string& pathToFile, RingBuffer& buffer)
+	bool loadFile(std::string const & pathToFile, RingBuffer & buffer)
 	{
-		//std::cout << "Opening file '" << pathToFile << "'" << std::endl;
-
 		std::ifstream file(pathToFile, std::ios::in | std::ifstream::binary);
-		if (!file)
-		{
+		if (!file) {
 			std::cout << "Unable to open file!" << std::endl;
 			return false;
 		}

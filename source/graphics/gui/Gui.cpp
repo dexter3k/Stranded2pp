@@ -3,18 +3,13 @@
 #include <cassert>
 #include <iostream>
 
-#include "screen/IntroScreen.h"
-#include "screen/MainMenuScreen.h"
-
-#include "common/Modification.h"
-#include "input/Input.h"
-
-#include "../device/Device.h"
-
 #include "GuiBackgroundImage.h"
 #include "GuiButton.h"
 #include "GuiElement.h"
 #include "GuiImage.h"
+
+#include "common/Modification.h"
+#include "graphics/device/Device.h"
 
 namespace gfx
 {
@@ -22,160 +17,107 @@ namespace gfx
 namespace gui
 {
 
-Gui::Gui(Input& input, device::Device* device) :
-	RootElement(nullptr, this),
+Gui::Gui(device::Device & device, Modification const & modification) :
+	RootElement(*this, nullptr),
+	modPath(modification.getPath()),
 	device(device),
-	engine(nullptr),
-	currentScreen(nullptr),
-	introScreen(new IntroScreen(*this, input)),
-	mainMenuScreen(new MainMenuScreen(*this, input)),
-	guiElements(),
-	modPath(""),
-	screenSize(800, 600)
+	screenSize(device.getRenderTargetSize()),
+	guiElements()
 {}
 
 Gui::~Gui()
 {
-	if (currentScreen != nullptr)
-	{
-		currentScreen->destroy();
-	}
-
-	for (auto&& element : guiElements)
-	{
+	for (auto element : guiElements)
 		delete element;
-	}
 }
 
-bool Gui::init(const Modification& modification)
+bool Gui::processEvent(Event event)
 {
-	modPath = modification.getPath();
-
-	screenSize = device->getRenderTargetSize();
-
-	return true;
+	switch (event.type) {
+	case Event::MouseMoved:
+		return RootElement::onMouseMoved(event.mouseMoved.x, event.mouseMoved.y);
+	case Event::MouseButtonPressed:
+		return RootElement::onMouseButtonPressed(event.mouseButtonPressed.button,
+			event.mouseButtonPressed.x, event.mouseButtonPressed.y);
+	case Event::MouseButtonReleased:
+		return RootElement::onMouseButtonReleased(event.mouseButtonReleased.button,
+			event.mouseButtonReleased.x, event.mouseButtonReleased.y);
+	default:
+		return false;
+	}
 }
 
 void Gui::update(double deltaTime)
 {
-	screenSize = device->getRenderTargetSize();
-
-	for (auto&& element : guiElements)
-	{
-		element->onAnimate(deltaTime);
-	}
-
-	if (currentScreen != nullptr)
-	{
-		currentScreen->update(deltaTime);
-	}
+	RootElement::animate(deltaTime);
 }
 
 void Gui::drawAll()
 {
-	RootElement::onDraw();
+	RootElement::draw();
 }
 
-void Gui::setScreen(Screen::Screens screen)
-{
-	if (currentScreen != nullptr)
-	{
-		currentScreen->destroy();
-	}
-
-	switch (screen)
-	{
-		case Screen::Intro:
-		{
-			currentScreen = introScreen.get();
-
-			break;
-		}
-		case Screen::MainMenu:
-		{
-			currentScreen = mainMenuScreen.get();
-
-			break;
-		}
-		default:
-		{
-			currentScreen = nullptr;
-
-			break;
-		}
-	}
-
-	if (currentScreen != nullptr)
-	{
-		currentScreen->create();
-	}
-}
-
-GuiElement* Gui::getRootElement()
-{
-	return this;
-}
-
-GuiButton* Gui::addButton(Texture* normalTexture, Texture* hoverTexture,
-	const math::Vector2i& position, const math::Recti& sourceRectangle,
-	GuiElement* parent, int id)
+GuiElement * Gui::createEmptyElement(GuiElement * parent)
 {
 	if (parent == nullptr)
-	{
 		parent = this;
-	}
 
-	GuiButton* button = new GuiButton(normalTexture, hoverTexture, position,
-		sourceRectangle, parent, this, id);
+	GuiElement * element = new GuiElement(*this, parent);
+
+	guiElements.push_back(element);
+
+	return element;
+}
+
+GuiButton * Gui::createButton(math::Vector2i const & position, std::string const & text,
+	FontType font, std::function<void(void)> onPressed, GuiElement * parent)
+{
+	if (parent == nullptr)
+		parent = this;
+
+	GuiButton * button = new GuiButton(*this, parent, position, text, font, onPressed);
 
 	guiElements.push_back(button);
 
 	return button;
 }
 
-GuiBackgroundImage* Gui::addBackgroundImage(Texture* texture,
-	const Color& backgroundColor, const Color& maskColor,
-	const math::Recti& sourceRectangle, GuiElement* parent, int id)
+GuiBackgroundImage * Gui::addBackgroundImage(std::string const & imageName,
+	Color backgroundColor, Color maskColor, GuiElement * parent)
 {
 	if (parent == nullptr)
-	{
 		parent = this;
-	}
 
-	GuiBackgroundImage* image = new GuiBackgroundImage(parent, this, texture,
-		backgroundColor, maskColor, sourceRectangle, id);
+	GuiBackgroundImage * image = new GuiBackgroundImage(*this, parent, imageName,
+		backgroundColor, maskColor);
 
 	guiElements.push_back(image);
 
 	return image;
 }
 
-GuiImage* Gui::addImage(Texture* texture,
-	const math::Recti& destinationRectangle, const math::Recti& sourceRectangle,
-	GuiElement* parent, int id)
+GuiImage * Gui::addImage(Texture * texture,
+	math::Recti const & destinationRectangle, math::Recti const & sourceRectangle,
+	GuiElement * parent)
 {
 	if (parent == nullptr)
-	{
 		parent = this;
-	}
 
-	GuiImage* image = new GuiImage(texture, destinationRectangle,
-		sourceRectangle, parent, this, id);
+	GuiImage * image = new GuiImage(*this, parent, texture, destinationRectangle,
+		sourceRectangle);
 
 	guiElements.push_back(image);
 
 	return image;
 }
 
-void Gui::deleteGuiElement(GuiElement* element)
+void Gui::deleteGuiElement(GuiElement * element)
 {
 	assert(element != nullptr);
 
 	auto end = guiElements.end();
-	for (auto it = guiElements.begin(); it != end; ++it)
-	{
-		if ((*it) == element)
-		{
+	for (auto it = guiElements.begin(); it != end; ++it) {
+		if ((*it) == element) {
 			delete *it;
 
 			guiElements.erase(it);
@@ -183,34 +125,6 @@ void Gui::deleteGuiElement(GuiElement* element)
 			return;
 		}
 	}
-}
-
-void Gui::connectEngine(Engine* engine)
-{
-	assert(engine != nullptr);
-	assert(this->engine == nullptr);
-
-	this->engine = engine;
-}
-
-const math::Vector2u& Gui::getScreenSize() const
-{
-	return screenSize;
-}
-
-Engine* Gui::getEngine() const
-{
-	return engine;
-}
-
-device::Device* Gui::getDevice() const
-{
-	return device;
-}
-
-const std::string& Gui::getModPath() const
-{
-	return modPath;
 }
 
 } // namespace gui

@@ -1,21 +1,23 @@
 #pragma once
 
-#include <memory>
 #include <iostream>
 #include <vector>
 
 #include "script/ExecutionContext.h"
 #include "script/Program.h"
 
+#include "input/Event.h"
+
 class Input;
 class Modification;
 class Network;
 class Sound;
+class Stranded;
 
 namespace gfx
 {
-	class Graphics;
 	class Color;
+	class Graphics;
 } // namespace gfx
 
 class Engine
@@ -29,37 +31,36 @@ class Engine
 		Editor
 	};
 public:
-	Engine(Input& input, gfx::Graphics& graphics, Network& network,
-		Sound& sound, Modification const & modification);
+	Engine(Stranded & game, gfx::Graphics & graphics, Network & network,
+		Sound & sound, Modification const & modification);
 
+	bool processEvent(Event event);
 	void update(double deltaTime);
-
-	void setGameState(GameState newGameState);
-	GameState getGameState() const;
-
-	void skipIntro();
 
 	void resetGame();
 	void setupGame(uint32_t day, uint8_t hour, uint8_t minute,
-		bool timeIsFreezed, const std::string& skybox, bool multiplayerMap,
-		uint8_t climate, const std::string& music,
-		const std::string& briefScript);
-	void setupQuickslots(const std::vector<std::string>& quickslots);
-	bool setupTerrain(unsigned terrainSize, const std::vector<float>& heightMap,
-		unsigned colorMapSize, const std::vector<gfx::Color>& colorMap,
-		const std::vector<uint8_t>& grassMap);
-private:
-	bool init(Modification const & modification);
+		bool timeIsFreezed, std::string const & skybox, bool multiplayerMap,
+		uint8_t climate, std::string const & music,
+		std::string const & briefScript);
+	void setupQuickslots(std::vector<std::string> const & quickslots);
+	bool setupTerrain(unsigned terrainSize, std::vector<float> const & heightMap,
+		unsigned colorMapSize, std::vector<gfx::Color> const & colorMap,
+		std::vector<uint8_t> const & grassMap);
 
-	bool loadGame();
-	bool parseGameConfig(const std::string& filename);
+	void loadGame(std::string const &) { /* todo */ };
 private:
-	static const unsigned gameTimeRatio; // game minutes / real milliseconds
+	bool updateTime(double deltaTime);
+
+	bool loadGameConfig();
+	bool parseGameConfig(std::string const & filename);
 private:
-	//Input&		input;
+	static const unsigned msPerGameMinute;
+private:
+	Stranded & game;
+
 	gfx::Graphics & graphics;
-	//Network&	network;
-	//Sound&		sound;
+	//Network & network;
+	//Sound & sound;
 
 	GameState gameState;
 

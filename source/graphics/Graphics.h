@@ -1,10 +1,15 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 #include <string>
+#include <vector>
 
-class Input;
+#include "LoadingScreen.h"
+#include "gui/Gui.h"
+#include "scene/Scene.h"
+
+#include "input/Event.h"
+
 class Modification;
 
 namespace gfx
@@ -12,49 +17,40 @@ namespace gfx
 
 	class Color;
 
-namespace gui
-{
-	class Gui;
-}
-
 namespace device
 {
-
 	class Device;
-
-} // namespace device
-
+}
 
 namespace scene
-{
-	
+{	
 	class InfinitePlane;
-	class Scene;
 	class Skybox;
 	class Terrain;
-
-} // namespace scene
+}
 
 class Texture;
 
 class Graphics
 {
 public:
-	Graphics(Input & input, Modification const & modification);
+	Graphics(Modification const & modification);
 	~Graphics();
 
+	bool processEvent(Event event);
 	void update(double deltaTime);
 
 	void drawAll();
 
-	gui::Gui& getGui();
+	gui::Gui & getGui() { return gui; };
+	LoadingScreen & getLoadingScreen() { return loadingScreen; };
 
-	void setSkybox(const std::string& name);
-	void setTerrain(unsigned terrainSize, const std::vector<float>& heightMap,
-		unsigned colorMapSize, const std::vector<gfx::Color>& colorMap,
-		const std::vector<uint8_t>& grassMap);
+	void setSkybox(std::string const & name);
+	void setTerrain(unsigned terrainSize, std::vector<float> const & heightMap,
+		unsigned colorMapSize, std::vector<gfx::Color> const & colorMap,
+		std::vector<uint8_t> const & grassMap);
 private:
-	bool init(Modification const & modification);
+	bool init();
 
 	void setWaterLevel(float level);
 	void setGroundLevel(float level);
@@ -76,22 +72,25 @@ private:
 	static const std::vector<std::string> skyboxPostfixes;
 	static const std::vector<std::string> preloadList;
 private:
-	std::shared_ptr<device::Device> device;
-	std::shared_ptr<scene::Scene> scene;
-	std::shared_ptr<gui::Gui> gui;
+	std::unique_ptr<device::Device> device;
 
-	scene::Terrain* terrainNode;
-
-	std::vector<std::string> preloadedTextures;
+	gui::Gui gui;
+	scene::Scene scene;
 
 	std::string basePath;
 
-	Texture* currentSkyboxTextures[6];
-	scene::Skybox* currentSkyboxNode;
+	std::vector<std::string> preloadedTextures;
+
+	scene::Terrain* terrainNode;
+
+	Texture * currentSkyboxTextures[6];
+	scene::Skybox * currentSkyboxNode;
 	std::string currentSkyboxName;
 
-	scene::InfinitePlane* waterPlane;
-	scene::InfinitePlane* groundPlane;
+	scene::InfinitePlane * waterPlane;
+	scene::InfinitePlane * groundPlane;
+
+	LoadingScreen loadingScreen;
 };
 
 } // namespace gfx

@@ -20,7 +20,7 @@ namespace gfx
 namespace scene
 {
 
-Scene::Scene(Graphics& graphics, device::Device* device) :
+Scene::Scene(Graphics& graphics, device::Device* device, Modification const & modification) :
 	RootNode(nullptr, this),
 	graphics(graphics),
 	device(device),
@@ -31,15 +31,8 @@ Scene::Scene(Graphics& graphics, device::Device* device) :
 	currentRenderPass(RenderPassNone),
 	skyboxes(),
 	solidObjects(),
-	modPath("")
+	modPath(modification.getPath())
 {}
-
-bool Scene::init(const Modification& modification)
-{
-	modPath = modification.getPath();
-
-	return true;
-}
 
 Scene::~Scene()
 {

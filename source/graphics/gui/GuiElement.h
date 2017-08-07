@@ -16,52 +16,47 @@ class Gui;
 class GuiElement
 {
 public:
-	GuiElement(GuiElement* parent, Gui* gui, int id = -1,
-		const math::Vector2i& position = math::Vector2i(0, 0));
+	GuiElement(Gui & gui, GuiElement * parent, math::Vector2i position = math::Vector2i(0, 0));
 	virtual ~GuiElement();
 
-	virtual void onAnimate(double deltaTime);
-	virtual void onDraw();
+	virtual void animate(double deltaTime);
+	virtual void draw();
+
 	virtual bool onMouseButtonPressed(uint8_t button, int x, int y);
+	virtual bool onMouseButtonReleased(uint8_t button, int x, int y);
 	virtual bool onMouseMoved(int x, int y);
 
-	virtual void addChild(GuiElement* child);
-	virtual const std::list<GuiElement*>& getChildren() const;
-	virtual bool removeChild(GuiElement* childToRemove);
+	void addChild(GuiElement * child);
+	bool removeChild(GuiElement * childToRemove);
 
-	virtual int getId() const;
-	virtual void setId(int id);
+	std::list<GuiElement *> const & getChildren() const { return children; };
 
-	virtual const std::string& getName() const;
-	virtual void setName(const std::string& name);
+	GuiElement * getParent() const { return parent; };
+	void setParent(GuiElement * newParent);
 
-	virtual GuiElement* getParent() const;
-	virtual void setParent(GuiElement* newParent);
+	bool isVisible() const { return !hidden; };
+	void hide() { hidden = true; };
+	void show() { hidden = false; };
 
-	virtual bool getVisible() const;
-	virtual void setVisible(bool isVisible);
+	bool isTrulyVisible() const;
 
-	virtual bool getTrulyVisible() const;
+	math::Vector2i getPosition() const { return position; };
+	void setPosition(math::Vector2i position) { this->position = position; };
 
-	virtual const math::Vector2i& getPosition() const;
-	virtual void setPosition(const math::Vector2i& position);
+	math::Vector2i getAbsolutePosition() const { return absolutePosition; };
 
-	virtual const math::Vector2i& getAbsolutePosition() const;
+	void updateAbsolutePosition();
+private:
+	GuiElement * parent;
 
-	virtual void updateAbsolutePosition();
-protected:
-	GuiElement* parent;
-	std::list<GuiElement*> children;
-
-	Gui* gui;
-
-	int id;
-	std::string name;
-
-	bool isVisible;
+	std::list<GuiElement *> children;
 
 	math::Vector2i position;
 	math::Vector2i absolutePosition;
+
+	bool hidden;
+protected:
+	Gui & gui;
 };
 
 } // namespace gui

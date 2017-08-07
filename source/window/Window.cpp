@@ -37,11 +37,11 @@ bool Window::init(bool forceWindowedMode, const Modification& modification)
 	// Check fullscreen video mode
 	if (!forceWindowedMode && !videoMode.isValid())
 	{
-		std::cout << "Error: invalid video mode! Selecting default..." <<
-			std::endl;
+		std::cout << "Error: invalid video mode! Selecting default" << std::endl;
 
 		auto modes = sf::VideoMode::getFullscreenModes();
 		videoMode = modes[0]; // Best available
+		std::cout << "New video mode: " << videoMode.width << "x" << videoMode.height << std::endl;
 	}
 
 	std::string title = "S2++ '";

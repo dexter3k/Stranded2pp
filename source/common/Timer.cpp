@@ -2,8 +2,8 @@
 
 Timer::Timer() :
 	timer(),
-	pauseStart(0.0f),
-	overallPauseTime(0.0f),
+	pauseStart(0.0),
+	overallPauseTime(0.0),
 	isStarted(false),
 	isPaused(false)
 {}
@@ -11,14 +11,10 @@ Timer::Timer() :
 double Timer::getElapsedTime() const
 {
 	if (!isStarted)
-	{
-		return 0.0f;
-	}
+		return 0.0;
 
 	if (isPaused)
-	{
 		return pauseStart;
-	}
 
 	return timer.getElapsedTime().asSeconds() - overallPauseTime;
 }
@@ -44,8 +40,8 @@ double Timer::stop()
 	double runTime = timer.getElapsedTime().asSeconds() - overallPauseTime;
 
 	isStarted = false;
-	pauseStart = 0.0f;
-	overallPauseTime = 0.0f;
+	pauseStart = 0.0;
+	overallPauseTime = 0.0;
 
 	return runTime;
 }

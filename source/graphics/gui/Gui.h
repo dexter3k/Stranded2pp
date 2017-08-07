@@ -1,16 +1,16 @@
 #pragma once
 
+#include <functional>
 #include <list>
-#include <memory>
 #include <string>
-
-#include "screen/Screen.h"
-#include "../Color.h"
-#include "math/Rect.h"
 
 #include "GuiElement.h"
 
-class Engine;
+#include "graphics/Color.h"
+#include "graphics/FontType.h"
+#include "input/Event.h"
+#include "math/Rect.h"
+
 class Input;
 class Modification;
 
@@ -30,63 +30,48 @@ namespace gui
 class GuiBackgroundImage;
 class GuiButton;
 class GuiImage;
-class IntroScreen;
-class MainMenuScreen;
 
 class Gui : public GuiElement
 {
 	typedef GuiElement RootElement;
 public:
-	Gui(Input& input, device::Device* device);
+	Gui(device::Device & device, Modification const & modification);
 	~Gui();
 
-	bool init(const Modification& modification);
+	bool processEvent(Event event);
 	void update(double deltaTime);
 
 	void drawAll();
 
-	void setScreen(Screen::Screens screen);
+	GuiElement * createEmptyElement(GuiElement * parent = nullptr);
 
-	GuiElement* getRootElement();
+	GuiButton * createButton(math::Vector2i const & position, std::string const & text,
+		FontType font, std::function<void(void)> onPressed = nullptr, GuiElement * parent = nullptr);
 
-	GuiButton* addButton(Texture* normalTexture, Texture* hoverTexture,
-		const math::Vector2i& position,
-		const math::Recti& sourceRectangle = math::Recti(0, 0, 0, 0),
-		GuiElement* parent = nullptr, int id = -1);
+	GuiBackgroundImage * addBackgroundImage(std::string const & imageName,
+		Color backgroundColor = Color(0, 0, 0), Color maskColor = Color(0, 0, 0, 0),
+		GuiElement * parent = nullptr);
 
-	GuiBackgroundImage* addBackgroundImage(Texture* texture,
-		const Color& backgroundColor = Color(0, 0, 0),
-		const Color& maskColor = Color(0, 0, 0, 0),
-		const math::Recti& sourceRectangle = math::Recti(0, 0, 0, 0),
-		GuiElement* parent = nullptr, int id = -1);
-
-	GuiImage* addImage(Texture* texture,
+	GuiImage* addImage(Texture * texture,
 		const math::Recti& destinationRectangle,
 		const math::Recti& sourceRectangle = math::Recti(0, 0, 0, 0),
-		GuiElement* parent = nullptr, int id = -1);
+		GuiElement * parent = nullptr);
 
-	void deleteGuiElement(GuiElement* element);
+	void deleteGuiElement(GuiElement * element);
 
-	void connectEngine(Engine* engine);
+	std::string const & getModPath() const { return modPath; };
 
-	const math::Vector2u& getScreenSize() const;
+	device::Device & getDevice() const { return device; };
 
-	Engine* getEngine() const;
-	device::Device* getDevice() const;
-	const std::string& getModPath() const;
+	math::Vector2u getScreenSize() const { return screenSize; };
 private:
-	device::Device* device;
-	Engine* engine;
-
-	Screen* currentScreen;
-	std::shared_ptr<IntroScreen> introScreen;
-	std::shared_ptr<MainMenuScreen> mainMenuScreen;
-
-	std::list<GuiElement*> guiElements;
-
 	std::string modPath;
 
+	device::Device & device;
+
 	math::Vector2u screenSize;
+
+	std::list<GuiElement*> guiElements;
 };
 
 } // namespace gui

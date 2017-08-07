@@ -7,12 +7,11 @@
 
 namespace fs
 {
-	void scanFolder(const std::string& pathToFolder,
-		std::vector<std::string>& results);
+	void scanFolder(std::string const & pathToFolder, std::vector<std::string> & results);
 
-	bool checkFolderExists(const std::string& pathToFolder);
-	bool checkFileExists(const std::string& pathToFile);
+	bool checkFolderExists(std::string const & pathToFolder);
+	bool checkFileExists(std::string const & pathToFile);
 
-	size_t getFileSize(const std::string& pathToFile);
-	bool loadFile(const std::string& pathToFile, RingBuffer& buffer);
+	size_t getFileSize(std::string const & pathToFile);
+	bool loadFile(std::string const & pathToFile, RingBuffer & buffer);
 } // namespace fs

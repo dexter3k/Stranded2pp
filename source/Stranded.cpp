@@ -7,10 +7,14 @@
 Stranded::Stranded(std::vector<std::string> const & arguments) :
 	cmdLineArgs(arguments),
 	modification(cmdLineArgs.modificationName()),
+	resources(cmdLineArgs.modificationName()),
 	window(cmdLineArgs.shouldForceWindowedMode(), modification),
 	input(window, modification),
-	graphics(input, modification),
-	engine(input, graphics, network, sound, modification),
+	graphics(modification),
+	engine(*this, graphics, network, sound, modification),
+	mainMenu(*this),
+	intro(*this),
+	currentStates(),
 	shouldStop(false)
 {}
 
@@ -19,14 +23,21 @@ void Stranded::run()
 	shouldStop = false;
 
 	printWelcomeMessage();
+	setState(state::IntroState);
 
 	Timer deltaTimer;
 	double deltaTime = 0.0;
 
-	while (!shouldStop)
-	{
-		// Process all OS events and trigger input callbacks
+	while (!shouldStop) {
+		// Process all OS events
 		input.processInput(deltaTime);
+
+		// Pass events to graphics layer and then game engine
+		Event event;
+		while (input.getEvent(event)) {
+			if (!graphics.processEvent(event))
+				engine.processEvent(event);
+		}
 
 		// Update current engine stage's logic
 		engine.update(deltaTime);
@@ -50,6 +61,9 @@ void Stranded::stopLoop()
 {
 	shouldStop = true;
 }
+
+void Stranded::setState(state::Type)
+{}
 
 void Stranded::printWelcomeMessage()
 {

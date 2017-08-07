@@ -10,64 +10,40 @@ namespace gfx
 namespace gui
 {
 
-GuiBackgroundImage::GuiBackgroundImage(GuiElement* parent, Gui* gui,
-		Texture* backgroundTexture, const Color& backgroundColor,
-		const Color& maskColor, const math::Recti& sourceRectangle, int id) :
-	super(parent, gui, id),
-	texture(backgroundTexture),
-	destinationRectangle(),
-	sourceRectangle(sourceRectangle),
+GuiBackgroundImage::GuiBackgroundImage(Gui & gui, GuiElement * parent,
+		std::string const & imageName, Color backgroundColor, Color maskColor) :
+	super(gui, parent),
+	textureName(imageName),
+	texture(gui.getDevice().grabTexture(gui.getModPath() + textureName)),
 	backgroundColor(backgroundColor),
 	maskColor(maskColor)
-{
-	if (sourceRectangle.upperLeft.x == 0 &&
-		sourceRectangle.upperLeft.y == 0 &&
-		sourceRectangle.lowerRight.x == 0 &&
-		sourceRectangle.lowerRight.y == 0)
-	{
-		if (texture != nullptr)
-		{
-			this->sourceRectangle.lowerRight = texture->getSize();
-		}
-	}
-
-	math::Vector2i imageSize =
-		this->sourceRectangle.lowerRight - this->sourceRectangle.upperLeft;
-	math::Vector2u screenSize = gui->getScreenSize();
-
-	destinationRectangle.upperLeft.x = screenSize.x / 2 - imageSize.x / 2;
-	destinationRectangle.upperLeft.y = screenSize.y / 2 - imageSize.y / 2;
-	destinationRectangle.lowerRight =
-		destinationRectangle.upperLeft + imageSize;
-}
-
-GuiBackgroundImage::~GuiBackgroundImage()
 {}
 
-void GuiBackgroundImage::onDraw()
+GuiBackgroundImage::~GuiBackgroundImage()
 {
-	device::Device* device = gui->getDevice();
-
-	if (device != nullptr)
-	{
-		math::Vector2u screenSize = gui->getScreenSize();
-
-		device->draw2DRectangle(math::Recti(0, 0, screenSize.x, screenSize.y),
-			backgroundColor);
-		device->draw2DImage(texture, destinationRectangle, sourceRectangle);
-
-		if (maskColor.getAlpha() > 0)
-		{
-			device->draw2DRectangle(
-				math::Recti(0, 0, screenSize.x, screenSize.y),
-				maskColor);
-		}
-	}
-
-	super::onDraw();
+	gui.getDevice().releaseTexture(gui.getModPath() + textureName);
 }
 
-void GuiBackgroundImage::setMaskColor(const Color& color)
+void GuiBackgroundImage::draw()
+{
+	math::Vector2i screenSize = gui.getScreenSize();
+	math::Vector2i imageSize(0, 0);
+	if (texture != nullptr)
+		imageSize = texture->getSize();
+
+	math::Vector2i upperLeft = screenSize / 2 - imageSize / 2;
+	math::Vector2i upperRight = upperLeft + imageSize;
+
+	auto & device = gui.getDevice();
+
+	device.draw2DRectangle(math::Recti(0, 0, screenSize.x, screenSize.y), backgroundColor);
+	device.draw2DImage(texture, math::Recti(upperLeft, upperRight));
+	device.draw2DRectangle(math::Recti(0, 0, screenSize.x, screenSize.y), maskColor);
+
+	super::draw();
+}
+
+void GuiBackgroundImage::setMaskColor(Color color)
 {
 	maskColor = color;
 }

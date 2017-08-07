@@ -16,14 +16,13 @@ class GuiImage : public GuiElement
 {
 	typedef GuiElement super;
 public:
-	GuiImage(Texture* texture, const math::Recti& destinationRectangle,
-		const math::Recti& sourceRectangle, GuiElement* parent, Gui* gui,
-		int id = -1);
-	~GuiImage();
+	GuiImage(Gui & gui, GuiElement * parent, Texture * texture,
+		math::Recti const & destinationRectangle, math::Recti const & sourceRectangle);
 
-	void onDraw() override;
+	void draw() override;
 private:
-	Texture* texture;
+	Texture * texture;
+
 	math::Recti destinationRectangle;
 	math::Recti sourceRectangle;
 };

@@ -10,9 +10,6 @@ Device::Device() :
 	deviceName("null")
 {}
 
-Device::~Device()
-{}
-
 } // namespace device
 
 } // namespace gfx

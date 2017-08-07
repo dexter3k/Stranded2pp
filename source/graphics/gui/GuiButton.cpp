@@ -12,84 +12,56 @@ namespace gfx
 namespace gui
 {
 
-GuiButton::GuiButton(Texture* normalTexture, Texture* hoverTexture,
-		const math::Vector2i& position, const math::Recti& sourceRectangle,
-		GuiElement* parent, Gui* gui, int id) :
-	super(parent, gui, id, position),
-	textures{normalTexture, hoverTexture},
-	sourceRectangle(sourceRectangle),
-	isHovered(false)
-{
-	if (sourceRectangle.upperLeft.x == 0 &&
-		sourceRectangle.upperLeft.y == 0 &&
-		sourceRectangle.lowerRight.x == 0 &&
-		sourceRectangle.lowerRight.y == 0)
-	{
-		if (normalTexture != nullptr)
-		{
-			this->sourceRectangle.lowerRight = normalTexture->getSize();
-		}
-		else if (hoverTexture != nullptr)
-		{
-			this->sourceRectangle.lowerRight = hoverTexture->getSize();
-		}
-	}
-}
+unsigned const GuiButton::width = 190;
+unsigned const GuiButton::height = 45;
 
-GuiButton::~GuiButton()
+std::string const GuiButton::textureName = "sys/gfx/bigbutton.bmp";
+std::string const GuiButton::textureHoveredName = "sys/gfx/bigbutton_over.bmp";
+
+GuiButton::GuiButton(Gui & gui, GuiElement * parent, math::Vector2i position,
+		std::string const &, FontType, std::function<void(void)> onPressed) :
+	super(gui, parent, position),
+	texture(gui.getDevice().grabTexture(gui.getModPath() + textureName)),
+	textureHovered(gui.getDevice().grabTexture(gui.getModPath() + textureHoveredName)),
+	isHovered(false),
+	onPressed(onPressed)
 {}
 
-void GuiButton::onDraw()
+GuiButton::~GuiButton()
 {
-	device::Device* device = gui->getDevice();
+	gui.getDevice().releaseTexture(gui.getModPath() + textureName);
+	gui.getDevice().releaseTexture(gui.getModPath() + textureHoveredName);
+}
 
-	if (device != nullptr)
-	{
-		if (isHovered)
-		{
-			device->draw2DImage(textures[1], position, sourceRectangle);
-		}
-		else
-		{
-			device->draw2DImage(textures[0], position, sourceRectangle);
-		}
-	}
+void GuiButton::draw()
+{
+	auto & device = gui.getDevice();
+
+	device.draw2DImage(isHovered ? textureHovered : texture, getPosition());
 }
 
 bool GuiButton::onMouseButtonPressed(uint8_t button, int x, int y)
 {
-	if (isVisible)
-	{
-		math::Vector2i lowerRight =
-			position + sourceRectangle.lowerRight - sourceRectangle.upperLeft;
+	if (!isVisible())
+		return false;
 
-		if (x > position.x && y > position.y &&
-			x < lowerRight.x && y < lowerRight.y)
-		{
-			std::cout << "Pressed!" << std::endl;
-		}
-	}
+	math::Vector2i lowerRight = getPosition() + math::Vector2i(width, height);
+
+	bool pressed = (x > getPosition().x && y > getPosition().y && x < lowerRight.x && y < lowerRight.y);
+	if (pressed && onPressed != nullptr)
+		onPressed();
 
 	return super::onMouseButtonPressed(button, x, y);
 }
 
 bool GuiButton::onMouseMoved(int x, int y)
 {
-	if (isVisible)
-	{
-		math::Vector2i lowerRight =
-			position + sourceRectangle.lowerRight - sourceRectangle.upperLeft;
+	if (!isVisible())
+		return false;
 
-		if (x > position.x && y > position.y &&
-			x < lowerRight.x && y < lowerRight.y)
-		{
-			isHovered = true;
-		}
-		else
-		{
-			isHovered = false;
-		}
-	}
+	math::Vector2i lowerRight = getPosition() + math::Vector2i(width, height);
+
+	isHovered = (x > getPosition().x && y > getPosition().y && x < lowerRight.x && y < lowerRight.y);
 
 	return super::onMouseMoved(x, y);
 }

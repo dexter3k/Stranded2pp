@@ -10,74 +10,66 @@ namespace gfx
 namespace gui
 {
 
-GuiElement::GuiElement(GuiElement* parent, Gui* gui, int id,
-		const math::Vector2i& position) :
+GuiElement::GuiElement(Gui & gui, GuiElement * parent, math::Vector2i position) :
 	parent(nullptr),
 	children(),
-	gui(gui),
-	id(id),
-	name(""),
-	isVisible(true),
 	position(position),
-	absolutePosition(position)
+	absolutePosition(position),
+	hidden(false),
+	gui(gui)
 {
-	assert(gui != nullptr);
-
 	setParent(parent);
 
 	if (parent != nullptr)
-	{
 		absolutePosition = parent->getAbsolutePosition() + position;
-	}
 }
 
 GuiElement::~GuiElement()
 {
-	for (auto&& child : children)
-	{
-		gui->deleteGuiElement(child);
-	}
+	while (!children.empty())
+		gui.deleteGuiElement(children.front());
 
 	if (parent != nullptr)
-	{
 		parent->removeChild(this);
-	}
 }
 
-void GuiElement::onAnimate(double deltaTime)
+void GuiElement::animate(double deltaTime)
 {
-	if (isVisible)
-	{
-		updateAbsolutePosition();
+	if (hidden)
+		return;
+	
+	updateAbsolutePosition();
 
-		for (auto&& child : children)
-		{
-			child->onAnimate(deltaTime);
-		}
-	}
+	for (auto child : children)
+		child->animate(deltaTime);
 }
 
-void GuiElement::onDraw()
+void GuiElement::draw()
 {
-	if (isVisible)
-	{
-		for (auto&& child : children)
-		{
-			child->onDraw();
-		}
+	if (!hidden) {
+		for (auto child : children)
+			child->draw();
 	}
 }
 
 bool GuiElement::onMouseButtonPressed(uint8_t button, int x, int y)
 {
-	if (isVisible)
-	{
-		for (auto&& child : children)
-		{
+	if (!hidden) {
+		for (auto child : children) {
 			if (child->onMouseButtonPressed(button, x, y))
-			{
 				return true;
-			}
+		}
+	}
+
+	return false;
+}
+
+bool GuiElement::onMouseButtonReleased(uint8_t button, int x, int y)
+{
+	if (!hidden) {
+		for (auto child : children) {
+			if (child->onMouseButtonReleased(button, x, y))
+				return true;
 		}
 	}
 
@@ -86,48 +78,35 @@ bool GuiElement::onMouseButtonPressed(uint8_t button, int x, int y)
 
 bool GuiElement::onMouseMoved(int x, int y)
 {
-	if (isVisible)
-	{
-		for (auto&& child : children)
-		{
+	if (!hidden) {
+		for (auto child : children) {
 			if (child->onMouseMoved(x, y))
-			{
 				return true;
-			}
 		}
 	}
 
 	return false;
 }
 
-void GuiElement::addChild(GuiElement* child)
+void GuiElement::addChild(GuiElement * child)
 {
 	assert(child != nullptr);
 
 	if (child->parent != nullptr)
-	{
 		child->parent->removeChild(child);
-	}
 
 	child->parent = this;
 
 	children.push_back(child);
 }
 
-const std::list<GuiElement*>& GuiElement::getChildren() const
-{
-	return children;
-}
-
-bool GuiElement::removeChild(GuiElement* childToRemove)
+bool GuiElement::removeChild(GuiElement * childToRemove)
 {
 	assert(childToRemove != nullptr);
 
 	auto end = children.end();
-	for (auto it = children.begin(); it != end; ++it)
-	{
-		if ((*it) == childToRemove)
-		{
+	for (auto it = children.begin(); it != end; ++it) {
+		if ((*it) == childToRemove) {
 			assert((*it)->parent == this);
 
 			(*it)->parent = nullptr;
@@ -141,92 +120,32 @@ bool GuiElement::removeChild(GuiElement* childToRemove)
 	return false;
 }
 
-int GuiElement::getId() const
-{
-	return id;
-}
-
-void GuiElement::setId(int id)
-{
-	this->id = id;
-}
-
-const std::string& GuiElement::getName() const
-{
-	return name;
-}
-
-void GuiElement::setName(const std::string& name)
-{
-	this->name = name;
-}
-
-GuiElement* GuiElement::getParent() const
-{
-	return parent;
-}
-
-void GuiElement::setParent(GuiElement* newParent)
+void GuiElement::setParent(GuiElement * newParent)
 {
 	if (parent == newParent)
-	{
 		return;
-	}
 
 	if (parent != nullptr)
-	{
 		parent->removeChild(this);
-	}
 	
 	if (newParent != nullptr)
-	{
 		newParent->addChild(this);
-	}
 }
 
-bool GuiElement::getVisible() const
+bool GuiElement::isTrulyVisible() const
 {
-	return isVisible;
-}
-
-void GuiElement::setVisible(bool isVisible)
-{
-	this->isVisible = isVisible;
-}
-
-bool GuiElement::getTrulyVisible() const
-{
-	if (parent != nullptr)
-	{
-		return getVisible() && parent->getVisible();
-	}
-
-	return getVisible();
-}
-
-const math::Vector2i& GuiElement::getPosition() const
-{
-	return position;
-}
-
-void GuiElement::setPosition(const math::Vector2i& position)
-{
-	this->position = position;
-}
-
-const math::Vector2i& GuiElement::getAbsolutePosition() const
-{
-	return absolutePosition;
+	if (isVisible())
+		return parent->isTrulyVisible();
+	else
+		return false;
 }
 
 void GuiElement::updateAbsolutePosition()
 {
-	if (parent != nullptr)
-	{
-		absolutePosition = parent->getAbsolutePosition() + getPosition();
-	}
-
 	absolutePosition = getPosition();
+
+	if (parent != nullptr)
+		absolutePosition += parent->getAbsolutePosition();
 }
 
 } // namespace gui

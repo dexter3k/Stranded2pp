@@ -2,18 +2,12 @@
 
 #include "device/Device.h"
 #include "device/OpenGLDevice.h"
-#include "scene/Scene.h"
-
-#include "common/Modification.h"
-#include "input/Input.h"
-
 #include "scene/Camera.h"
 #include "scene/InfinitePlane.h"
 #include "scene/Skybox.h"
 #include "scene/Terrain.h"
 
-#include "gui/Gui.h"
-
+#include "common/Modification.h"
 
 namespace gfx
 {
@@ -126,84 +120,57 @@ const std::vector<std::string> Graphics::preloadList = {
 	"sprites/moon_a.png",
 };
 
-Graphics::Graphics(Input & input, Modification const & modification) :
-	device(new device::OpenGLDevice()),
-	scene(new scene::Scene(*this, device.get())),
-	gui(new gui::Gui(input, device.get())),
-	terrainNode(nullptr),
-	preloadedTextures(),
+Graphics::Graphics(Modification const & modification) :
+	device(std::make_unique<device::OpenGLDevice>()),
+	gui(*device.get(), modification),
+	scene(*this, device.get(), modification),
 	basePath(""),
+	preloadedTextures(),
+	terrainNode(nullptr),
 	currentSkyboxTextures(),
 	currentSkyboxNode(nullptr),
 	currentSkyboxName("sky"),
 	waterPlane(nullptr),
 	groundPlane(nullptr)
 {
-	if (!init(modification))
+	basePath = modification.getPath();
+
+	if (!init())
 		throw std::runtime_error("Unable to init Graphics");
 }
 
 Graphics::~Graphics()
 {
-	for (const auto& texture : preloadedTextures)
-	{
-		device->releaseTexture(texture);
-	}
+	// Unload used textures
 
+	for (const auto& texture : preloadedTextures)
+		device->releaseTexture(texture);
 	preloadedTextures.clear();
 
-	// Unload ground plane texture
 	if (groundPlane != nullptr)
-	{
 		device->releaseTexture(basePath + "sys/gfx/terraindirt.bmp");
-	}
 
-	// Unload water plane texture
 	if (waterPlane != nullptr)
-	{
 		device->releaseTexture(basePath + "gfx/water.jpg");
-	}
 
-	// Unload skybox textures
-	for (unsigned i = 0; i < 6; ++i)
-	{
-		if (currentSkyboxTextures[i] != nullptr)
-		{
+	for (unsigned i = 0; i < 6; ++i) {
+		if (currentSkyboxTextures[i] != nullptr) {
 			device->releaseTexture(
-				basePath + skyboxBasePath + currentSkyboxName +
-					skyboxPostfixes[i]);
+				basePath + skyboxBasePath + currentSkyboxName + skyboxPostfixes[i]);
+			currentSkyboxTextures[i] = nullptr;
 		}
 	}
 }
 
-bool Graphics::init(Modification const & modification)
+bool Graphics::init()
 {
-	basePath = modification.getPath();
-
-	if (!device->init())
-	{
-		return false;
-	}
-
 	if (!preloadTextures())
-	{
 		return false;
-	}
 
-	if (!scene->init(modification))
-	{
-		return false;
-	}
-
-	if (!gui->init(modification))
-	{
-		return false;
-	}
-
-	scene->addCamera(nullptr, math::Vector3f(0.0f, 10.0f, 30.0f),
+	scene.addCamera(nullptr, math::Vector3f(0.0f, 10.0f, 30.0f),
 		math::Vector3f(0.0f, 0.0f, 0.0f));
 
-	waterPlane = scene->addInfinitePlane(
+	waterPlane = scene.addInfinitePlane(
 		device->grabTexture(basePath + "gfx/water.jpg"), Color(80, 255, 240),
 		3.125f);
 	{
@@ -216,7 +183,7 @@ bool Graphics::init(Modification const & modification)
 
 	setWaterLevel(1.0f / 64.0f);
 
-	groundPlane = scene->addInfinitePlane(
+	groundPlane = scene.addInfinitePlane(
 		device->grabTexture(basePath + "sys/gfx/terraindirt.bmp"),
 		Color(255, 255, 255), 2.0f);
 	{
@@ -232,9 +199,17 @@ bool Graphics::init(Modification const & modification)
 	return true;
 }
 
+bool Graphics::processEvent(Event event)
+{
+	if (gui.processEvent(event))
+		return true;
+
+	return false;
+}
+
 void Graphics::update(double deltaTime)
 {
-	auto camera = scene->getActiveCamera();
+	auto camera = scene.getActiveCamera();
 	if (camera != nullptr)
 	{
 		auto rotation = camera->getRotation();
@@ -242,61 +217,46 @@ void Graphics::update(double deltaTime)
 		camera->setRotation(rotation);
 	}
 
-	gui->update(deltaTime);
+	gui.update(deltaTime);
 }
 
 void Graphics::drawAll()
 {
 	device->beginScene();
 
-	scene->drawAll();
-
-	gui->drawAll();
+	scene.drawAll();
+	gui.drawAll();
 
 	device->endScene();
 }
 
-gui::Gui& Graphics::getGui()
+void Graphics::setSkybox(std::string const & name)
 {
-	return *gui;
-}
-
-void Graphics::setSkybox(const std::string& name)
-{
-	if (currentSkyboxNode != nullptr)
-	{
+	if (currentSkyboxNode != nullptr) {
 		if (groundPlane != nullptr)
-		{
 			groundPlane->setParent(nullptr);
-		}
 
-		scene->removeNode(currentSkyboxNode);
+		scene.removeNode(currentSkyboxNode);
 		currentSkyboxNode = nullptr;
 	}
 
-	if (currentSkyboxName != name)
-	{
-		for (unsigned i = 0; i < 6; ++i)
-		{
-			if (currentSkyboxTextures[i] != nullptr)
-			{
+	if (currentSkyboxName != name) {
+		for (unsigned i = 0; i < 6; ++i) {
+			if (currentSkyboxTextures[i] != nullptr) {
 				device->releaseTexture(
-					basePath + skyboxBasePath + currentSkyboxName +
-						skyboxPostfixes[i]);
+					basePath + skyboxBasePath + currentSkyboxName + skyboxPostfixes[i]);
 			}
 		}
 
 		currentSkyboxName = name;
 
-		for (unsigned i = 0; i < 6; ++i)
-		{
+		for (unsigned i = 0; i < 6; ++i) {
 			currentSkyboxTextures[i] = device->loadTextureFromFile(
-				basePath + skyboxBasePath + currentSkyboxName +
-					skyboxPostfixes[i]);
+				basePath + skyboxBasePath + currentSkyboxName + skyboxPostfixes[i]);
 		}
 	}
 
-	currentSkyboxNode = scene->addSkybox(
+	currentSkyboxNode = scene.addSkybox(
 		currentSkyboxTextures[0],
 		currentSkyboxTextures[1],
 		currentSkyboxTextures[2],
@@ -305,24 +265,19 @@ void Graphics::setSkybox(const std::string& name)
 		currentSkyboxTextures[5]);
 
 	if (groundPlane != nullptr)
-	{
 		groundPlane->setParent(currentSkyboxNode);
-	}
 }
 
-void Graphics::setTerrain(unsigned terrainSize,
-	const std::vector<float>& heightMap, unsigned colorMapSize,
-	const std::vector<gfx::Color>& colorMap,
-	const std::vector<uint8_t>&)
+void Graphics::setTerrain(unsigned terrainSize, std::vector<float> const & heightMap,
+	unsigned colorMapSize, std::vector<gfx::Color> const & colorMap,
+	std::vector<uint8_t> const &)
 {
-	if (terrainNode != nullptr)
-	{
-		scene->removeNode(terrainNode);
+	if (terrainNode != nullptr) {
+		scene.removeNode(terrainNode);
 		terrainNode = nullptr;
 	}
 
-	terrainNode = scene->addTerrain(terrainSize, heightMap, colorMapSize,
-		colorMap);
+	terrainNode = scene.addTerrain(terrainSize, heightMap, colorMapSize, colorMap);
 
 	// TODO
 	setGroundLevel(heightMap[0] * 50.0f - 25.0f);
@@ -332,43 +287,32 @@ void Graphics::setTerrain(unsigned terrainSize,
 void Graphics::setWaterLevel(float level)
 {
 	if (waterPlane != nullptr)
-	{
 		waterPlane->setPosition(math::Vector3f(0.0f, level, 0.0f));
-	}
 }
 
 void Graphics::setGroundLevel(float level)
 {
 	if (groundPlane != nullptr)
-	{
 		groundPlane->setPosition(math::Vector3f(0.0f, level, 0.0f));
-	}
 }
 
 void Graphics::setGroundColor(const Color& color)
 {
 	if (groundPlane != nullptr)
-	{
 		groundPlane->setColor(color);
-	}
 }
 
 bool Graphics::preloadTextures()
 {
-	for (const auto& filename : preloadList)
-	{
-		Texture* texture = device->loadTextureFromFile(basePath + filename,
-			false, true);
+	for (auto const & filename : preloadList) {
+		Texture* texture = device->loadTextureFromFile(basePath + filename, false, true);
 		if (texture == nullptr)
-		{
 			return false;
-		}
 
 		preloadedTextures.push_back(basePath + filename);
 	}
 
-	for (unsigned i = 0; i < 6; ++i)
-	{
+	for (unsigned i = 0; i < 6; ++i) {
 		currentSkyboxTextures[i] = device->loadTextureFromFile(
 			basePath + skyboxBasePath + currentSkyboxName + skyboxPostfixes[i]);
 	}
