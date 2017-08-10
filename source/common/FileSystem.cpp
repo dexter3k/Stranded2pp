@@ -57,7 +57,7 @@ namespace fs
 		std::ifstream file(pathToFile, std::ios::in | std::ifstream::binary);
 		if (!file)
 		{
-			std::cout << "Unable to open file!" << std::endl;
+			std::cout << "Unable to open file: '" << pathToFile << "'" << std::endl;
 			return false;
 		}
 
@@ -74,7 +74,7 @@ namespace fs
 	{
 		std::ifstream file(pathToFile, std::ios::in | std::ifstream::binary);
 		if (!file) {
-			std::cout << "Unable to open file!" << std::endl;
+			std::cout << "Unable to open file: '" << pathToFile << "'" << std::endl;
 			return false;
 		}
 
