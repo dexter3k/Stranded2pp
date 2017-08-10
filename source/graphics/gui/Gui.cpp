@@ -82,7 +82,7 @@ GuiButton * Gui::createButton(math::Vector2i const & position, std::string const
 	return button;
 }
 
-GuiBackgroundImage * Gui::addBackgroundImage(std::string const & imageName,
+GuiBackgroundImage * Gui::createBackgroundImage(std::string const & imageName,
 	Color backgroundColor, Color maskColor, GuiElement * parent)
 {
 	if (parent == nullptr)

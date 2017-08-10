@@ -3,6 +3,7 @@
 #include <iostream>
 #include <stack>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "common/CmdLineArgs.h"
@@ -55,6 +56,8 @@ private:
 
 	state::MainMenu mainMenu;
 	state::Intro intro;
+
+	std::unordered_map<state::Type, state::State *> const stateMapping;
 
 	std::stack<state::State *> currentStates;
 

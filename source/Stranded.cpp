@@ -14,6 +14,9 @@ Stranded::Stranded(std::vector<std::string> const & arguments) :
 	engine(*this, graphics, network, sound, modification),
 	mainMenu(*this),
 	intro(*this),
+	stateMapping({
+		{state::IntroState, &intro},
+		{state::MainMenuState, &mainMenu}}),
 	currentStates(),
 	shouldStop(false)
 {}
@@ -35,9 +38,15 @@ void Stranded::run()
 		// Pass events to graphics layer and then game engine
 		Event event;
 		while (input.getEvent(event)) {
-			if (!graphics.processEvent(event))
-				engine.processEvent(event);
+			if (currentStates.empty() || !(currentStates.top()->processEvent(event))) {
+				if (!graphics.processEvent(event))
+					engine.processEvent(event);
+			}
 		}
+
+		// Manage state logic
+		if (!currentStates.empty())
+			currentStates.top()->update(deltaTime);
 
 		// Update current engine stage's logic
 		engine.update(deltaTime);
@@ -55,6 +64,9 @@ void Stranded::run()
 		// This is just to make the first delta be exactly zero seconds long
 		deltaTime = deltaTimer.restart();
 	}
+
+	while (!currentStates.empty())
+		popState();
 }
 
 void Stranded::stopLoop()
@@ -62,8 +74,42 @@ void Stranded::stopLoop()
 	shouldStop = true;
 }
 
-void Stranded::setState(state::Type)
-{}
+void Stranded::pushState(state::Type state)
+{
+	std::cout << "Pushing state " << state << std::endl;
+
+	if (!currentStates.empty())
+		currentStates.top()->hide();
+
+	try {
+		currentStates.push(stateMapping.at(state));
+	} catch (std::out_of_range &) {
+		assert(false);
+	}
+
+	currentStates.top()->show();
+}
+
+void Stranded::popState()
+{
+	std::cout << "Popping state" << std::endl;
+
+	assert(!currentStates.empty());
+
+	currentStates.top()->hide();
+	currentStates.pop();
+
+	if (!currentStates.empty())
+		currentStates.top()->show();
+}
+
+void Stranded::setState(state::Type state)
+{
+	while (!currentStates.empty())
+		popState();
+
+	pushState(state);
+}
 
 void Stranded::printWelcomeMessage()
 {

@@ -48,7 +48,7 @@ public:
 	GuiButton * createButton(math::Vector2i const & position, std::string const & text,
 		FontType font, std::function<void(void)> onPressed = nullptr, GuiElement * parent = nullptr);
 
-	GuiBackgroundImage * addBackgroundImage(std::string const & imageName,
+	GuiBackgroundImage * createBackgroundImage(std::string const & imageName,
 		Color backgroundColor = Color(0, 0, 0), Color maskColor = Color(0, 0, 0, 0),
 		GuiElement * parent = nullptr);
 

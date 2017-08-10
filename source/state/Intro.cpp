@@ -1,14 +1,25 @@
 #include "Intro.h"
 
+#include <algorithm>
+
 #include "Stranded.h"
 #include "graphics/gui/Gui.h"
 
 namespace state
 {
 
+std::string const Intro::introImageName = "sys/gfx/logo.bmp";
+double const Intro::fadingStepPerSecond = 1.25;
+double const Intro::startValue = -0.3;
+double const Intro::fadeinMax = 2.5;
+double const Intro::fadeoutMin = -0.5;
+
 Intro::Intro(Stranded & game) :
 	super(game),
-	rootElement(nullptr)
+	rootElement(nullptr),
+	introImage(nullptr),
+	a(0.0),
+	fadein(true)
 {
 	loadInterface();
 }
@@ -16,6 +27,9 @@ Intro::Intro(Stranded & game) :
 void Intro::show()
 {
 	super::show();
+
+	a = startValue;
+	fadein = true;
 
 	rootElement->show();
 }
@@ -27,6 +41,47 @@ void Intro::hide()
 	super::hide();
 }
 
+bool Intro::processEvent(Event event)
+{
+	switch (event.type) {
+	case Event::KeyPressed:
+		if (event.keyPressed.key == kb::S) {
+			fadein = true;
+			a = 1.5;
+			return true;
+		}
+
+		// fallthrough
+	case Event::MouseButtonPressed:
+		skipIntro();
+
+		return true;
+	default:
+		return false;
+	}
+}
+
+void Intro::update(double deltaTime)
+{
+	super::update(deltaTime);
+
+	if (fadein) {
+		a += deltaTime * fadingStepPerSecond;
+		if (a > fadeinMax)
+			fadein = false;
+	} else {
+		a -= deltaTime * fadingStepPerSecond;
+	}
+
+	double alpha = std::max(0.0, std::min(1.0, a));
+
+	assert(introImage != nullptr);
+	introImage->setMaskColor(gfx::Color(0, 0, 0, 255 - 255 * alpha));
+
+	if (!fadein && a < fadeoutMin)
+		skipIntro();
+}
+
 void Intro::loadInterface()
 {
 	assert(rootElement == nullptr);
@@ -36,74 +91,13 @@ void Intro::loadInterface()
 
 	rootElement = gui.createEmptyElement();
 	rootElement->hide();
+
+	introImage = gui.createBackgroundImage(introImageName, gfx::Color(0, 0, 0), gfx::Color(0, 0, 0, 0), rootElement);
+}
+
+void Intro::skipIntro()
+{
+	game.setState(MainMenuState);
 }
 
 } // namespace state
-
-// #include "IntroScreen.h"
-
-// #include <cstdint>
-
-// #include "graphics/gui/Gui.h"
-// #include "graphics/gui/GuiBackgroundImage.h"
-
-// namespace gfx
-// {
-
-// namespace gui
-// {
-
-// std::string const IntroScreen::logoTextureName = "sys/gfx/logo.bmp";
-
-// IntroScreen::IntroScreen(Gui & gui) :
-// 	super(gui),
-// 	maxShowTime(3.0),
-// 	fadeStart(maxShowTime * 0.8),
-// 	fadeColor(0, 0, 0),
-// 	introImage(nullptr),
-// 	showTime(0.0),
-// 	introEnded(false)
-// {}
-
-// void IntroScreen::create()
-// {
-// 	super::create();
-
-// 	showTime = 0.0;
-
-// 	introImage = gui.addBackgroundImage(logoTextureName);
-// }
-
-// void IntroScreen::destroy()
-// {
-// 	if (introImage != nullptr) {
-// 		gui.deleteGuiElement(introImage);
-// 		introImage = nullptr;
-// 	}
-
-// 	super::destroy();
-// }
-
-// bool IntroScreen::update(double deltaTime)
-// {
-// 	showTime += deltaTime;
-
-// 	if (showTime > maxShowTime) {
-// 		showTime = maxShowTime;
-// 		introEnded = true;
-// 	}
-
-// 	if (showTime > fadeStart) {
-// 		double fadeLength = maxShowTime - fadeStart;
-// 		double fade = (showTime - fadeStart) / fadeLength;
-
-// 		fadeColor.setAlpha(static_cast<uint8_t>(255.0 * fade));
-// 		introImage->setMaskColor(fadeColor);
-// 	}
-
-// 	return !introEnded;
-// }
-
-// } // namespace gui
-
-// } // namespace gfx

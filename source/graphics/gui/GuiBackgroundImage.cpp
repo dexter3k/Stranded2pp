@@ -1,8 +1,8 @@
 #include "GuiBackgroundImage.h"
 
 #include "Gui.h"
-#include "../Texture.h"
-#include "../device/Device.h"
+#include "graphics/Texture.h"
+#include "graphics/device/Device.h"
 
 namespace gfx
 {

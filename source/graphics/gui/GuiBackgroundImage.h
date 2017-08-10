@@ -3,7 +3,6 @@
 #include "GuiElement.h"
 
 #include "graphics/Color.h"
-#include "math/Rect.h"
 
 namespace gfx
 {

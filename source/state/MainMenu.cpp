@@ -78,8 +78,9 @@ void MainMenu::loadInterface()
 		math::Vector2i(5, 5),
 		"Adventure",
 		gfx::NormalFont,
-		[]() {
+		[this]() {
 			std::cout << "Adventure button pressed" << std::endl;
+			game.setState(IntroState); // for tests
 		},
 		mainMenu);
 	gui.createButton(
@@ -144,8 +145,9 @@ void MainMenu::loadInterface()
 		math::Vector2i(5, 600 - 50),
 		"Quit",
 		gfx::NormalFont,
-		[]() {
+		[this]() {
 			std::cout << "Quit button pressed" << std::endl;
+			game.stopLoop(); // todo
 		},
 		mainMenu);
 }
