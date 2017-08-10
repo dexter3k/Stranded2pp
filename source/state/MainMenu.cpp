@@ -44,7 +44,7 @@ void MainMenu::loadGame()
 {
 	auto & engine = game.getEngine();
 
-	engine.loadGame(menuMap/*, ObserverWtfSomethingInMenuNoShitPlease*/);
+	engine.loadGame(menuMap/*, MainMenuController*/);
 }
 
 void MainMenu::loadInterface()
