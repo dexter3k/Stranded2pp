@@ -7,7 +7,7 @@ namespace gui
 {
 
 GuiText::GuiText(Gui & gui, GuiElement * parent, math::Vector2i position,
-		std::string const & text, FontType, TextAlignment) :
+		std::string const & text, FontType, TextStyle) :
 	super(gui, parent, position),
 	text(text)
 	//font(font),

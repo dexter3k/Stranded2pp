@@ -5,6 +5,7 @@
 #include "GuiElement.h"
 
 #include "graphics/FontType.h"
+#include "graphics/TextStyle.h"
 
 namespace gfx
 {
@@ -12,25 +13,18 @@ namespace gfx
 namespace gui
 {
 
-enum TextAlignment
-{
-	AlignLeft,
-	AlignCenter,
-	AlignRight
-};
-
 class GuiText : public GuiElement
 {
 	typedef GuiElement super;
 public:
 	GuiText(Gui & gui, GuiElement * parent, math::Vector2i position,
-		std::string const & text, FontType font, TextAlignment alignment);
+		std::string const & text, FontType font, TextStyle style);
 
 	void draw() override;
 private:
 	std::string text;
 	//FontType font;
-	//TextAlignment alignment;
+	//TextStyle style;
 };
 
 } // namespace gui
