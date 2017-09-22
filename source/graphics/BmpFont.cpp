@@ -1,7 +1,5 @@
 #include "BmpFont.h"
 
-#include <iostream>
-
 #include "common/FileSystem.h"
 #include "common/RingBuffer.h"
 #include "graphics/device/Device.h"

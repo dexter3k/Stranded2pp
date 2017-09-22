@@ -45,9 +45,6 @@ void GuiButton::draw()
 	device.draw2DImage(isHovered ? textureHovered : texture, getPosition());
 	if (!text.empty()) {
 		math::Vector2i textPosition = getPosition() + math::Vector2i(width, height) / 2;
-		if (textPosition.x == -1) {
-			return;
-		}
 		textEngine.drawText(isHovered ? NormalOverFont : NormalFont, text, textPosition, Centered);
 	}
 }

@@ -14,7 +14,7 @@ include_directories(source)
 
 file(GLOB_RECURSE SOURCES source/*.cpp)
 
-add_definitions(-g -std=c++14 -Wall -Wextra -Werror -pedantic)
+add_definitions(-std=c++14 -Wall -Wextra -Werror -pedantic)
 
 add_executable(stranded2pp ${SOURCES})
 
