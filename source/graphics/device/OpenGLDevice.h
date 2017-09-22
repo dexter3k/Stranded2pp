@@ -96,6 +96,14 @@ public:
 	void drawMeshBuffer(const MeshBuffer* meshBuffer) override;
 
 
+	// 2D Text Drawing
+
+
+	void drawText(FontType fontType, std::string const & text,
+		math::Vector2i const & position, TextStyle style,
+		math::Recti * clippingRectangle = nullptr, bool multiline = false) override;
+
+
 	// 2D Rendering
 
 
