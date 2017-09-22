@@ -590,31 +590,22 @@ void OpenGLDevice::draw2DImage(Texture* texture,
 	const Color& color, const math::Recti* clippingRectangle,
 	bool useAlphaChannel)
 {
-	if (!texture)
-	{
-		return;
-	}
-
-	if (!sourceRectangle.isValid())
-	{
+	if (!texture || !sourceRectangle.isValid()) {
 		return;
 	}
 
 	math::Vector2i targetPosition = imageDestination;
 	math::Vector2i sourcePosition = sourceRectangle.upperLeft;
-
 	math::Vector2i sourceSize = sourceRectangle.getSize();
+	
 	// TODO
-	if (clippingRectangle)
-	{
-
+	if (clippingRectangle) {
+		;
 	}
 
-	if (targetPosition.x < 0)
-	{
+	if (targetPosition.x < 0) {
 		sourceSize.x += targetPosition.x;
-		if (sourceSize.x <= 0)
-		{
+		if (sourceSize.x <= 0) {
 			return;
 		}
 
@@ -623,7 +614,7 @@ void OpenGLDevice::draw2DImage(Texture* texture,
 	}
 
 	// TODO
-	const math::Vector2u& renderTargetSize = getRenderTargetSize();
+	math::Vector2u const & renderTargetSize = getRenderTargetSize();
 
 	if (targetPosition.x + sourceSize.x > static_cast<int>(renderTargetSize.x))
 	{

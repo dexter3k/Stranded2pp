@@ -27,9 +27,6 @@ public:
 		lowerRight(lowerRight)
 	{}
 
-	~Rect()
-	{}
-
 	void clipAgainst(const Rect<T>& other)
 	{
 		if (other.lowerRight.x < lowerRight.x)
@@ -71,8 +68,8 @@ public:
 
 	bool isValid() const
 	{
-		return ((lowerRight.x >= upperLeft.x) &&
-			(lowerRight.y >= upperLeft.y));
+		return lowerRight.x >= upperLeft.x
+			&& lowerRight.y >= upperLeft.y;
 	}
 
 	Vector2<T> getSize() const

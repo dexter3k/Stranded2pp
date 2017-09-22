@@ -13,7 +13,12 @@ BmpFont::BmpFont(device::Device & device, std::string const & bmpfFilename,
 		std::string const & bmpFilename) :
 	device(device),
 	bmpFilename(bmpFilename),
-	texture(device.loadTextureFromFile(bmpFilename, false, true))
+	texture(device.loadTextureFromFile(bmpFilename, false, true)),
+	frameCount(0),
+	frameWidth(0),
+	frameHeight(0),
+	indexes(),
+	charSizes()
 {
 	loadFontFile(bmpfFilename);
 }
