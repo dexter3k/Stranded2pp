@@ -10,6 +10,7 @@
 
 #include "math/MathUtility.h"
 #include "common/FileSystem.h"
+#include "graphics/BmpFont.h"
 
 namespace gfx
 {
@@ -517,9 +518,27 @@ void OpenGLDevice::drawMeshBuffer(const MeshBuffer* meshBuffer)
 	2D Text Rendering
 */
 
-void OpenGLDevice::drawText(BmpFont const &, std::string const &,
-	math::Vector2i const &, math::Recti *)
-{}
+void OpenGLDevice::drawText(BmpFont const & font, std::string const & text,
+	math::Vector2i const & position, math::Recti * clippingRectangle)
+{
+	Texture * texture = font.getTexture();
+	if (texture == nullptr) {
+		return;
+	}
+
+	math::Vector2i destination = position;
+	for (uint8_t character : text) {
+		draw2DImage(texture, destination,
+			math::Recti(
+				font.getFrameWidth() * font.getCharacterIndex(character),
+				0,
+				font.getFrameWidth() * font.getCharacterIndex(character) + font.getCharacterWidth(character),
+				font.getFrameHeight()),
+			Color(255, 255, 255, 255),
+			clippingRectangle);
+		destination.x += font.getCharacterWidth(character);
+	}
+}
 
 
 /*

@@ -22,7 +22,7 @@ public:
 
 	~BmpFont();
 
-	Texture * getTexture() { return texture; };
+	Texture * getTexture() const { return texture; };
 
 	unsigned getFrameCount() const { return frameCount; };
 	unsigned getFrameWidth() const { return frameWidth; };
