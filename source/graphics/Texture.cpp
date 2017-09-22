@@ -27,12 +27,13 @@ Texture::Texture(const std::string& name, const Image& image,
 	Texture* bindedTexture = device.getBindedTexture(0);
 	device.bindTexture(0, this);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 	// TODO: MipMaps
 
 	uploadTexture(true, 0, image.getRawData());
+
+	// TODO: GL_NEAREST vs. GL_LINEAR. Which is in original game?
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	device.bindTexture(0, bindedTexture);
 }

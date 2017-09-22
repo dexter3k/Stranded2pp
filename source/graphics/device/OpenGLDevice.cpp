@@ -202,8 +202,7 @@ Texture* OpenGLDevice::loadTextureFromFile(const std::string& name,
 		image.create(math::Vector2u(16, 16), Color(127, 31, 127));
 	}
 
-	if (applyColorKey)
-	{
+	if (applyColorKey) {
 		image.applyColorKey(colorKey);
 	}
 
