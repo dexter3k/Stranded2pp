@@ -12,6 +12,7 @@ ASAP!
 ## Medium priority
 Just after High priority tasks
 
+* Improve text rendering by drawing whole string in a single OpenGL call. Currently makes a call per character.
 * Write COMPILING.md
 
 ## Low priority
