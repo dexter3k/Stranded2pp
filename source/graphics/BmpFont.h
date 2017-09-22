@@ -16,8 +16,10 @@ namespace device
 class BmpFont
 {
 public:
-	BmpFont(device::Device & device, std::string const & bmpFilename,
-		std::string const & bmpfFilename);
+	BmpFont(device::Device & device, std::string const & bmpfFilename,
+		std::string const & bmpFilename);
+	BmpFont(BmpFont const & other);
+
 	~BmpFont();
 
 	Texture * getTexture() { return texture; };

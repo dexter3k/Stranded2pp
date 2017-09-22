@@ -6,11 +6,11 @@ namespace gfx
 enum FontType
 {
 	NormalFont,
-	TinyFont,
 	NormalOverFont,
 	NormalDarkFont,
 	NormalBadFont,
 	NormalGoodFont,
+	TinyFont,
 	HandwritingFont
 };
 

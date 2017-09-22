@@ -7,6 +7,7 @@
 #include "GuiElement.h"
 
 #include "graphics/Color.h"
+#include "graphics/TextEngine.h"
 #include "graphics/FontType.h"
 #include "input/Event.h"
 #include "math/Rect.h"
@@ -63,11 +64,15 @@ public:
 
 	device::Device & getDevice() const { return device; };
 
+	TextEngine & getTextEngine() { return textEngine; };
+
 	math::Vector2u getScreenSize() const { return screenSize; };
 private:
 	std::string modPath;
 
 	device::Device & device;
+
+	TextEngine textEngine;
 
 	math::Vector2u screenSize;
 

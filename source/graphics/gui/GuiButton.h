@@ -38,6 +38,8 @@ private:
 	Texture * texture;
 	Texture * textureHovered;
 
+	std::string text;
+
 	bool isHovered;
 
 	std::function<void(void)> onPressed;

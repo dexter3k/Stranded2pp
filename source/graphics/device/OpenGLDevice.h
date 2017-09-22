@@ -99,9 +99,9 @@ public:
 	// 2D Text Drawing
 
 
-	void drawText(FontType fontType, std::string const & text,
-		math::Vector2i const & position, TextStyle style,
-		math::Recti * clippingRectangle = nullptr, bool multiline = false) override;
+	void drawText(BmpFont const & font, std::string const & text,
+		math::Vector2i const & position,
+		math::Recti * clippingRectangle = nullptr) override;
 
 
 	// 2D Rendering

@@ -16,6 +16,7 @@
 namespace gfx
 {
 
+class BmpFont;
 class Image;
 class Material;
 class MeshBuffer;
@@ -120,9 +121,9 @@ public:
 	// 2D Text Drawing
 
 
-	virtual void drawText(FontType fontType, std::string const & text,
-		math::Vector2i const & position, TextStyle style,
-		math::Recti * clippingRectangle = nullptr, bool multiline = false) = 0;
+	virtual void drawText(BmpFont const & font, std::string const & text,
+		math::Vector2i const & position,
+		math::Recti * clippingRectangle = nullptr) = 0;
 
 
 	// 2D Drawing

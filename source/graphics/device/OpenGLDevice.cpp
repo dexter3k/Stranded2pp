@@ -517,9 +517,8 @@ void OpenGLDevice::drawMeshBuffer(const MeshBuffer* meshBuffer)
 	2D Text Rendering
 */
 
-void OpenGLDevice::drawText(FontType, std::string const &,
-		math::Vector2i const &, TextStyle,
-		math::Recti *, bool)
+void OpenGLDevice::drawText(BmpFont const &, std::string const &,
+	math::Vector2i const &, math::Recti *)
 {}
 
 

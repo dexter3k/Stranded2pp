@@ -1,5 +1,7 @@
 #include "BmpFont.h"
 
+#include <iostream>
+
 #include "common/FileSystem.h"
 #include "common/RingBuffer.h"
 #include "graphics/device/Device.h"
@@ -7,14 +9,25 @@
 namespace gfx
 {
 
-BmpFont::BmpFont(device::Device & device, std::string const & bmpFilename,
-		std::string const & bmpfFilename) :
+BmpFont::BmpFont(device::Device & device, std::string const & bmpfFilename,
+		std::string const & bmpFilename) :
 	device(device),
 	bmpFilename(bmpFilename),
 	texture(device.loadTextureFromFile(bmpFilename, false, true))
 {
 	loadFontFile(bmpfFilename);
 }
+
+BmpFont::BmpFont(BmpFont const & other) :
+	device(other.device),
+	bmpFilename(other.bmpFilename),
+	texture(device.grabTexture(bmpFilename)),
+	frameCount(other.frameCount),
+	frameWidth(other.frameWidth),
+	frameHeight(other.frameHeight),
+	indexes(other.indexes),
+	charSizes(other.charSizes)
+{}
 
 BmpFont::~BmpFont()
 {

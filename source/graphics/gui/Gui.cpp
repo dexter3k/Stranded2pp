@@ -21,6 +21,7 @@ Gui::Gui(device::Device & device, Modification const & modification) :
 	RootElement(*this, nullptr),
 	modPath(modification.getPath()),
 	device(device),
+	textEngine(device, modification),
 	screenSize(device.getRenderTargetSize()),
 	guiElements()
 {}
