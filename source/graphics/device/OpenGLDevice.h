@@ -120,7 +120,9 @@ public:
 		const math::Recti* clippingRectangle = nullptr,
 		bool useAlphaChannel = true) override;
 
-	void draw2DImage(Texture * texture, math::Recti const & destinationRectangle) override;
+	void draw2DImage(Texture* texture,
+		math::Recti const & destinationRectangle,
+		math::Recti const * clippingRectangle = nullptr) override;
 
 	void draw2DImage(Texture* texture,
 		const math::Recti& destinationRectangle,

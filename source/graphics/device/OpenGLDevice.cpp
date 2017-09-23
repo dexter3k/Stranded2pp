@@ -701,8 +701,9 @@ void OpenGLDevice::draw2DImage(Texture* texture,
 	glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, quad2DIndices);
 }
 
-void OpenGLDevice::draw2DImage(Texture * texture,
-	math::Recti const & destinationRectangle)
+void OpenGLDevice::draw2DImage(Texture* texture,
+	math::Recti const & destinationRectangle,
+	math::Recti const * clippingRectangle)
 {
 	if (!texture) {
 		return;
@@ -721,6 +722,18 @@ void OpenGLDevice::draw2DImage(Texture * texture,
 	bindTexture(0, texture);
 
 	set2DRenderMode(false, true, true);
+
+	if (clippingRectangle != nullptr) {
+		if (!clippingRectangle->isValid()) {
+			return;
+		}
+
+		glEnable(GL_SCISSOR_TEST);
+		math::Vector2u renderTargetSize = getRenderTargetSize();
+		glScissor(clippingRectangle->upperLeft.x,
+			renderTargetSize.y - clippingRectangle->lowerRight.y,
+			clippingRectangle->getWidth(), clippingRectangle->getHeight());
+	}
 
 	quad2DVertices[0].color = Color(255, 255, 255, 255);
 	quad2DVertices[1].color = Color(255, 255, 255, 255);
@@ -759,6 +772,10 @@ void OpenGLDevice::draw2DImage(Texture * texture,
 		&((static_cast<const Vertex3D*>(quad2DVertices))[0].color));
 
 	glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, quad2DIndices);
+
+	if (clippingRectangle) {
+		glDisable(GL_SCISSOR_TEST);
+	}
 }
 
 void OpenGLDevice::draw2DImage(Texture* texture,

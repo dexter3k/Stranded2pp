@@ -22,11 +22,17 @@ public:
 	void draw() override;
 private:
 	static std::string const backgroundImage;
+	static std::string const borderCornerImage;
+	static std::string const borderVerticalImage;
+	static std::string const borderHorizontalImage;
 protected:
 	static unsigned const width;
 	static unsigned const height;
 private:
 	Texture * backgroundTexture;
+	Texture * borderCorner;
+	Texture * borderVertical;
+	Texture * borderHorizontal;
 };
 
 } // namespace gui

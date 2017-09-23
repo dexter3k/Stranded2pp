@@ -144,7 +144,8 @@ public:
 		bool useAlphaChannel = true) = 0;
 
 	virtual void draw2DImage(Texture* texture,
-		const math::Recti& destinationRectangle) = 0;
+		math::Recti const & destinationRectangle,
+		math::Recti const * clippingRectangle = nullptr) = 0;
 
 	virtual void draw2DImage(Texture* texture,
 		const math::Recti& destinationRectangle,
