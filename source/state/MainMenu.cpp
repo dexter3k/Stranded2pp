@@ -150,6 +150,11 @@ void MainMenu::loadInterface()
 			game.stopLoop(); // todo
 		},
 		mainMenu);
+
+	gui.createWindow(
+		math::Vector2i(210, 0),
+		"Test",
+		mainMenu);
 }
 
 }

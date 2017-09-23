@@ -7,6 +7,7 @@
 #include "GuiButton.h"
 #include "GuiElement.h"
 #include "GuiImage.h"
+#include "GuiWindow.h"
 
 #include "common/Modification.h"
 #include "graphics/device/Device.h"
@@ -95,6 +96,18 @@ GuiBackgroundImage * Gui::createBackgroundImage(std::string const & imageName,
 	guiElements.push_back(image);
 
 	return image;
+}
+
+GuiWindow * Gui::createWindow(math::Vector2i position, std::string const &, GuiElement * parent)
+{
+	if (parent == nullptr)
+		parent = this;
+
+	GuiWindow * window = new GuiWindow(*this, parent, position);
+
+	guiElements.push_back(window);
+
+	return window;
 }
 
 GuiImage * Gui::addImage(Texture * texture,

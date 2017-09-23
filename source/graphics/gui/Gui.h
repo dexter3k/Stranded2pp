@@ -31,6 +31,7 @@ namespace gui
 class GuiBackgroundImage;
 class GuiButton;
 class GuiImage;
+class GuiWindow;
 
 class Gui : public GuiElement
 {
@@ -52,6 +53,8 @@ public:
 	GuiBackgroundImage * createBackgroundImage(std::string const & imageName,
 		Color backgroundColor = Color(0, 0, 0), Color maskColor = Color(0, 0, 0, 0),
 		GuiElement * parent = nullptr);
+
+	GuiWindow * createWindow(math::Vector2i position, std::string const & title, GuiElement * parent = nullptr);
 
 	GuiImage* addImage(Texture * texture,
 		const math::Recti& destinationRectangle,
