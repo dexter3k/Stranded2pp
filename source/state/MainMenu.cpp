@@ -74,6 +74,7 @@ void MainMenu::loadInterface()
 	creditsMenu->hide();
 	quitMenu->hide();
 
+	// Main screen
 	gui.createButton(
 		math::Vector2i(5, 5),
 		"Adventure",
@@ -151,10 +152,21 @@ void MainMenu::loadInterface()
 		},
 		mainMenu);
 
+	// Random game
+
+	// Singleplayer
 	gui.createWindow(
 		215,
 		"Test",
 		mainMenu);
+
+	// Load
+
+	// Multiplayer
+
+	// Options
+
+	// Credits
 }
 
 }

@@ -8,6 +8,7 @@ Stranded::Stranded(std::vector<std::string> const & arguments) :
 	cmdLineArgs(arguments),
 	modification(cmdLineArgs.modificationName()),
 	resources(cmdLineArgs.modificationName()),
+	strings(modification.getPath()),
 	window(cmdLineArgs.shouldForceWindowedMode(), modification),
 	input(window, modification),
 	graphics(modification),

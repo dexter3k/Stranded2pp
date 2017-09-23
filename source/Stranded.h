@@ -9,6 +9,7 @@
 #include "common/CmdLineArgs.h"
 #include "common/Resources.h"
 #include "common/Modification.h"
+#include "common/Strings.h"
 #include "engine/Engine.h"
 #include "graphics/Graphics.h"
 #include "input/Input.h"
@@ -33,6 +34,7 @@ public:
 
 	gfx::Graphics & getGraphics() { return graphics; };
 	Engine & getEngine() { return engine; };
+	Strings const & getStrings() const { return strings; };
 private:
 	void printWelcomeMessage();
 private:
@@ -41,6 +43,8 @@ private:
 	Modification modification;
 
 	Resources resources;
+
+	Strings const strings;
 
 	Window window;
 
