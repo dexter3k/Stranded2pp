@@ -152,7 +152,7 @@ void MainMenu::loadInterface()
 		mainMenu);
 
 	gui.createWindow(
-		math::Vector2i(215, 0),
+		215,
 		"Test",
 		mainMenu);
 }

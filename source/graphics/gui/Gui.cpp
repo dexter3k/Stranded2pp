@@ -98,12 +98,12 @@ GuiBackgroundImage * Gui::createBackgroundImage(std::string const & imageName,
 	return image;
 }
 
-GuiWindow * Gui::createWindow(math::Vector2i position, std::string const &, GuiElement * parent)
+GuiWindow * Gui::createWindow(int position, std::string const & title, GuiElement * parent)
 {
 	if (parent == nullptr)
 		parent = this;
 
-	GuiWindow * window = new GuiWindow(*this, parent, position);
+	GuiWindow * window = new GuiWindow(*this, parent, position, title);
 
 	guiElements.push_back(window);
 

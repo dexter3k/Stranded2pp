@@ -16,10 +16,12 @@ class GuiWindow : public GuiElement
 {
 	typedef GuiElement super;
 public:
-	GuiWindow(Gui & gui, GuiElement * parent, math::Vector2i position);
+	GuiWindow(Gui & gui, GuiElement * parent, int position, std::string const & title);
 	~GuiWindow();
 
 	void draw() override;
+protected:
+	void drawBar(unsigned position);
 private:
 	static std::string const backgroundImage;
 	static std::string const borderCornerImage;
@@ -33,6 +35,8 @@ private:
 	Texture * borderCorner;
 	Texture * borderVertical;
 	Texture * borderHorizontal;
+
+	std::string title;
 };
 
 } // namespace gui

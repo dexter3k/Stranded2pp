@@ -54,7 +54,7 @@ public:
 		Color backgroundColor = Color(0, 0, 0), Color maskColor = Color(0, 0, 0, 0),
 		GuiElement * parent = nullptr);
 
-	GuiWindow * createWindow(math::Vector2i position, std::string const & title, GuiElement * parent = nullptr);
+	GuiWindow * createWindow(int position, std::string const & title, GuiElement * parent = nullptr);
 
 	GuiImage* addImage(Texture * texture,
 		const math::Recti& destinationRectangle,

@@ -22,7 +22,8 @@ class TextEngine
 public:
 	TextEngine(device::Device & device, Modification const & modification);
 
-	void drawText(FontType fontType, std::string const & text, math::Vector2i const & position, TextCentering centering);
+	void drawText(FontType fontType, std::string const & text, math::Vector2i const & position,
+		TextCentering centering = NotCentered);
 private:
 	unsigned calculateTextWidth(BmpFont const & font, std::string const & text);
 private:

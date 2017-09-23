@@ -20,12 +20,13 @@ std::string const GuiWindow::borderHorizontalImage = "sys/gfx/border_hori.bmp";
 unsigned const GuiWindow::width = 580;
 unsigned const GuiWindow::height = 595;
 
-GuiWindow::GuiWindow(Gui & gui, GuiElement * parent, math::Vector2i position) :
-	super(gui, parent, position),
+GuiWindow::GuiWindow(Gui & gui, GuiElement * parent, int position, std::string const & title) :
+	super(gui, parent, math::Vector2i(position, 0)),
 	backgroundTexture(gui.getDevice().grabTexture(gui.getModPath() + backgroundImage)),
 	borderCorner(gui.getDevice().grabTexture(gui.getModPath() + borderCornerImage)),
 	borderVertical(gui.getDevice().grabTexture(gui.getModPath() + borderVerticalImage)),
-	borderHorizontal(gui.getDevice().grabTexture(gui.getModPath() + borderHorizontalImage))
+	borderHorizontal(gui.getDevice().grabTexture(gui.getModPath() + borderHorizontalImage)),
+	title(title)
 {}
 
 GuiWindow::~GuiWindow()
@@ -39,6 +40,7 @@ GuiWindow::~GuiWindow()
 void GuiWindow::draw()
 {
 	auto & device = gui.getDevice();
+	auto & textEngine = gui.getTextEngine();
 
 	// Cut 8 pixels from each side like in original game (why?)
 	math::Recti clippingRectangle(
@@ -49,11 +51,6 @@ void GuiWindow::draw()
 		math::Recti(getPosition(), getPosition() + math::Vector2i(width, height)),
 		&clippingRectangle);
 	device.draw2DImage(
-		borderHorizontal,
-		math::Recti(
-			getPosition() + math::Vector2i(0, height - 16),
-			getPosition() + math::Vector2i(width, height)));
-	device.draw2DImage(
 		borderVertical,
 		math::Recti(
 			getPosition(),
@@ -63,16 +60,37 @@ void GuiWindow::draw()
 		math::Recti(
 			getPosition() + math::Vector2i(width - 16, 0),
 			getPosition() + math::Vector2i(width, height)));
+
+	drawBar(height - 16);
+	drawBar(42);
+
+	if (!title.empty()) {
+		textEngine.drawText(
+			NormalFont,
+			title,
+			getPosition() + math::Vector2i(58, 10));
+	}
+}
+
+void GuiWindow::drawBar(unsigned position)
+{
+	auto & device = gui.getDevice();
+
+	device.draw2DImage(
+		borderHorizontal,
+		math::Recti(
+			getPosition() + math::Vector2i(0, position),
+			getPosition() + math::Vector2i(width, position + 16)));
 	device.draw2DImage(
 		borderCorner,
 		math::Recti(
-			getPosition() + math::Vector2i(0, height - 16),
-			getPosition() + math::Vector2i(16, height)));
+			getPosition() + math::Vector2i(0, position),
+			getPosition() + math::Vector2i(16, position + 16)));
 	device.draw2DImage(
 		borderCorner,
 		math::Recti(
-			getPosition() + math::Vector2i(width - 16, height - 16),
-			getPosition() + math::Vector2i(width, height)));
+			getPosition() + math::Vector2i(width - 16, position),
+			getPosition() + math::Vector2i(width, position + 16)));
 }
 
 } // namespace gui
