@@ -110,6 +110,7 @@ public:
 	void drawPixel(unsigned x, unsigned y,
 		const Color& pixelColor = Color(255, 255, 255, 255)) override;
 
+
 	void draw2DImage(Texture* texture, const math::Vector2i& imageDestination)
 		override;
 
@@ -119,14 +120,14 @@ public:
 		const math::Recti* clippingRectangle = nullptr,
 		bool useAlphaChannel = true) override;
 
-	void draw2DImage(Texture* texture, const math::Recti& destinationRectangle)
-		override;
+	void draw2DImage(Texture * texture, math::Recti const & destinationRectangle) override;
 
 	void draw2DImage(Texture* texture,
 		const math::Recti& destinationRectangle,
 		const math::Recti& sourceRectangle, const Color* colors = nullptr,
 		const math::Recti* clippingRectangle = nullptr,
 		bool useAlphaChannel = true) override;
+
 
 	void draw2DLine(const math::Vector2i& start, const math::Vector2i& end,
 		const Color& color = Color(255, 255, 255, 255)) override;

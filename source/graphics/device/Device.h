@@ -132,6 +132,7 @@ public:
 	virtual void drawPixel(unsigned x, unsigned y,
 		const Color& pixelColor = Color(255, 255, 255, 255)) = 0;
 
+
 	virtual void draw2DImage(Texture* texture,
 		const math::Vector2i& imageDestination) = 0;
 
@@ -150,6 +151,7 @@ public:
 		const math::Recti& sourceRectangle, const Color* colors = nullptr,
 		const math::Recti* clippingRectangle = nullptr,
 		bool useAlphaChannel = true) = 0;
+
 
 	virtual void draw2DLine(const math::Vector2i& start,
 		const math::Vector2i& end,

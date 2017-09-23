@@ -701,19 +701,64 @@ void OpenGLDevice::draw2DImage(Texture* texture,
 	glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, quad2DIndices);
 }
 
-void OpenGLDevice::draw2DImage(Texture* texture,
-	const math::Recti& destinationRectangle)
+void OpenGLDevice::draw2DImage(Texture * texture,
+	math::Recti const & destinationRectangle)
 {
-	if (!texture)
-	{
+	if (!texture) {
 		return;
 	}
 
-	auto originalSize = texture->getSize();
+	math::Vector2u textureSize = texture->getSize();
+	math::Vector2i destinationSize = destinationRectangle.getSize();
 
-	draw2DImage(texture, destinationRectangle,
-		math::Recti(0, 0, static_cast<int>(originalSize.x),
-			static_cast<int>(originalSize.y)));
+	math::Rectf textureCoords(
+		0.0f,
+		0.0f,
+		static_cast<float>(destinationSize.x) / static_cast<float>(textureSize.x),
+		static_cast<float>(destinationSize.y) / static_cast<float>(textureSize.y));
+
+	disableTextures(1);
+	bindTexture(0, texture);
+
+	set2DRenderMode(false, true, true);
+
+	quad2DVertices[0].color = Color(255, 255, 255, 255);
+	quad2DVertices[1].color = Color(255, 255, 255, 255);
+	quad2DVertices[2].color = Color(255, 255, 255, 255);
+	quad2DVertices[3].color = Color(255, 255, 255, 255);
+
+	quad2DVertices[0].position = math::Vector3f(
+		static_cast<float>(destinationRectangle.upperLeft.x),
+		static_cast<float>(destinationRectangle.upperLeft.y), 0.0f);
+	quad2DVertices[3].position = math::Vector3f(
+		static_cast<float>(destinationRectangle.lowerRight.x),
+		static_cast<float>(destinationRectangle.upperLeft.y), 0.0f);
+	quad2DVertices[2].position = math::Vector3f(
+		static_cast<float>(destinationRectangle.lowerRight.x),
+		static_cast<float>(destinationRectangle.lowerRight.y), 0.0f);
+	quad2DVertices[1].position = math::Vector3f(
+		static_cast<float>(destinationRectangle.upperLeft.x),
+		static_cast<float>(destinationRectangle.lowerRight.y), 0.0f);
+
+	quad2DVertices[0].textureCoords = math::Vector2f(textureCoords.upperLeft.x,
+		textureCoords.upperLeft.y);
+	quad2DVertices[3].textureCoords = math::Vector2f(textureCoords.lowerRight.x,
+		textureCoords.upperLeft.y);
+	quad2DVertices[2].textureCoords = math::Vector2f(textureCoords.lowerRight.x,
+		textureCoords.lowerRight.y);
+	quad2DVertices[1].textureCoords = math::Vector2f(textureCoords.upperLeft.x,
+		textureCoords.lowerRight.y);
+
+	setClientStates(true, false, true, true);
+
+	glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex3D),
+		&((static_cast<const Vertex3D*>(quad2DVertices))[0].textureCoords));
+	glVertexPointer(2, GL_FLOAT, sizeof(Vertex3D),
+		&((static_cast<const Vertex3D*>(quad2DVertices))[0].position));
+	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex3D),
+		&((static_cast<const Vertex3D*>(quad2DVertices))[0].color));
+
+	glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, quad2DIndices);
 }
 
 void OpenGLDevice::draw2DImage(Texture* texture,
@@ -721,8 +766,7 @@ void OpenGLDevice::draw2DImage(Texture* texture,
 	const Color* colors, const math::Recti* clippingRectangle,
 	bool useAlphaChannel)
 {
-	if (texture == nullptr)
-	{
+	if (texture == nullptr) {
 		return;
 	}
 
@@ -805,8 +849,7 @@ void OpenGLDevice::draw2DImage(Texture* texture,
 
 	glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, quad2DIndices);
 
-	if (clippingRectangle)
-	{
+	if (clippingRectangle) {
 		glDisable(GL_SCISSOR_TEST);
 	}
 }

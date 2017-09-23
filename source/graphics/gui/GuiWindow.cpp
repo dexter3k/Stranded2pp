@@ -33,8 +33,7 @@ void GuiWindow::draw()
 
 	device.draw2DImage(
 		backgroundTexture,
-		math::Recti(getPosition(), getPosition() + math::Vector2i(width, height)),
-		math::Recti(math::Vector2i(0, 0), math::Vector2i(backgroundTexture->getSize())));
+		math::Recti(getPosition(), getPosition() + math::Vector2i(width, height)));
 }
 
 } // namespace gui
