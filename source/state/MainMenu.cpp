@@ -51,6 +51,7 @@ void MainMenu::loadInterface()
 {
 	assert(menuRoot == nullptr);
 
+	auto & strings = game.getStrings();
 	auto & gfx = game.getGraphics();
 	auto & gui = gfx.getGui();
 
@@ -77,7 +78,7 @@ void MainMenu::loadInterface()
 	// Main screen
 	gui.createButton(
 		math::Vector2i(5, 5),
-		"Adventure",
+		strings.getMenuString(strings::Adventure),
 		gfx::NormalFont,
 		[this]() {
 			std::cout << "Adventure button pressed" << std::endl;
@@ -86,7 +87,7 @@ void MainMenu::loadInterface()
 		mainMenu);
 	gui.createButton(
 		math::Vector2i(5, 55),
-		"Random",
+		strings.getMenuString(strings::RandomIsland),
 		gfx::NormalFont,
 		[]() {
 			std::cout << "Random button pressed" << std::endl;
@@ -94,7 +95,7 @@ void MainMenu::loadInterface()
 		mainMenu);
 	gui.createButton(
 		math::Vector2i(5, 105),
-		"Singleplayer",
+		strings.getMenuString(strings::SingleIsland),
 		gfx::NormalFont,
 		[]() {
 			std::cout << "Singleplayer button pressed" << std::endl;
@@ -102,7 +103,7 @@ void MainMenu::loadInterface()
 		mainMenu);
 	gui.createButton(
 		math::Vector2i(5, 155),
-		"Load savegame",
+		strings.getMenuString(strings::Load),
 		gfx::NormalFont,
 		[]() {
 			std::cout << "Load savegame button pressed" << std::endl;
@@ -110,7 +111,7 @@ void MainMenu::loadInterface()
 		mainMenu);
 	gui.createButton(
 		math::Vector2i(5, 205),
-		"Multiplayer",
+		strings.getMenuString(strings::Multiplayer),
 		gfx::NormalFont,
 		[]() {
 			std::cout << "Multiplayer button pressed" << std::endl;
@@ -119,7 +120,7 @@ void MainMenu::loadInterface()
 
 	gui.createButton(
 		math::Vector2i(5, 300 - 25),
-		"Settings",
+		strings.getMenuString(strings::Options),
 		gfx::NormalFont,
 		[]() {
 			std::cout << "Settings button pressed" << std::endl;
@@ -127,7 +128,7 @@ void MainMenu::loadInterface()
 		mainMenu);
 	gui.createButton(
 		math::Vector2i(5, 300 + 25),
-		"Editor",
+		strings.getMenuString(strings::Editor),
 		gfx::NormalFont,
 		[]() {
 			std::cout << "Editor button pressed" << std::endl;
@@ -135,7 +136,7 @@ void MainMenu::loadInterface()
 		mainMenu);
 	gui.createButton(
 		math::Vector2i(5, 300 + 75),
-		"Credits",
+		strings.getMenuString(strings::Credits),
 		gfx::NormalFont,
 		[]() {
 			std::cout << "Credits button pressed" << std::endl;
@@ -144,7 +145,7 @@ void MainMenu::loadInterface()
 
 	gui.createButton(
 		math::Vector2i(5, 600 - 50),
-		"Quit",
+		strings.getMenuString(strings::Quit),
 		gfx::NormalFont,
 		[this]() {
 			std::cout << "Quit button pressed" << std::endl;

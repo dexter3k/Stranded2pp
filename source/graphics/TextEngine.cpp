@@ -25,6 +25,10 @@ TextEngine::TextEngine(device::Device & device, Modification const & modificatio
 void TextEngine::drawText(FontType fontType, std::string const & text,
 	math::Vector2i const & position, TextCentering centering)
 {
+	if (text.size() == 0) {
+		return;
+	}
+
 	BmpFont const & font = fonts.at(fontType);
 
 	unsigned const textWidth = calculateTextWidth(font, text);
@@ -38,7 +42,17 @@ void TextEngine::drawText(FontType fontType, std::string const & text,
 		destination.y -= textHeight / 2;
 	}
 
-	device.drawText(font, text, destination);
+	for (unsigned i = 0; i < text.size(); ++i) {
+		if (text[i] == ' ') {
+			destination.x += font.getFrameWidth() / 2;
+		} else {
+			auto space = text.find(' ', i);
+			std::string word = text.substr(i, space);
+			device.drawText(font, word, destination);
+			i += word.size();
+			destination.x += calculateTextWidth(font, word) + font.getFrameWidth() / 2;
+		}
+	}
 }
 
 unsigned TextEngine::calculateTextWidth(BmpFont const & font, std::string const & text)

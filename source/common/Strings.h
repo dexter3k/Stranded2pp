@@ -20,7 +20,7 @@ private:
 private:
 	static std::string const filename;
 private:
-	std::array<std::string, 50> misc;
-	std::array<std::string, 250> menu;
-	std::array<std::string, 300> editor;
+	std::array<std::string, 51> misc;
+	std::array<std::string, 251> menu;
+	std::array<std::string, 301> editor;
 };
