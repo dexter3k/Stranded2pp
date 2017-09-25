@@ -169,7 +169,7 @@ enum MenuStringId
 	ClickQuit,
 	RestartAfterwards,
 	/* Unknown = 124 */
-	Online,
+	Online = 125,
 	Lan,
 	CreateGame,
 	Name,

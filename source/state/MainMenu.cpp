@@ -55,6 +55,9 @@ void MainMenu::loadInterface()
 	auto & gfx = game.getGraphics();
 	auto & gui = gfx.getGui();
 
+	//unsigned screenWidth = 800;
+	unsigned screenHeight = 600;
+
 	menuRoot = gui.createEmptyElement();
 
 	mainMenu = gui.createEmptyElement(menuRoot);
@@ -89,62 +92,69 @@ void MainMenu::loadInterface()
 		math::Vector2i(5, 55),
 		strings.getMenuString(strings::RandomIsland),
 		gfx::NormalFont,
-		[]() {
-			std::cout << "Random button pressed" << std::endl;
+		[this]() {
+			mainMenu->hide();
+			randomMenu->show();
 		},
 		mainMenu);
 	gui.createButton(
 		math::Vector2i(5, 105),
 		strings.getMenuString(strings::SingleIsland),
 		gfx::NormalFont,
-		[]() {
-			std::cout << "Singleplayer button pressed" << std::endl;
+		[this]() {
+			mainMenu->hide();
+			customMenu->show();
 		},
 		mainMenu);
 	gui.createButton(
 		math::Vector2i(5, 155),
 		strings.getMenuString(strings::Load),
 		gfx::NormalFont,
-		[]() {
-			std::cout << "Load savegame button pressed" << std::endl;
+		[this]() {
+			mainMenu->hide();
+			loadGameMenu->show();
 		},
 		mainMenu);
 	gui.createButton(
 		math::Vector2i(5, 205),
 		strings.getMenuString(strings::Multiplayer),
 		gfx::NormalFont,
-		[]() {
-			std::cout << "Multiplayer button pressed" << std::endl;
+		[this]() {
+			mainMenu->hide();
+			multiplayerMenu->show();
 		},
 		mainMenu);
 
 	gui.createButton(
-		math::Vector2i(5, 300 - 25),
+		math::Vector2i(5, screenHeight / 2 - 25),
 		strings.getMenuString(strings::Options),
 		gfx::NormalFont,
-		[]() {
-			std::cout << "Settings button pressed" << std::endl;
+		[this]() {
+			mainMenu->hide();
+			optionsMenu->show();
 		},
 		mainMenu);
 	gui.createButton(
-		math::Vector2i(5, 300 + 25),
+		math::Vector2i(5, screenHeight / 2 + 25),
 		strings.getMenuString(strings::Editor),
 		gfx::NormalFont,
-		[]() {
+		[this]() {
 			std::cout << "Editor button pressed" << std::endl;
+			game.setState(IntroState); // for tests
 		},
 		mainMenu);
 	gui.createButton(
-		math::Vector2i(5, 300 + 75),
+		math::Vector2i(5, screenHeight / 2 + 75),
 		strings.getMenuString(strings::Credits),
 		gfx::NormalFont,
-		[]() {
-			std::cout << "Credits button pressed" << std::endl;
+		[this]() {
+			mainMenu->hide();
+			creditsMenu->show();
 		},
 		mainMenu);
 
 	gui.createButton(
-		math::Vector2i(5, 600 - 50),
+		math::Vector2i(5, screenHeight - 50),
 		strings.getMenuString(strings::Quit),
 		gfx::NormalFont,
 		[this]() {
@@ -154,20 +164,90 @@ void MainMenu::loadInterface()
 		mainMenu);
 
 	// Random game
-
-	// Singleplayer
+	gui.createButton(
+		math::Vector2i(5, screenHeight - 50),
+		strings.getMenuString(strings::Back),
+		gfx::NormalFont,
+		[this]() {
+			randomMenu->hide();
+			mainMenu->show();
+		},
+		randomMenu);
 	gui.createWindow(
 		215,
 		"Test",
-		mainMenu);
+		randomMenu);
+
+	// Singleplayer
+	gui.createButton(
+		math::Vector2i(5, screenHeight - 50),
+		strings.getMenuString(strings::Back),
+		gfx::NormalFont,
+		[this]() {
+			customMenu->hide();
+			mainMenu->show();
+		},
+		customMenu);
+	gui.createWindow(
+		215,
+		"Test",
+		customMenu);
 
 	// Load
+	gui.createButton(
+		math::Vector2i(5, screenHeight - 50),
+		strings.getMenuString(strings::Back),
+		gfx::NormalFont,
+		[this]() {
+			loadGameMenu->hide();
+			mainMenu->show();
+		},
+		loadGameMenu);
+	gui.createWindow(
+		215,
+		"Test",
+		loadGameMenu);
 
 	// Multiplayer
+	gui.createButton(
+		math::Vector2i(5, screenHeight - 50),
+		strings.getMenuString(strings::Back),
+		gfx::NormalFont,
+		[this]() {
+			multiplayerMenu->hide();
+			mainMenu->show();
+		},
+		multiplayerMenu);
+	gui.createWindow(
+		215,
+		"Test",
+		multiplayerMenu);
 
 	// Options
+	gui.createButton(
+		math::Vector2i(5, screenHeight - 50),
+		"Back (todo)",
+		gfx::NormalFont,
+		[this]() {
+			optionsMenu->hide();
+			mainMenu->show();
+		},
+		optionsMenu);
+	gui.createWindow(
+		215,
+		"Test",
+		optionsMenu);
 
 	// Credits
+	gui.createButton(
+		math::Vector2i(5, screenHeight - 50),
+		strings.getMenuString(strings::Back),
+		gfx::NormalFont,
+		[this]() {
+			creditsMenu->hide();
+			mainMenu->show();
+		},
+		creditsMenu);
 }
 
 }
