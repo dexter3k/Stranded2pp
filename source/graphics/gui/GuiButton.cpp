@@ -8,6 +8,7 @@
 #include "graphics/TextCentering.h"
 #include "graphics/TextEngine.h"
 #include "graphics/device/Device.h"
+#include "input/Mouse.h"
 
 namespace gfx
 {
@@ -53,12 +54,15 @@ bool GuiButton::onMouseButtonPressed(uint8_t button, int x, int y)
 {
 	if (!isVisible())
 		return false;
+	if (button == mouse::Left) {
+		math::Vector2i lowerRight = getPosition() + math::Vector2i(width, height);
 
-	math::Vector2i lowerRight = getPosition() + math::Vector2i(width, height);
-
-	bool pressed = (x > getPosition().x && y > getPosition().y && x < lowerRight.x && y < lowerRight.y);
-	if (pressed && onPressed != nullptr)
-		onPressed();
+		bool pressed = (x > getPosition().x && y > getPosition().y && x < lowerRight.x && y < lowerRight.y);
+		if (pressed && onPressed != nullptr) {
+			onPressed();
+			return true;
+		}
+	}
 
 	return super::onMouseButtonPressed(button, x, y);
 }
