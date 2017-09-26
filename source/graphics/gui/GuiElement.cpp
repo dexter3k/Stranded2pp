@@ -88,6 +88,13 @@ bool GuiElement::onMouseMoved(int x, int y)
 	return false;
 }
 
+void GuiElement::onVisibilityChange(bool isVisible)
+{
+	for (auto child : children) {
+		child->onVisibilityChange(isVisible);
+	}
+}
+
 void GuiElement::addChild(GuiElement * child)
 {
 	assert(child != nullptr);

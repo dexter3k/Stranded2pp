@@ -75,6 +75,15 @@ bool GuiButton::onMouseMoved(int x, int y)
 	return super::onMouseMoved(x, y);
 }
 
+void GuiButton::onVisibilityChange(bool isVisible)
+{
+	if (!isVisible) {
+		isHovered = false;
+	} else {
+		onMouseMoved(gui.getMousePosition().x, gui.getMousePosition().y);
+	}
+}
+
 } // namespace gui
 
 } // namespace gfx

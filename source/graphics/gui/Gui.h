@@ -63,6 +63,8 @@ public:
 
 	void deleteGuiElement(GuiElement * element);
 
+	math::Vector2i getMousePosition() const { return lastMousePosition; };
+
 	std::string const & getModPath() const { return modPath; };
 
 	device::Device & getDevice() const { return device; };
@@ -80,6 +82,8 @@ private:
 	math::Vector2u screenSize;
 
 	std::list<GuiElement*> guiElements;
+
+	math::Vector2i lastMousePosition;
 };
 
 } // namespace gui

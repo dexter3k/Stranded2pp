@@ -24,7 +24,8 @@ Gui::Gui(device::Device & device, Modification const & modification) :
 	device(device),
 	textEngine(device, modification),
 	screenSize(device.getRenderTargetSize()),
-	guiElements()
+	guiElements(),
+	lastMousePosition(0, 0)
 {}
 
 Gui::~Gui()
@@ -37,7 +38,8 @@ bool Gui::processEvent(Event event)
 {
 	switch (event.type) {
 	case Event::MouseMoved:
-		return RootElement::onMouseMoved(event.mouseMoved.x, event.mouseMoved.y);
+		lastMousePosition = math::Vector2i(event.mouseMoved.x, event.mouseMoved.y);
+		return RootElement::onMouseMoved(lastMousePosition.x, lastMousePosition.y);
 	case Event::MouseButtonPressed:
 		return RootElement::onMouseButtonPressed(event.mouseButtonPressed.button,
 			event.mouseButtonPressed.x, event.mouseButtonPressed.y);

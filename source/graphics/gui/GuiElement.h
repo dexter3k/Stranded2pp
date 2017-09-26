@@ -25,6 +25,7 @@ public:
 	virtual bool onMouseButtonPressed(uint8_t button, int x, int y);
 	virtual bool onMouseButtonReleased(uint8_t button, int x, int y);
 	virtual bool onMouseMoved(int x, int y);
+	virtual void onVisibilityChange(bool isVisible);
 
 	void addChild(GuiElement * child);
 	bool removeChild(GuiElement * childToRemove);
@@ -35,8 +36,8 @@ public:
 	void setParent(GuiElement * newParent);
 
 	bool isVisible() const { return !hidden; };
-	void hide() { hidden = true; };
-	void show() { hidden = false; };
+	void hide() { hidden = true; onVisibilityChange(!hidden); };
+	void show() { hidden = false; onVisibilityChange(!hidden); };
 
 	bool isTrulyVisible() const;
 

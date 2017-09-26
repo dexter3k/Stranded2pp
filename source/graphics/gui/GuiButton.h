@@ -28,6 +28,7 @@ public:
 
 	bool onMouseButtonPressed(uint8_t button, int x, int y) override;
 	bool onMouseMoved(int x, int y) override;
+	void onVisibilityChange(bool isVisible) override;
 private:
 	static unsigned const width;
 	static unsigned const height;
