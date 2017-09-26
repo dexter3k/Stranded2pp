@@ -16,7 +16,7 @@ public:
 	void show() override;
 	void hide() override;
 
-	bool processEvent(Event event);
+	bool processEvent(Event event) override;
 private:
 	void loadGame();
 	void loadInterface();
