@@ -65,7 +65,7 @@ void GuiWindow::draw()
 	drawBar(42);
 
 	if (!title.empty()) {
-		textEngine.drawText(
+		textEngine.drawSingleLine(
 			NormalFont,
 			title,
 			getPosition() + math::Vector2i(58, 10));

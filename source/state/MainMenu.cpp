@@ -73,6 +73,7 @@ void MainMenu::loadInterface()
 	unsigned const screenHeight = 600;
 	unsigned const windowPosition = 215;
 	unsigned const buttonSpacing = 50;
+	std::string const versionString = "test 0.0.1 indev";
 
 	menuRoot = gui.createEmptyElement();
 
@@ -212,9 +213,9 @@ void MainMenu::loadInterface()
 	// Version info
 	// gui.createText(
 	// 	math::Vector2i(screenWidth - 3, screenHeight - 17),
-	// 	"test",
+	// 	versionString,
 	// 	gfx::SmallFont,
-	//	pad right
+	// 	,
 	// 	mainMenu);
 
 

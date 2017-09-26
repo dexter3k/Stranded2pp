@@ -5,7 +5,7 @@
 
 #include "BmpFont.h"
 #include "FontType.h"
-#include "TextCentering.h"
+#include "TextPadding.h"
 
 class Modification;
 
@@ -22,8 +22,9 @@ class TextEngine
 public:
 	TextEngine(device::Device & device, Modification const & modification);
 
-	void drawText(FontType fontType, std::string const & text, math::Vector2i const & position,
-		TextCentering centering = NotCentered);
+	void drawSingleLine(FontType fontType, std::string const & text, math::Vector2i position,
+		TextHorizontalPadding horizontalPadding = TextPadLeft,
+		TextVerticalPadding verticalPadding = TextPadUp);
 private:
 	unsigned calculateTextWidth(BmpFont const & font, std::string const & text);
 private:

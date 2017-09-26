@@ -5,7 +5,7 @@
 #include "Gui.h"
 #include "graphics/FontType.h"
 #include "graphics/Texture.h"
-#include "graphics/TextCentering.h"
+#include "graphics/TextPadding.h"
 #include "graphics/TextEngine.h"
 #include "graphics/device/Device.h"
 #include "input/Mouse.h"
@@ -46,7 +46,10 @@ void GuiButton::draw()
 	device.draw2DImage(isHovered ? textureHovered : texture, getPosition());
 	if (!text.empty()) {
 		math::Vector2i textPosition = getPosition() + math::Vector2i(width, height) / 2;
-		textEngine.drawText(isHovered ? NormalOverFont : NormalFont, text, textPosition, Centered);
+		textEngine.drawSingleLine(
+			isHovered ? NormalOverFont : NormalFont,
+			text, textPosition,
+			gfx::TextHorizontallyCentered, gfx::TextVerticallyCentered);
 	}
 }
 

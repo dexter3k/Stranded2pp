@@ -22,8 +22,9 @@ TextEngine::TextEngine(device::Device & device, Modification const & modificatio
 	})
 {}
 
-void TextEngine::drawText(FontType fontType, std::string const & text,
-	math::Vector2i const & position, TextCentering centering)
+void TextEngine::drawSingleLine(FontType fontType, std::string const & text,
+	math::Vector2i position, TextHorizontalPadding horizontalPadding,
+	TextVerticalPadding verticalPadding)
 {
 	if (text.size() == 0) {
 		return;
@@ -35,11 +36,16 @@ void TextEngine::drawText(FontType fontType, std::string const & text,
 	unsigned const textHeight = font.getFrameHeight();
 
 	math::Vector2i destination = position;
-	if (centering == Centered || centering == CenteredHorizontally) {
+	if (horizontalPadding == TextHorizontallyCentered) {
 		destination.x -= textWidth / 2;
+	} else if (horizontalPadding == TextPadRight) {
+		destination.x -= textWidth;
 	}
-	if (centering == Centered || centering == CenteredVertically) {
+
+	if (verticalPadding == TextVerticallyCentered) {
 		destination.y -= textHeight / 2;
+	} else if (verticalPadding == TextPadDown) {
+		destination.y -= textHeight;
 	}
 
 	for (unsigned i = 0; i < text.size(); ++i) {
