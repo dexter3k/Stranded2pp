@@ -56,7 +56,9 @@ void MainMenu::loadInterface()
 	auto & gui = gfx.getGui();
 
 	//unsigned screenWidth = 800;
-	unsigned screenHeight = 600;
+	unsigned const screenHeight = 600;
+	unsigned const windowPosition = 215;
+	unsigned const buttonSpacing = 50;
 
 	menuRoot = gui.createEmptyElement();
 
@@ -78,55 +80,73 @@ void MainMenu::loadInterface()
 	creditsMenu->hide();
 	quitMenu->hide();
 
-	// Main screen
-	gui.createButton(
-		math::Vector2i(5, 5),
-		strings.getMenuString(strings::Adventure),
-		gfx::NormalFont,
-		[this]() {
-			std::cout << "Adventure button pressed" << std::endl;
-			game.setState(IntroState); // for tests
-		},
-		mainMenu);
-	gui.createButton(
-		math::Vector2i(5, 55),
-		strings.getMenuString(strings::RandomIsland),
-		gfx::NormalFont,
-		[this]() {
-			mainMenu->hide();
-			randomMenu->show();
-		},
-		mainMenu);
-	gui.createButton(
-		math::Vector2i(5, 105),
-		strings.getMenuString(strings::SingleIsland),
-		gfx::NormalFont,
-		[this]() {
-			mainMenu->hide();
-			customMenu->show();
-		},
-		mainMenu);
-	gui.createButton(
-		math::Vector2i(5, 155),
-		strings.getMenuString(strings::Load),
-		gfx::NormalFont,
-		[this]() {
-			mainMenu->hide();
-			loadGameMenu->show();
-		},
-		mainMenu);
-	gui.createButton(
-		math::Vector2i(5, 205),
-		strings.getMenuString(strings::Multiplayer),
-		gfx::NormalFont,
-		[this]() {
-			mainMenu->hide();
-			multiplayerMenu->show();
-		},
-		mainMenu);
+
+	// *** MAIN MENU ***
+
+	// Buttons
+	unsigned buttonY = 5;
+	if (true) {
+		gui.createButton(
+			math::Vector2i(5, buttonY),
+			strings.getMenuString(strings::Adventure),
+			gfx::NormalFont,
+			[this]() {
+				std::cout << "Adventure button pressed" << std::endl;
+				game.setState(IntroState); // for tests
+			},
+			mainMenu);
+		buttonY += buttonSpacing;
+	}
+	if (true) {
+		gui.createButton(
+			math::Vector2i(5, buttonY),
+			strings.getMenuString(strings::RandomIsland),
+			gfx::NormalFont,
+			[this]() {
+				mainMenu->hide();
+				randomMenu->show();
+			},
+			mainMenu);
+		buttonY += buttonSpacing;
+	}
+	if (true) {
+		gui.createButton(
+			math::Vector2i(5, buttonY),
+			strings.getMenuString(strings::SingleIsland),
+			gfx::NormalFont,
+			[this]() {
+				mainMenu->hide();
+				customMenu->show();
+			},
+			mainMenu);
+		buttonY += buttonSpacing;
+	}
+	if (true) {
+		gui.createButton(
+			math::Vector2i(5, buttonY),
+			strings.getMenuString(strings::Load),
+			gfx::NormalFont,
+			[this]() {
+				mainMenu->hide();
+				loadGameMenu->show();
+			},
+			mainMenu);
+		buttonY += buttonSpacing;
+	}
+	if (true) {
+		gui.createButton(
+			math::Vector2i(5, buttonY),
+			strings.getMenuString(strings::Multiplayer),
+			gfx::NormalFont,
+			[this]() {
+				mainMenu->hide();
+				multiplayerMenu->show();
+			},
+			mainMenu);
+	}
 
 	gui.createButton(
-		math::Vector2i(5, screenHeight / 2 - 25),
+		math::Vector2i(5, screenHeight / 2 - buttonSpacing / 2),
 		strings.getMenuString(strings::Options),
 		gfx::NormalFont,
 		[this]() {
@@ -135,7 +155,7 @@ void MainMenu::loadInterface()
 		},
 		mainMenu);
 	gui.createButton(
-		math::Vector2i(5, screenHeight / 2 + 25),
+		math::Vector2i(5, screenHeight / 2 + buttonSpacing / 2),
 		strings.getMenuString(strings::Editor),
 		gfx::NormalFont,
 		[this]() {
@@ -144,7 +164,7 @@ void MainMenu::loadInterface()
 		},
 		mainMenu);
 	gui.createButton(
-		math::Vector2i(5, screenHeight / 2 + 75),
+		math::Vector2i(5, screenHeight / 2 + buttonSpacing + buttonSpacing / 2),
 		strings.getMenuString(strings::Credits),
 		gfx::NormalFont,
 		[this]() {
@@ -154,7 +174,7 @@ void MainMenu::loadInterface()
 		mainMenu);
 
 	gui.createButton(
-		math::Vector2i(5, screenHeight - 50),
+		math::Vector2i(5, screenHeight - buttonSpacing),
 		strings.getMenuString(strings::Quit),
 		gfx::NormalFont,
 		[this]() {
@@ -163,7 +183,22 @@ void MainMenu::loadInterface()
 		},
 		mainMenu);
 
-	// Random game
+	// Logo image
+	// gui.createImage(
+	// 	math::Vector2i(200 + (screenWidth - 200) / 2, 200),
+	// 	mainMenu);
+
+	// Version info
+	// gui.createText(
+	// 	math::Vector2i(),
+	// 	"test",
+	// 	gfx::SmallFont,
+	// 	mainMenu);
+
+
+	// *** RANDOM GAME ***
+
+
 	gui.createButton(
 		math::Vector2i(5, screenHeight - 50),
 		strings.getMenuString(strings::Back),
@@ -174,11 +209,14 @@ void MainMenu::loadInterface()
 		},
 		randomMenu);
 	gui.createWindow(
-		215,
+		windowPosition,
 		"Test",
 		randomMenu);
 
-	// Singleplayer
+
+	// *** SINGLEPLAYER (CUSTOM GAME) ***
+
+
 	gui.createButton(
 		math::Vector2i(5, screenHeight - 50),
 		strings.getMenuString(strings::Back),
@@ -189,11 +227,14 @@ void MainMenu::loadInterface()
 		},
 		customMenu);
 	gui.createWindow(
-		215,
+		windowPosition,
 		"Test",
 		customMenu);
 
-	// Load
+
+	// *** LOAD GAME ****
+
+
 	gui.createButton(
 		math::Vector2i(5, screenHeight - 50),
 		strings.getMenuString(strings::Back),
@@ -204,11 +245,14 @@ void MainMenu::loadInterface()
 		},
 		loadGameMenu);
 	gui.createWindow(
-		215,
+		windowPosition,
 		"Test",
 		loadGameMenu);
 
-	// Multiplayer
+
+	// *** MULTIPLAYER ***
+
+
 	gui.createButton(
 		math::Vector2i(5, screenHeight - 50),
 		strings.getMenuString(strings::Back),
@@ -219,11 +263,14 @@ void MainMenu::loadInterface()
 		},
 		multiplayerMenu);
 	gui.createWindow(
-		215,
+		windowPosition,
 		"Test",
 		multiplayerMenu);
 
-	// Options
+
+	// *** OPTIONS ***
+
+
 	gui.createButton(
 		math::Vector2i(5, screenHeight - 50),
 		"Back (todo)",
@@ -234,11 +281,14 @@ void MainMenu::loadInterface()
 		},
 		optionsMenu);
 	gui.createWindow(
-		215,
+		windowPosition,
 		"Test",
 		optionsMenu);
 
-	// Credits
+
+	// *** CREDITS ***
+
+
 	gui.createButton(
 		math::Vector2i(5, screenHeight - 50),
 		strings.getMenuString(strings::Back),
