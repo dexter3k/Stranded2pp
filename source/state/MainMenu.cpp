@@ -4,11 +4,13 @@
 
 #include "Stranded.h"
 #include "graphics/gui/Gui.h"
+#include "input/Mouse.h"
 
 namespace state
 {
 
 std::string const MainMenu::menuMap = "maps/menu/menu.s2";
+std::string const MainMenu::logoImage = "sys/gfx/title.bmp";
 
 MainMenu::MainMenu(Stranded & game) :
 	super(game),
@@ -40,6 +42,18 @@ void MainMenu::hide()
 	super::hide();
 }
 
+bool MainMenu::processEvent(Event event)
+{
+	if (event.type == Event::MouseButtonPressed
+		&& event.mouseButtonPressed.button == mouse::Right)
+	{
+		// Do explosion
+		return true;
+	}
+	
+	return false;
+}
+
 void MainMenu::loadGame()
 {
 	auto & engine = game.getEngine();
@@ -55,7 +69,7 @@ void MainMenu::loadInterface()
 	auto & gfx = game.getGraphics();
 	auto & gui = gfx.getGui();
 
-	//unsigned screenWidth = 800;
+	unsigned const screenWidth = 800;
 	unsigned const screenHeight = 600;
 	unsigned const windowPosition = 215;
 	unsigned const buttonSpacing = 50;
@@ -154,24 +168,29 @@ void MainMenu::loadInterface()
 			optionsMenu->show();
 		},
 		mainMenu);
-	gui.createButton(
-		math::Vector2i(5, screenHeight / 2 + buttonSpacing / 2),
-		strings.getMenuString(strings::Editor),
-		gfx::NormalFont,
-		[this]() {
-			std::cout << "Editor button pressed" << std::endl;
-			game.setState(IntroState); // for tests
-		},
-		mainMenu);
-	gui.createButton(
-		math::Vector2i(5, screenHeight / 2 + buttonSpacing + buttonSpacing / 2),
-		strings.getMenuString(strings::Credits),
-		gfx::NormalFont,
-		[this]() {
-			mainMenu->hide();
-			creditsMenu->show();
-		},
-		mainMenu);
+
+	if (true) {
+		gui.createButton(
+			math::Vector2i(5, screenHeight / 2 + buttonSpacing / 2),
+			strings.getMenuString(strings::Editor),
+			gfx::NormalFont,
+			[this]() {
+				std::cout << "Editor button pressed" << std::endl;
+				game.setState(IntroState); // for tests
+			},
+			mainMenu);
+	}
+	if (true) {
+		gui.createButton(
+			math::Vector2i(5, screenHeight / 2 + buttonSpacing + buttonSpacing / 2),
+			strings.getMenuString(strings::Credits),
+			gfx::NormalFont,
+			[this]() {
+				mainMenu->hide();
+				creditsMenu->show();
+			},
+			mainMenu);
+	}
 
 	gui.createButton(
 		math::Vector2i(5, screenHeight - buttonSpacing),
@@ -184,15 +203,18 @@ void MainMenu::loadInterface()
 		mainMenu);
 
 	// Logo image
-	// gui.createImage(
-	// 	math::Vector2i(200 + (screenWidth - 200) / 2, 200),
-	// 	mainMenu);
+	gui.createImage(
+		logoImage,
+		math::Vector2i(200 + (screenWidth - 200) / 2, 200),
+		true, // centered
+		mainMenu);
 
 	// Version info
 	// gui.createText(
-	// 	math::Vector2i(),
+	// 	math::Vector2i(screenWidth - 3, screenHeight - 17),
 	// 	"test",
 	// 	gfx::SmallFont,
+	//	pad right
 	// 	mainMenu);
 
 

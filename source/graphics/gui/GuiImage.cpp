@@ -10,30 +10,30 @@ namespace gfx
 namespace gui
 {
 
-GuiImage::GuiImage(Gui & gui, GuiElement * parent, Texture * texture, math::Recti const & destinationRectangle,
-		const math::Recti& sourceRectangle) :
-	super(gui, parent),
-	texture(texture),
-	destinationRectangle(destinationRectangle),
-	sourceRectangle(sourceRectangle)
+GuiImage::GuiImage(Gui & gui, GuiElement * parent, std::string const & imageName,
+		math::Vector2i position, bool centered) :
+	super(gui, parent, position),
+	textureName(imageName),
+	texture(gui.getDevice().grabTexture(gui.getModPath() + textureName)),
+	centered(centered)
+{}
+
+GuiImage::~GuiImage()
 {
-	if (sourceRectangle.upperLeft.x == 0 &&
-		sourceRectangle.upperLeft.y == 0 &&
-		sourceRectangle.lowerRight.x == 0 &&
-		sourceRectangle.lowerRight.y == 0)
-	{
-		if (texture != nullptr)
-		{
-			this->sourceRectangle.lowerRight = texture->getSize();
-		}
-	}
+	gui.getDevice().releaseTexture(gui.getModPath() + textureName);
 }
 
 void GuiImage::draw()
 {
 	auto & device = gui.getDevice();
 
-	device.draw2DImage(texture, destinationRectangle, sourceRectangle);
+	auto position = getPosition();
+	if (centered && texture != nullptr) {
+		auto textureSize = texture->getSize();
+		position -= textureSize / 2;
+	}
+
+	device.draw2DImage(texture, position);
 }
 
 } // namespace gui

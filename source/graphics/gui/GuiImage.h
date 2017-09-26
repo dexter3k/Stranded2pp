@@ -2,8 +2,6 @@
 
 #include "GuiElement.h"
 
-#include "math/Rect.h"
-
 namespace gfx
 {
 
@@ -16,15 +14,16 @@ class GuiImage : public GuiElement
 {
 	typedef GuiElement super;
 public:
-	GuiImage(Gui & gui, GuiElement * parent, Texture * texture,
-		math::Recti const & destinationRectangle, math::Recti const & sourceRectangle);
+	GuiImage(Gui & gui, GuiElement * parent, std::string const & imageName,
+		math::Vector2i position, bool centered);
+	~GuiImage();
 
 	void draw() override;
 private:
+	std::string const textureName;
 	Texture * texture;
 
-	math::Recti destinationRectangle;
-	math::Recti sourceRectangle;
+	bool centered;
 };
 
 } // namespace gui

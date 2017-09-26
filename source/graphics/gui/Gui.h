@@ -47,7 +47,7 @@ public:
 
 	GuiElement * createEmptyElement(GuiElement * parent = nullptr);
 
-	GuiButton * createButton(math::Vector2i const & position, std::string const & text,
+	GuiButton * createButton(math::Vector2i position, std::string const & text,
 		FontType font, std::function<void(void)> onPressed = nullptr, GuiElement * parent = nullptr);
 
 	GuiBackgroundImage * createBackgroundImage(std::string const & imageName,
@@ -56,10 +56,8 @@ public:
 
 	GuiWindow * createWindow(int position, std::string const & title, GuiElement * parent = nullptr);
 
-	GuiImage* addImage(Texture * texture,
-		const math::Recti& destinationRectangle,
-		const math::Recti& sourceRectangle = math::Recti(0, 0, 0, 0),
-		GuiElement * parent = nullptr);
+	GuiImage * createImage(std::string const & imageName, math::Vector2i position,
+		bool centered = false, GuiElement * parent = nullptr);
 
 	void deleteGuiElement(GuiElement * element);
 

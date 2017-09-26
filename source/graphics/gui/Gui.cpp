@@ -73,7 +73,7 @@ GuiElement * Gui::createEmptyElement(GuiElement * parent)
 	return element;
 }
 
-GuiButton * Gui::createButton(math::Vector2i const & position, std::string const & text,
+GuiButton * Gui::createButton(math::Vector2i position, std::string const & text,
 	FontType font, std::function<void(void)> onPressed, GuiElement * parent)
 {
 	if (parent == nullptr)
@@ -112,15 +112,13 @@ GuiWindow * Gui::createWindow(int position, std::string const & title, GuiElemen
 	return window;
 }
 
-GuiImage * Gui::addImage(Texture * texture,
-	math::Recti const & destinationRectangle, math::Recti const & sourceRectangle,
-	GuiElement * parent)
+GuiImage * Gui::createImage(std::string const & imageName, math::Vector2i position,
+	bool centered, GuiElement * parent)
 {
 	if (parent == nullptr)
 		parent = this;
 
-	GuiImage * image = new GuiImage(*this, parent, texture, destinationRectangle,
-		sourceRectangle);
+	GuiImage * image = new GuiImage(*this, parent, imageName, position, centered);
 
 	guiElements.push_back(image);
 

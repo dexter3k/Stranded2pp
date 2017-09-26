@@ -15,12 +15,15 @@ public:
 
 	void show() override;
 	void hide() override;
+
+	bool processEvent(Event event);
 private:
 	void loadGame();
 	void loadInterface();
-
+private:
 	static std::string const menuMap;
-
+	static std::string const logoImage;
+private:
 	gfx::gui::GuiElement * menuRoot;
 	gfx::gui::GuiElement * mainMenu;
 	gfx::gui::GuiElement * randomMenu;
