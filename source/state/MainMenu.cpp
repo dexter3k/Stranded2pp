@@ -73,7 +73,7 @@ void MainMenu::loadInterface()
 	unsigned const screenHeight = 600;
 	unsigned const windowPosition = 215;
 	unsigned const buttonSpacing = 50;
-	std::string const versionString = "test 0.0.1 indev";
+	std::string const versionString = "Test version string: v0.00.01 26.09.2017 indev";
 
 	menuRoot = gui.createEmptyElement();
 
@@ -211,12 +211,13 @@ void MainMenu::loadInterface()
 		mainMenu);
 
 	// Version info
-	// gui.createText(
-	// 	math::Vector2i(screenWidth - 3, screenHeight - 17),
-	// 	versionString,
-	// 	gfx::SmallFont,
-	// 	,
-	// 	mainMenu);
+	gui.createText(
+		math::Vector2i(screenWidth - 3, screenHeight - 17),
+		versionString,
+		gfx::TinyFont,
+		gfx::TextPadRight,
+		gfx::TextPadUp,
+		mainMenu);
 
 
 	// *** RANDOM GAME ***

@@ -52,11 +52,11 @@ void TextEngine::drawSingleLine(FontType fontType, std::string const & text,
 		if (text[i] == ' ') {
 			destination.x += font.getFrameWidth() / 2;
 		} else {
-			auto space = text.find(' ', i);
-			std::string word = text.substr(i, space);
+			auto space = text.find(' ', i + 1);
+			std::string word = text.substr(i, space - i);
 			device.drawText(font, word, destination);
-			i += word.size();
-			destination.x += calculateTextWidth(font, word) + font.getFrameWidth() / 2;
+			i += word.size() - 1;
+			destination.x += calculateTextWidth(font, word);
 		}
 	}
 }

@@ -7,6 +7,7 @@
 #include "GuiButton.h"
 #include "GuiElement.h"
 #include "GuiImage.h"
+#include "GuiText.h"
 #include "GuiWindow.h"
 
 #include "common/Modification.h"
@@ -63,8 +64,9 @@ void Gui::drawAll()
 
 GuiElement * Gui::createEmptyElement(GuiElement * parent)
 {
-	if (parent == nullptr)
+	if (parent == nullptr) {
 		parent = this;
+	}
 
 	GuiElement * element = new GuiElement(*this, parent);
 
@@ -76,8 +78,9 @@ GuiElement * Gui::createEmptyElement(GuiElement * parent)
 GuiButton * Gui::createButton(math::Vector2i position, std::string const & text,
 	FontType font, std::function<void(void)> onPressed, GuiElement * parent)
 {
-	if (parent == nullptr)
+	if (parent == nullptr) {
 		parent = this;
+	}
 
 	GuiButton * button = new GuiButton(*this, parent, position, text, font, onPressed);
 
@@ -89,8 +92,9 @@ GuiButton * Gui::createButton(math::Vector2i position, std::string const & text,
 GuiBackgroundImage * Gui::createBackgroundImage(std::string const & imageName,
 	Color backgroundColor, Color maskColor, GuiElement * parent)
 {
-	if (parent == nullptr)
+	if (parent == nullptr) {
 		parent = this;
+	}
 
 	GuiBackgroundImage * image = new GuiBackgroundImage(*this, parent, imageName,
 		backgroundColor, maskColor);
@@ -102,8 +106,9 @@ GuiBackgroundImage * Gui::createBackgroundImage(std::string const & imageName,
 
 GuiWindow * Gui::createWindow(int position, std::string const & title, GuiElement * parent)
 {
-	if (parent == nullptr)
+	if (parent == nullptr) {
 		parent = this;
+	}
 
 	GuiWindow * window = new GuiWindow(*this, parent, position, title);
 
@@ -115,14 +120,31 @@ GuiWindow * Gui::createWindow(int position, std::string const & title, GuiElemen
 GuiImage * Gui::createImage(std::string const & imageName, math::Vector2i position,
 	bool centered, GuiElement * parent)
 {
-	if (parent == nullptr)
+	if (parent == nullptr) {
 		parent = this;
+	}
 
 	GuiImage * image = new GuiImage(*this, parent, imageName, position, centered);
 
 	guiElements.push_back(image);
 
 	return image;
+}
+
+GuiText * Gui::createText(math::Vector2i position, std::string const & text, FontType font,
+	TextHorizontalPadding horizontalPadding, TextVerticalPadding verticalPadding,
+	GuiElement * parent)
+{
+	if (parent == nullptr) {
+		parent = this;
+	}
+
+	GuiText * textElement = new GuiText(*this, parent, position, text, font,
+		horizontalPadding, verticalPadding);
+
+	guiElements.push_back(textElement);
+
+	return textElement;
 }
 
 void Gui::deleteGuiElement(GuiElement * element)

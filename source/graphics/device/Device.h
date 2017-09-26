@@ -5,7 +5,6 @@
 #include "../Color.h"
 #include "../FontType.h"
 #include "../IndexSize.h"
-#include "../TextStyle.h"
 #include "../Vertex3D.h"
 
 #include "math/Matrix4.h"

@@ -31,6 +31,7 @@ namespace gui
 class GuiBackgroundImage;
 class GuiButton;
 class GuiImage;
+class GuiText;
 class GuiWindow;
 
 class Gui : public GuiElement
@@ -58,6 +59,10 @@ public:
 
 	GuiImage * createImage(std::string const & imageName, math::Vector2i position,
 		bool centered = false, GuiElement * parent = nullptr);
+
+	GuiText * createText(math::Vector2i position, std::string const & text, FontType font,
+		TextHorizontalPadding horizontalPadding = TextPadLeft,
+		TextVerticalPadding verticalPadding = TextPadUp, GuiElement * parent = nullptr);
 
 	void deleteGuiElement(GuiElement * element);
 
