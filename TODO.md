@@ -3,10 +3,9 @@
 ## High priority
 ASAP!
 
-* Screen system should be moved out of Gui to Stranded
-* Add details to this list
 * Decide about Modification class and some resource manager
-* Rewrite all the trash
+* Rewrite all the trash (more details, pls?)
+* [Done] Screen system should be moved out of Gui to Stranded
 * [Done] Move to CMake build system
 
 ## Medium priority
@@ -16,7 +15,8 @@ Just after High priority tasks
 * Write COMPILING.md
 
 ## Low priority
-U probably got that logic
+Lower priority tasks
 
-* Add support for original `moon_a.png` and `flames0_a.png` sprites
-* Add support for mp3 files (or wait for SFML to do so?)
+* Support all file formats that the original game supports. Currently `mp3` and some features of `png` are known to be unsupported
+	* Add support for original `moon_a.png` and `flames0_a.png` sprites
+	* Add support for mp3 files (or wait for SFML to do so?)
