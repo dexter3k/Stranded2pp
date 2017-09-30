@@ -4,6 +4,8 @@
 
 #include "common/Timer.h"
 
+std::string const Stranded::versionString = "Stranded2++ engine by Dexter3000. Version 0.0 (indev)";
+
 Stranded::Stranded(std::vector<std::string> const & arguments) :
 	cmdLineArgs(arguments),
 	modification(cmdLineArgs.modificationName()),

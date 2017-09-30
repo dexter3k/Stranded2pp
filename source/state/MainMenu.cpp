@@ -73,7 +73,7 @@ void MainMenu::loadInterface()
 	unsigned const screenHeight = 600;
 	unsigned const windowPosition = 215;
 	unsigned const buttonSpacing = 50;
-	std::string const versionString = "Test version string: v0.00.01 26.09.2017 indev";
+	std::string const versionString = game.getVersionString();
 
 	menuRoot = gui.createEmptyElement();
 

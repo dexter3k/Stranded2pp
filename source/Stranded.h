@@ -35,8 +35,12 @@ public:
 	gfx::Graphics & getGraphics() { return graphics; };
 	Engine & getEngine() { return engine; };
 	Strings const & getStrings() const { return strings; };
+
+	std::string getVersionString() const { return versionString; };
 private:
 	void printWelcomeMessage();
+private:
+	static std::string const versionString;
 private:
 	common::CmdLineArgs cmdLineArgs;
 
