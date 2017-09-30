@@ -17,11 +17,13 @@ State::~State()
 
 void State::show()
 {
+	assert(hidden);
 	hidden = false;
 }
 
 void State::hide()
 {
+	assert(!hidden);
 	hidden = true;
 }
 

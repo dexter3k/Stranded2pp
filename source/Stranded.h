@@ -15,8 +15,9 @@
 #include "input/Input.h"
 #include "network/Network.h"
 #include "sound/Sound.h"
-#include "state/MainMenu.h"
+#include "state/Editor.h"
 #include "state/Intro.h"
+#include "state/MainMenu.h"
 #include "state/State.h"
 #include "window/Window.h"
 
@@ -62,8 +63,9 @@ private:
 
 	Engine engine;
 
-	state::MainMenu mainMenu;
+	state::Editor editor;
 	state::Intro intro;
+	state::MainMenu mainMenu;
 
 	std::unordered_map<state::Type, state::State *> const stateMapping;
 

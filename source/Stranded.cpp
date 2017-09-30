@@ -15,9 +15,11 @@ Stranded::Stranded(std::vector<std::string> const & arguments) :
 	input(window, modification),
 	graphics(modification),
 	engine(*this, graphics, network, sound, modification),
-	mainMenu(*this),
+	editor(*this),
 	intro(*this),
+	mainMenu(*this),
 	stateMapping({
+		{state::EditorState, &editor},
 		{state::IntroState, &intro},
 		{state::MainMenuState, &mainMenu}}),
 	currentStates(),

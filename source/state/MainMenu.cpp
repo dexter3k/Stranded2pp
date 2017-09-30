@@ -69,8 +69,8 @@ void MainMenu::loadInterface()
 	auto & gfx = game.getGraphics();
 	auto & gui = gfx.getGui();
 
-	unsigned const screenWidth = 800;
-	unsigned const screenHeight = 600;
+	unsigned const screenWidth = gui.getScreenSize().x;
+	unsigned const screenHeight = gui.getScreenSize().y;
 	unsigned const windowPosition = 215;
 	unsigned const buttonSpacing = 50;
 	std::string const versionString = game.getVersionString();
