@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 
+#include "controllers/Controller.h"
 #include "script/ExecutionContext.h"
 #include "script/Program.h"
 
@@ -47,12 +48,13 @@ public:
 		unsigned colorMapSize, std::vector<gfx::Color> const & colorMap,
 		std::vector<uint8_t> const & grassMap);
 
-	void loadGame(std::string const &) { /* todo */ };
+	void loadGame(std::string const & filename, controller::Type controller);
 private:
 	bool updateTime(double deltaTime);
 
 	bool loadGameConfig();
 	bool parseGameConfig(std::string const & filename);
+	void switchController(controller::Type controller);
 private:
 	static const unsigned msPerGameMinute;
 private:
@@ -75,6 +77,9 @@ private:
 
 	script::Program mainScript;
 	script::Program mapScript;
+
+	// Controller
+	controller::Controller * currentController;
 
 	// Game values
 

@@ -28,6 +28,7 @@ Engine::Engine(Stranded &, gfx::Graphics & graphics, Network &, Sound &, Modific
 	gameScriptSource(""),
 	mainScript(),
 	mapScript(),
+	currentController(nullptr),
 	isTimePaused(false),
 	timeCounter(0),
 	currentDay(0),
@@ -114,13 +115,20 @@ bool Engine::setupTerrain(unsigned terrainSize,
 	// on z-axis
 	unsigned heightMapSize = terrainSize + 1;
 	std::vector<float> flippedHeightMap(heightMap.size());
-	for (unsigned x = 0; x < heightMapSize; ++x)
-		for (unsigned z = 0; z < heightMapSize; ++z)
+	for (unsigned x = 0; x < heightMapSize; ++x) {
+		for (unsigned z = 0; z < heightMapSize; ++z) {
 			flippedHeightMap[x + (heightMapSize - z - 1) * heightMapSize] = heightMap[x + z * heightMapSize];
+		}
+	}
 
 	graphics.setTerrain(terrainSize, flippedHeightMap, colorMapSize, colorMap, grassMap);
 
 	return true;
+}
+
+void Engine::loadGame(std::string const &, controller::Type controller)
+{
+	switchController(controller);
 }
 
 bool Engine::updateTime(double deltaTime)
@@ -289,4 +297,12 @@ bool Engine::parseGameConfig(std::string const & filename)
 	std::cout << "'" << filename << "' is loaded successfully" << std::endl;
 
 	return true;
+}
+
+void Engine::switchController(controller::Type)
+{
+	if (currentController != nullptr) {
+		delete currentController;
+		currentController = nullptr;
+	}
 }
