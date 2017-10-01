@@ -56,9 +56,9 @@ bool MainMenu::processEvent(Event event)
 
 void MainMenu::loadGame()
 {
-	auto & engine = game.getEngine();
+	//auto & engine = game.getEngine();
 
-	engine.loadGame(menuMap/*, MainMenuController*/);
+	//engine.loadGame(menuMap, MainMenuController);
 }
 
 void MainMenu::loadInterface()

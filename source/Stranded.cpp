@@ -45,7 +45,11 @@ void Stranded::run()
 		while (input.getEvent(event)) {
 			if (currentStates.empty() || !(currentStates.top()->processEvent(event))) {
 				if (!graphics.processEvent(event))
-					engine.processEvent(event);
+					if (!engine.processEvent(event)
+						&& event.type == Event::Closed)
+					{
+						stopLoop();
+					}
 			}
 		}
 

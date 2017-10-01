@@ -56,7 +56,7 @@ private:
 private:
 	static const unsigned msPerGameMinute;
 private:
-	Stranded & game;
+	//Stranded & game;
 
 	gfx::Graphics & graphics;
 	//Network & network;

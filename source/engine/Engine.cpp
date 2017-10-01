@@ -17,8 +17,8 @@
 
 unsigned const Engine::msPerGameMinute = 500;
 
-Engine::Engine(Stranded & game, gfx::Graphics & graphics, Network &, Sound &, Modification const & modification) :
-	game(game),
+Engine::Engine(Stranded &, gfx::Graphics & graphics, Network &, Sound &, Modification const & modification) :
+	//game(game),
 	graphics(graphics),
 	//network(network),
 	//sound(sound),
@@ -44,9 +44,6 @@ Engine::Engine(Stranded & game, gfx::Graphics & graphics, Network &, Sound &, Mo
 bool Engine::processEvent(Event event)
 {
 	switch (event.type) {
-	case Event::Closed:
-		game.stopLoop();
-		return true;
 	default:
 		return false;
 	}
