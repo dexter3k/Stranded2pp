@@ -2,6 +2,8 @@
 
 #include <cassert>
 
+#include "Scene.h"
+
 namespace gfx
 {
 
@@ -27,7 +29,13 @@ Node::Node(Node* parent, Scene* scene, int id, const math::Vector3f& position,
 }
 
 Node::~Node()
-{}
+{
+	while (!children.empty())
+		scene->removeNode(children.front());
+
+	if (parent != nullptr)
+		parent->removeChild(this);
+}
 
 void Node::onRegisterNode()
 {
@@ -57,14 +65,10 @@ void Node::addChild(Node* child)
 {
 	assert(child != nullptr);
 
-	if (child->parent == nullptr)
-	{
-		child->parent = this;
-	}
-	else
-	{
+	if (child->parent != nullptr)
 		child->parent->removeChild(child);
-	}
+
+	child->parent = this;
 
 	children.push_back(child);
 }
@@ -120,20 +124,17 @@ Node* Node::getParent() const
 	return parent;
 }
 
-void Node::setParent(Node* newParent)
+void Node::setParent(Node * newParent)
 {
-	if (parent == newParent)
-	{
+	if (parent == newParent) {
 		return;
 	}
 
-	if (parent != nullptr)
-	{
+	if (parent != nullptr) {
 		parent->removeChild(this);
 	}
 
-	if (newParent != nullptr)
-	{
+	if (newParent != nullptr) {
 		newParent->addChild(this);
 	}
 }

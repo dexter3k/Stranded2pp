@@ -20,9 +20,8 @@ namespace gfx
 namespace scene
 {
 
-Scene::Scene(Graphics& graphics, device::Device* device, Modification const & modification) :
+Scene::Scene(device::Device & device, Modification const & modification) :
 	RootNode(nullptr, this),
-	graphics(graphics),
 	device(device),
 	activeCamera(nullptr),
 	cameraWorldPosition(0.0f, 0.0f, 0.0f),
@@ -43,13 +42,8 @@ void Scene::drawAll()
 {
 	// TODO
 
-	if (device == nullptr)
-	{
-		return;
-	}
-
-	device->setMaterial(Material());
-	device->resetTransforms();
+	device.setMaterial(Material());
+	device.resetTransforms();
 
 	float animationDeltaTime = animationDeltaTimer.restart();
 
@@ -91,9 +85,9 @@ void Scene::drawAll()
 	currentRenderPass = RenderPassNone;
 }
 
-device::Device* Scene::getDevice()
+device::Device * Scene::getDevice()
 {
-	return device;
+	return &device;
 }
 
 void Scene::removeNode(Node* node)
@@ -141,11 +135,11 @@ Skybox* Scene::addSkybox(Texture* top, Texture* bottom, Texture* left,
 	return skybox;
 }
 
-Terrain* Scene::addTerrain(unsigned terrainSize, const std::vector<float>& heightMap,
+Terrain * Scene::addTerrain(unsigned terrainSize, const std::vector<float>& heightMap,
 	unsigned colorMapSize, const std::vector<gfx::Color>& colorMap,
 	const math::Vector2f& scale, int id)
 {
-	Terrain* terrain = new Terrain(terrainSize, heightMap, colorMapSize, colorMap,
+	Terrain * terrain = new Terrain(terrainSize, heightMap, colorMapSize, colorMap,
 		this, this, id, scale);
 
 	sceneNodes.push_back(terrain);

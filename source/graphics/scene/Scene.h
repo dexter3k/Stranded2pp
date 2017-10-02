@@ -51,7 +51,7 @@ public:
 private:
 	friend class gfx::Graphics;
 
-	Scene(Graphics& graphics, device::Device* device, Modification const & modification);
+	Scene(device::Device & device, Modification const & modification);
 	~Scene();
 public:
 
@@ -62,7 +62,7 @@ public:
 		Scene configuration
 	*/
 
-	Camera* getActiveCamera() const;
+	Camera * getActiveCamera() const;
 	void setActiveCamera(Camera* camera);
 
 	/*
@@ -118,20 +118,19 @@ public:
 
 	void render();
 private:
-	Graphics& graphics;
-	device::Device* device;
+	device::Device & device;
 
 	Camera* activeCamera;
 	math::Vector3f cameraWorldPosition;
 
-	std::list<Node*> sceneNodes;
+	std::list<Node *> sceneNodes;
 
 	Timer animationDeltaTimer;
 
 	SceneNodeRenderPass currentRenderPass;
 
-	std::list<Node*> skyboxes;
-	std::list<Node*> solidObjects;
+	std::list<Node *> skyboxes;
+	std::list<Node *> solidObjects;
 
 	std::string modPath;
 };

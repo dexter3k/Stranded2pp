@@ -23,6 +23,7 @@ const std::vector<std::string> Graphics::skyboxPostfixes = {
 	"_bk.jpg"
 };
 
+// Preloaded textures are kept loaded until shutdown
 const std::vector<std::string> Graphics::preloadList = {
 	"sys/gfx/bigbutton.bmp",
 	"sys/gfx/bigbutton_over.bmp",
@@ -123,7 +124,7 @@ const std::vector<std::string> Graphics::preloadList = {
 Graphics::Graphics(Modification const & modification) :
 	device(std::make_unique<device::OpenGLDevice>()),
 	gui(*device.get(), modification),
-	scene(*this, device.get(), modification),
+	scene(*device.get(), modification),
 	basePath(""),
 	preloadedTextures(),
 	terrainNode(nullptr),
@@ -171,10 +172,11 @@ bool Graphics::init()
 		math::Vector3f(0.0f, 0.0f, 0.0f));
 
 	waterPlane = scene.addInfinitePlane(
-		device->grabTexture(basePath + "gfx/water.jpg"), Color(80, 255, 240),
+		device->grabTexture(basePath + "gfx/water.jpg"),
+		Color(80, 255, 240),
 		3.125f);
 	{
-		auto& material = waterPlane->getMaterial();
+		auto & material = waterPlane->getMaterial();
 		material.depthFunction = Material::Always;
 		material.zWriteEnabled = true;
 		material.textureLayers[0].bilinearFilter = true;
@@ -185,9 +187,10 @@ bool Graphics::init()
 
 	groundPlane = scene.addInfinitePlane(
 		device->grabTexture(basePath + "sys/gfx/terraindirt.bmp"),
-		Color(255, 255, 255), 2.0f);
+		Color(255, 255, 255),
+		2.0f);
 	{
-		auto& material = groundPlane->getMaterial();
+		auto & material = groundPlane->getMaterial();
 		material.depthFunction = Material::Disabled;
 		material.zWriteEnabled = false;
 		material.textureLayers[0].bilinearFilter = true;
