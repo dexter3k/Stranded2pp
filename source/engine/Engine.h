@@ -2,8 +2,9 @@
 
 #include <iostream>
 #include <vector>
+#include <memory>
 
-#include "controllers/Controller.h"
+#include "controller/Controller.h"
 #include "script/ExecutionContext.h"
 #include "script/Program.h"
 
@@ -49,6 +50,15 @@ public:
 		std::vector<uint8_t> const & grassMap);
 
 	void loadGame(std::string const & filename, controller::Type controller);
+
+	void placeObject(unsigned objectId, unsigned objectType, float x, float z,
+		float yaw, float health, float maxHealth, unsigned age);
+	void placeUnit(unsigned unitId, unsigned unitType, float x, float y, float z, float yaw,
+		float health, float maxHealth, float hunger, float thirst, float exhaustion, float aiX, float aiZ);
+	void placeItem(unsigned itemId, unsigned itemType, float x, float y, float z, float yaw,
+		float health, unsigned count, unsigned parentClass, unsigned parentMode, unsigned parentId);
+	void placeInfo(unsigned infoId, unsigned infoType, float x, float y, float z, float pitch, float yaw,
+		std::string const & vars);
 private:
 	bool updateTime(double deltaTime);
 
@@ -79,7 +89,7 @@ private:
 	script::Program mapScript;
 
 	// Controller
-	controller::Controller * currentController;
+	std::unique_ptr<controller::Controller> currentController;
 
 	// Game values
 

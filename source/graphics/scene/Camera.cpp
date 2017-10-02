@@ -30,7 +30,7 @@ Camera::Camera(Node* parent, Scene* scene, int id,
 	if (device != nullptr)
 	{
 		auto renderTargetSize = device->getRenderTargetSize();
-		aspect =static_cast<float>(renderTargetSize.x) /
+		aspect = static_cast<float>(renderTargetSize.x) /
 			static_cast<float>(renderTargetSize.y);
 	}
 

@@ -6,5 +6,5 @@ class Engine;
 
 namespace save
 {
-	bool loadFromFile(const std::string& filename, Engine& engine);
+	bool loadFromFile(std::string const & filename, Engine & engine);
 } // namespace save

@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "SaveGameUtils.h"
+#include "controller/MainMenuController.h"
 #include "script/Compiler.h"
 
 #include "Stranded.h"
@@ -44,6 +45,12 @@ Engine::Engine(Stranded &, gfx::Graphics & graphics, Network &, Sound &, Modific
 
 bool Engine::processEvent(Event event)
 {
+	if (currentController != nullptr
+		&& currentController->processEvent(event))
+	{
+		return true;
+	}
+
 	switch (event.type) {
 	default:
 		return false;
@@ -126,10 +133,27 @@ bool Engine::setupTerrain(unsigned terrainSize,
 	return true;
 }
 
-void Engine::loadGame(std::string const &, controller::Type controller)
+void Engine::loadGame(std::string const & filename, controller::Type controller)
 {
+	save::loadFromFile(modBaseDirectory + filename, *this);
 	switchController(controller);
 }
+
+void Engine::placeObject(unsigned, unsigned, float, float,
+	float, float, float, unsigned)
+{}
+
+void Engine::placeUnit(unsigned, unsigned, float, float, float, float,
+	float, float, float, float, float, float, float)
+{}
+
+void Engine::placeItem(unsigned, unsigned, float, float, float, float,
+	float, unsigned, unsigned, unsigned, unsigned)
+{}
+
+void Engine::placeInfo(unsigned, unsigned, float, float, float, float, float,
+	std::string const &)
+{}
 
 bool Engine::updateTime(double deltaTime)
 {
@@ -193,7 +217,7 @@ bool Engine::parseGameConfig(std::string const & filename)
 	gameScriptSource.clear();
 
 	// WTF is all this?
-	for (auto && entry : entries) {
+	for (auto const & entry : entries) {
 		if (entry.key == "healthsystem")
 		{}
 		else if (entry.key == "exhaust_move")
@@ -299,10 +323,13 @@ bool Engine::parseGameConfig(std::string const & filename)
 	return true;
 }
 
-void Engine::switchController(controller::Type)
+void Engine::switchController(controller::Type controller)
 {
-	if (currentController != nullptr) {
-		delete currentController;
-		currentController = nullptr;
+	switch (controller) {
+	case controller::MainMenu:
+		currentController.reset(new controller::MainMenuController(*this));
+		break;
+	default:
+		assert(false);
 	}
 }

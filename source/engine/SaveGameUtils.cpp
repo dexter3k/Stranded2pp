@@ -119,7 +119,7 @@ namespace save
 	{
 		if (!fs::checkFileExists(filename))
 		{
-			std::cout << "Unable to load map '" << filename << "' - file not found"
+			std::cout << "Unable to load map '" << filename << "': file not found"
 				<< std::endl;
 
 			return false;
@@ -151,7 +151,7 @@ namespace save
 			return false;
 		}
 
-		std::cout << "Loading map:\n" << "[" << mainHeader.gameVersion << "] "
+		std::cout << "Loading map: " << "[" << mainHeader.gameVersion << "] "
 			<< mainHeader.date << " " << mainHeader.time << " " <<
 			mainHeader.format << " " << mainHeader.mode << std::endl;
 
@@ -322,10 +322,12 @@ namespace save
 			if (!buffer.readFloat(maxHealth)) return false;
 			if (!buffer.readUint32(dayTimer)) return false;
 
-			//std::cout << "Object " << i << " [" << objectId << "] t: " << objectType
-			//	<< " x: " << position.x << " z: " << position.z << " yaw: " << yaw
-			//	<< " h: " << health << " mH: " << maxHealth << " age: " << dayTimer
-			//	<< std::endl;
+			// std::cout << "Object " << i << " [" << objectId << "] t: " << objectType
+			// 	<< " x: " << position.x << " z: " << position.z << " yaw: " << yaw
+			// 	<< " h: " << health << " mH: " << maxHealth << " age: " << dayTimer
+			// 	<< std::endl;
+
+			engine.placeObject(objectId, objectType, position.x, position.z, yaw, health, maxHealth, dayTimer);
 		}
 
 		// Units
@@ -378,10 +380,13 @@ namespace save
 			if (!buffer.readFloat(aiCenter.x)) return false;
 			if (!buffer.readFloat(aiCenter.z)) return false;
 
-			//std::cout << "Unit " << i << " [" << unitId << "] t: " << unitType
-			//	<< " x: " << position.x << " y: " << position.y << " z: " <<
-			//	position.z << " yaw: " << yaw << " h: " << health << " mH: " <<
-			//	maxHealth << std::endl;
+			// std::cout << "Unit " << i << " [" << unitId << "] t: " << unitType
+			// 	<< " x: " << position.x << " y: " << position.y << " z: " <<
+			// 	position.z << " yaw: " << yaw << " h: " << health << " mH: " <<
+			// 	maxHealth << std::endl;
+
+			engine.placeUnit(unitId, unitType, position.x, position.y, position.z, yaw,
+				health, maxHealth, hunger, thirst, exhaustion, aiCenter.x, aiCenter.z);
 		}
 
 		// Items
@@ -427,12 +432,15 @@ namespace save
 			if (!buffer.readUint8(parentMode)) return false;
 			if (!buffer.readUint32(parentId)) return false;
 
-			//std::cout << "Item " << i << " [" << itemId << "] t: " << itemType
-			//	<< " x: " << position.x << " y: " << position.y << " z: " <<
-			//	position.z << " yaw: " << yaw << " h: " << health << " c: " << count
-			//	<< " pC: " << static_cast<uint16_t>(parentClass) << " pM: " <<
-			//	static_cast<uint16_t>(parentMode) << " pId: " << parentId <<
-			//	std::endl;
+			// std::cout << "Item " << i << " [" << itemId << "] t: " << itemType
+			// 	<< " x: " << position.x << " y: " << position.y << " z: " <<
+			// 	position.z << " yaw: " << yaw << " h: " << health << " c: " << count
+			// 	<< " pC: " << static_cast<uint16_t>(parentClass) << " pM: " <<
+			// 	static_cast<uint16_t>(parentMode) << " pId: " << parentId <<
+			// 	std::endl;
+
+			engine.placeItem(itemId, itemType, position.x, position.y, position.z, yaw,
+				health, count, parentClass, parentMode, parentId);
 		}
 
 
@@ -463,10 +471,12 @@ namespace save
 			if (!buffer.readFloat(yaw)) return false;
 			if (!buffer.readLengthPrefixedString(vars)) return false;
 
-			//std::cout << "Info " << i << " [" << infoId << "] t: " <<
-			//	static_cast<uint16_t>(infoType) << " x: " << position.x <<
-			//	" y: " << position.y << " z: " << position.z << " pitch: " <<
-			//	pitch << " yaw: " << yaw << " vars: " << vars << std::endl;
+			// std::cout << "Info " << i << " [" << infoId << "] t: " <<
+			// 	static_cast<uint16_t>(infoType) << " x: " << position.x <<
+			// 	" y: " << position.y << " z: " << position.z << " pitch: " <<
+			// 	pitch << " yaw: " << yaw << " vars: " << vars << std::endl;
+
+			engine.placeInfo(infoId, infoType, position.x, position.y, position.z, pitch, yaw, vars);
 		}
 
 		// States
