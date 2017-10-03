@@ -18,7 +18,7 @@ public:
 	Controller(Engine & engine);
 	virtual ~Controller() = default;
 
-	virtual bool processEvent(Event event);
+	virtual bool processEvent(Event event) = 0;
 protected:
 	Engine & engine;
 };
