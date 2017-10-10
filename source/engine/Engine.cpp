@@ -23,12 +23,11 @@ Engine::Engine(Stranded &, gfx::Graphics & graphics, Network &, Sound &, Modific
 	graphics(graphics),
 	//network(network),
 	//sound(sound),
-	gameState(Intro),
 	modBaseDirectory(""),
-	scriptContext(),
 	gameScriptSource(""),
 	mainScript(),
 	mapScript(),
+	scheduledTasks(),
 	currentController(nullptr),
 	isTimePaused(false),
 	timeCounter(0),
@@ -59,21 +58,7 @@ bool Engine::processEvent(Event event)
 
 void Engine::update(double deltaTime)
 {
-	switch (gameState) {
-	case Intro:
-		break;
-	case MainMenu:
-	case Singleplayer:
-	case Multiplayer:
-		timeChanged = updateTime(deltaTime);
-
-		break;
-	case Editor:
-		break;
-	default:
-		assert(!"Reached default!");
-		break;
-	}
+	timeChanged = updateTime(deltaTime);
 }
 
 void Engine::resetGame()
@@ -86,7 +71,7 @@ void Engine::resetGame()
 
 void Engine::setupGame(uint32_t day, uint8_t hour, uint8_t minute,
 	bool, std::string const & skybox, bool multiplayerMap,
-	uint8_t, std::string const &, std::string const &)
+	uint8_t, std::string const &, std::string const & briefScript)
 {
 	if (multiplayerMap)
 		std::cout << "Warning: loading multiplayer map in singleplayer" << std::endl;
@@ -96,13 +81,15 @@ void Engine::setupGame(uint32_t day, uint8_t hour, uint8_t minute,
 
 	graphics.setSkybox(skybox);
 
-	//mapScript.compile(briefScript);
+	std::cout << briefScript << std::endl;
+
+	mapScript = script::compile(briefScript);
+	scheduleEvent("preload");
+	handleScheduledEvents("preload");
 }
 
 void Engine::setupQuickslots(std::vector<std::string> const &)
-{
-	// Setup those quickslots
-}
+{}
 
 bool Engine::setupTerrain(unsigned terrainSize,
 	std::vector<float> const & heightMap, unsigned colorMapSize,
@@ -188,7 +175,7 @@ bool Engine::loadGameConfig()
 	std::vector<std::string> entries;
 	fs::scanFolder(modBaseDirectory + "sys/", entries);
 
-	for (auto&& entry : entries) {
+	for (auto const & entry : entries) {
 		if (string::startsWith(entry, "game")
 			&& string::endsWith(entry, ".inf"))
 		{
@@ -216,7 +203,6 @@ bool Engine::parseGameConfig(std::string const & filename)
 
 	gameScriptSource.clear();
 
-	// WTF is all this?
 	for (auto const & entry : entries) {
 		if (entry.key == "healthsystem")
 		{}
@@ -332,4 +318,36 @@ void Engine::switchController(controller::Type controller)
 	default:
 		assert(false);
 	}
+}
+
+void Engine::scheduleEvent(std::string const & event, std::string const & info)
+{
+	// Main game script
+	if (mainScript.hasHandlerForEvent(event)) {
+		scheduledTasks.emplace_back(-1, 0, event, info, mainScript);
+	}
+
+	// Current map script
+	if (mapScript.hasHandlerForEvent(event)) {
+		scheduledTasks.emplace_back(0, 0, event, info, mapScript);
+	}
+
+	// Other scripts
+
+	// Objects
+
+	// Units
+
+	// Items
+
+	// Infos
+}
+
+void Engine::handleScheduledEvents(std::string const &, bool)
+{
+	// for (auto const & task : scheduledTasks) {
+	// 	task.script.execute();
+	// }
+
+	scheduledTasks.clear();
 }

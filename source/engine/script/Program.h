@@ -9,16 +9,13 @@ namespace script
 class Program
 {
 public:
-	Program();
-	Program(Program const& other);
-	Program(Program && other);
+	Program() = default;
+	Program(Program const & other) = default;
 
-	Program & operator=(Program const& other);
-	Program & operator=(Program && other);
-
-	bool getIsAssembled() const;
+	std::vector<std::string> const & getEventHandlers() const { return eventHandlers; };
+	bool hasHandlerForEvent(std::string const & event);
 private:
-	bool isAssembled;
+	std::vector<std::string> eventHandlers;
 };
 
 } // namespace script

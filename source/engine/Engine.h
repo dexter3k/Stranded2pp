@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "controller/Controller.h"
-#include "script/ExecutionContext.h"
 #include "script/Program.h"
 
 #include "input/Event.h"
@@ -24,13 +23,23 @@ namespace gfx
 
 class Engine
 {
-	enum GameState
+	struct ScheduledTask
 	{
-		Intro,
-		MainMenu,
-		Singleplayer,
-		Multiplayer,
-		Editor
+		unsigned taskClass;
+		unsigned taskId;
+		std::string event;
+		std::string info;
+		script::Program script;
+
+		ScheduledTask(unsigned taskClass, unsigned taskId,
+				std::string const & event, std::string const & info,
+				script::Program const & script) :
+			taskClass(taskClass),
+			taskId(taskId),
+			event(event),
+			info(info),
+			script(script)
+		{}
 	};
 public:
 	Engine(Stranded & game, gfx::Graphics & graphics, Network & network,
@@ -65,6 +74,9 @@ private:
 	bool loadGameConfig();
 	bool parseGameConfig(std::string const & filename);
 	void switchController(controller::Type controller);
+
+	void scheduleEvent(std::string const & event, std::string const & info = "");
+	void handleScheduledEvents(std::string const & event, bool noskip = false);
 private:
 	static const unsigned msPerGameMinute;
 private:
@@ -74,19 +86,15 @@ private:
 	//Network & network;
 	//Sound & sound;
 
-	GameState gameState;
-
 	std::string modBaseDirectory;
 
 	// Script
-
-	// Global execution context (global vars, functions, procedures)
-	script::ExecutionContext scriptContext;
-
 	std::string gameScriptSource;
 
 	script::Program mainScript;
 	script::Program mapScript;
+
+	std::vector<ScheduledTask> scheduledTasks;
 
 	// Controller
 	std::unique_ptr<controller::Controller> currentController;
