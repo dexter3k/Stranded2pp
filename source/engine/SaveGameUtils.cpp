@@ -183,8 +183,7 @@ namespace save
 
 		// Load 96 x 72 R8G8B8 raw image
 		gfx::Image previewImage;
-		if (!impl::readPreviewImage(buffer, previewImage))
-		{
+		if (!impl::readPreviewImage(buffer, previewImage)) {
 			return false;
 		}
 
@@ -304,6 +303,7 @@ namespace save
 				objectType = type & 0x00ff;
 			}
 
+			// Why define a struct for this? Damn...
 			struct
 			{
 				float x = 0.0f;
@@ -315,17 +315,15 @@ namespace save
 			float maxHealth = 0.0f;
 			uint32_t dayTimer = 0.0f;
 
-			if (!buffer.readFloat(position.x)) return false;
-			if (!buffer.readFloat(position.z)) return false;
-			if (!buffer.readFloat(yaw)) return false;
-			if (!buffer.readFloat(health)) return false;
-			if (!buffer.readFloat(maxHealth)) return false;
-			if (!buffer.readUint32(dayTimer)) return false;
-
-			// std::cout << "Object " << i << " [" << objectId << "] t: " << objectType
-			// 	<< " x: " << position.x << " z: " << position.z << " yaw: " << yaw
-			// 	<< " h: " << health << " mH: " << maxHealth << " age: " << dayTimer
-			// 	<< std::endl;
+			if (!buffer.readFloat(position.x)
+				|| !buffer.readFloat(position.z)
+				|| !buffer.readFloat(yaw)
+				|| !buffer.readFloat(health)
+				|| !buffer.readFloat(maxHealth)
+				|| !buffer.readUint32(dayTimer))
+			{
+				return false;
+			}
 
 			engine.placeObject(objectId, objectType, position.x, position.z, yaw, health, maxHealth, dayTimer);
 		}

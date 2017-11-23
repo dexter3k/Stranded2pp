@@ -17,27 +17,26 @@
 #include "utils/StringUtils.h"
 
 unsigned const Engine::msPerGameMinute = 500;
+unsigned const Engine::objectPoolSize = 65536;
 
 Engine::Engine(Stranded &, gfx::Graphics & graphics, Network &, Sound &, Modification const & modification) :
 	//game(game),
 	graphics(graphics),
 	//network(network),
 	//sound(sound),
-	modBaseDirectory(""),
+	modBaseDirectory(modification.getPath()),
 	gameScriptSource(""),
 	mainScript(),
 	mapScript(),
 	scheduledTasks(),
 	currentController(nullptr),
+	objectBuilder(modBaseDirectory),
 	isTimePaused(false),
 	timeCounter(0),
 	currentDay(0),
 	dayTime(0),
 	timeChanged(false)
 {
-	// TODO
-	modBaseDirectory = modification.getPath();
-
 	if (!loadGameConfig())
 		throw std::runtime_error("Unable to init Engine");
 }
@@ -128,7 +127,9 @@ void Engine::loadGame(std::string const & filename, controller::Type controller)
 
 void Engine::placeObject(unsigned, unsigned, float, float,
 	float, float, float, unsigned)
-{}
+{
+
+}
 
 void Engine::placeUnit(unsigned, unsigned, float, float, float, float,
 	float, float, float, float, float, float, float)

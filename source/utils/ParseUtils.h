@@ -13,7 +13,7 @@ namespace parser
 			enum PropertyType
 			{
 				Value,
-				Script
+				Multiline
 			} type;
 
 			std::string key;

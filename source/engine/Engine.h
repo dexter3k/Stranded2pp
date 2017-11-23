@@ -4,10 +4,12 @@
 #include <vector>
 #include <memory>
 
-#include "controller/Controller.h"
-#include "script/Program.h"
-
+#include "engine/ObjectBuilder.h"
+#include "engine/Pool.h"
+#include "engine/controller/Controller.h"
+#include "engine/script/Program.h"
 #include "input/Event.h"
+#include "mod/Object.h"
 
 class Input;
 class Modification;
@@ -79,6 +81,7 @@ private:
 	void handleScheduledEvents(std::string const & event, bool noskip = false);
 private:
 	static const unsigned msPerGameMinute;
+	static unsigned const objectPoolSize;
 private:
 	//Stranded & game;
 
@@ -98,6 +101,8 @@ private:
 
 	// Controller
 	std::unique_ptr<controller::Controller> currentController;
+
+	engine::ObjectBuilder objectBuilder;
 
 	// Game values
 

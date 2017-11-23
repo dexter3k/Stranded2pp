@@ -35,11 +35,12 @@ namespace parser
 					std::string valueString = line.substr(line.find('=') + 1);
 					valueString = string::trim(valueString);
 
-					if (keyString == "script")
+					if (keyString == "script"
+						|| keyString == "description")
 					{
 						if (valueString == "start")
 						{
-							std::string script = "";
+							std::string multiline = "";
 
 							while (std::getline(file, line))
 							{
@@ -48,19 +49,19 @@ namespace parser
 								valueString = line.substr(line.find('=') + 1);
 								valueString = string::trim(valueString);
 
-								if (keyString == "script" &&
-									valueString == "end")
+								if ((keyString == "script" || keyString == "description")
+									&& valueString == "end")
 								{
 									break;	
 								}
 
-								script = script + "\n" + line;
+								multiline = multiline + "\n" + line;
 							}
 
 							Entry entry;
-							entry.type = Entry::Script;
-							entry.key = "script";
-							entry.value = script;
+							entry.type = Entry::Multiline;
+							entry.key = keyString;
+							entry.value = multiline;
 							data.push_back(entry);
 
 							continue;

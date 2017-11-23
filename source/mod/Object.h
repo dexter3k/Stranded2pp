@@ -5,11 +5,16 @@
 #include "graphics/Color.h"
 #include "math/Vector3.h"
 
+namespace engine {
+	class ObjectBuilder;
+}
+
 namespace mod
 {
 
 class Object
 {
+	friend class engine::ObjectBuilder;
 public:
 	Object() = default;
 private:
