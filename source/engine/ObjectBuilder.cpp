@@ -73,7 +73,7 @@ bool ObjectBuilder::parseObjectConfig(std::string const & filename)
 		} else if (entry.key == "icon") {
 			// TODO
 		} else if (entry.key == "model") {
-			// TODO
+			objects[currentId].modelName = entry.value;
 		} else if (entry.key == "x") {
 			// TODO
 		} else if (entry.key == "y") {
