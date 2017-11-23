@@ -3,7 +3,7 @@
 namespace engine
 {
 
-class Object
+class Objects
 {
 public:
 	

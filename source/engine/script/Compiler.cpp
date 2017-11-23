@@ -6,7 +6,7 @@
 
 namespace script
 {
-	Program compile(std::string const& source)
+	Program compile(std::string const & source)
 	{
 		Program program;
 
