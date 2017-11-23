@@ -1,9 +1,13 @@
 #pragma once
 
-#include <cstdio> //size_t
+#include <cstdio>
 #include <string>
+#include <vector>
 
 // TODO: improve for readability
+// TODO: rewrite and rename to just (Byte)Buffer?
+// Cuz name is kinda misleading and reading/writing looks dope af
+// See engine/SaveGameUtils.cpp for example of code should NOT look like
 
 // First and main rule: if error occurs, no changes are applied to container
 
@@ -33,12 +37,11 @@ public:
 
 	void debug() const;
 private:
-	bool silentRead(void* buffer, size_t toRead, size_t& readPointer) const;
+	bool silentRead(void* buffer, std::size_t toRead, std::size_t& readPointer) const;
 private:
-	char* buffer;
-	size_t bufferSize;
+	std::vector<uint8_t> buffer;
 
-	size_t readPosition;
-	size_t writePosition;
-	size_t dataSize;
+	std::size_t readPosition;
+	std::size_t writePosition;
+	std::size_t dataSize;
 };

@@ -4,28 +4,15 @@
 #include <cstring>
 #include <iostream>
 
-RingBuffer::RingBuffer(size_t bufferSize) :
-	buffer(new char[bufferSize]),
-	bufferSize(bufferSize),
+RingBuffer::RingBuffer(std::size_t bufferSize) :
+	buffer(bufferSize),
 	readPosition(0),
 	writePosition(0),
 	dataSize(0)
-{
-#ifndef NDEBUG
-	// Initialize each value, so that valgrind wont complain without reason
-	// in RingBuffer::debug(void) const
-	// In normal conditions uninitialized data is never visible to user
-	for (unsigned i = 0; i < bufferSize; ++i)
-	{
-		buffer[i] = 0;
-	}
-#endif
-}
+{}
 
 RingBuffer::~RingBuffer()
-{
-	delete[] buffer;
-}
+{}
 
 bool RingBuffer::write(const void* data, size_t dataSize)
 {
@@ -37,15 +24,15 @@ bool RingBuffer::write(const void* data, size_t dataSize)
 	}
 
 	// Do we overlap?
-	if ((writePosition + dataSize) <= bufferSize)
+	if ((writePosition + dataSize) <= buffer.size())
 	{
 		// No. Just write as is
-		memcpy(buffer + writePosition, data, dataSize);
+		memcpy(buffer.data() + writePosition, data, dataSize);
 
 		writePosition += dataSize;
 
-		assert(writePosition <= bufferSize);
-		if (writePosition == bufferSize)
+		assert(writePosition <= buffer.size());
+		if (writePosition == buffer.size())
 		{
 			writePosition = 0;
 		}
@@ -53,13 +40,13 @@ bool RingBuffer::write(const void* data, size_t dataSize)
 	else
 	{
 		// Yes. First write until overlap, then remaining
-		size_t leadingPartSize = bufferSize - writePosition;
+		size_t leadingPartSize = buffer.size() - writePosition;
 		assert(leadingPartSize < dataSize);
 
-		memcpy(buffer + writePosition, data, leadingPartSize);
+		memcpy(buffer.data() + writePosition, data, leadingPartSize);
 
 		// Write remaining data to buffer beginning
-		memcpy(buffer, static_cast<const char*>(data) + leadingPartSize,
+		memcpy(buffer.data(), static_cast<const char*>(data) + leadingPartSize,
 			dataSize - leadingPartSize);
 
 		writePosition = dataSize - leadingPartSize;
@@ -83,16 +70,16 @@ bool RingBuffer::read(void* buffer, size_t toRead)
 	}
 
 	// Overlap?
-	if ((readPosition + toRead) <= bufferSize)
+	if ((readPosition + toRead) <= this->buffer.size())
 	{
 		// No.
 
-		memcpy(buffer, this->buffer + readPosition, toRead);
+		memcpy(buffer, this->buffer.data() + readPosition, toRead);
 
 		readPosition += toRead;
 
-		assert(readPosition <= bufferSize);
-		if (readPosition == bufferSize)
+		assert(readPosition <= this->buffer.size());
+		if (readPosition == this->buffer.size())
 		{
 			readPosition = 0;
 		}
@@ -101,13 +88,13 @@ bool RingBuffer::read(void* buffer, size_t toRead)
 	{
 		// Yes.
 
-		size_t leadingPartSize = bufferSize - readPosition;
+		size_t leadingPartSize = this->buffer.size() - readPosition;
 		assert(leadingPartSize < toRead);
 
-		memcpy(buffer, this->buffer + readPosition, leadingPartSize);
+		memcpy(buffer, this->buffer.data() + readPosition, leadingPartSize);
 
 		// Read remaining data
-		memcpy(static_cast<char*>(buffer) + leadingPartSize, this->buffer,
+		memcpy(static_cast<char*>(buffer) + leadingPartSize, this->buffer.data(),
 			toRead - leadingPartSize);
 		readPosition = toRead - leadingPartSize;
 	}
@@ -121,7 +108,7 @@ bool RingBuffer::read(void* buffer, size_t toRead)
 
 size_t RingBuffer::getFreeSpace() const
 {
-	return bufferSize - dataSize;
+	return buffer.size() - dataSize;
 }
 
 size_t RingBuffer::getDataSize() const
@@ -233,7 +220,7 @@ bool RingBuffer::readLengthPrefixedString(std::string& string)
 
 void RingBuffer::debug() const
 {
-	for (size_t i = 0; i < bufferSize; ++i)
+	for (size_t i = 0; i < buffer.size(); ++i)
 	{
 		std::cout << static_cast<int>(buffer[i]) << " ";
 	}
@@ -243,7 +230,7 @@ void RingBuffer::debug() const
 bool RingBuffer::silentRead(void* buffer, size_t toRead, size_t& readPointer)
 	const
 {
-	assert(readPointer < bufferSize);
+	assert(readPointer < this->buffer.size());
 
 	if (toRead > dataSize)
 	{
@@ -253,16 +240,16 @@ bool RingBuffer::silentRead(void* buffer, size_t toRead, size_t& readPointer)
 	}
 
 	// Check for overlap
-	if ((readPointer + toRead) <= bufferSize)
+	if ((readPointer + toRead) <= this->buffer.size())
 	{
 		// No.
 
-		memcpy(buffer, this->buffer + readPointer, toRead);
+		memcpy(buffer, this->buffer.data() + readPointer, toRead);
 
 		readPointer += toRead;
 
-		assert(readPointer <= bufferSize);
-		if (readPointer == bufferSize)
+		assert(readPointer <= this->buffer.size());
+		if (readPointer == this->buffer.size())
 		{
 			readPointer = 0;
 		}
@@ -271,13 +258,13 @@ bool RingBuffer::silentRead(void* buffer, size_t toRead, size_t& readPointer)
 	{
 		// Yes.
 
-		size_t leadingPartSize = bufferSize - readPointer;
+		size_t leadingPartSize = this->buffer.size() - readPointer;
 		assert(leadingPartSize < toRead);
 
-		memcpy(buffer, this->buffer + readPointer, leadingPartSize);
+		memcpy(buffer, this->buffer.data() + readPointer, leadingPartSize);
 
 		// Read remaining data
-		memcpy(static_cast<char*>(buffer) + leadingPartSize, this->buffer,
+		memcpy(static_cast<char*>(buffer) + leadingPartSize, this->buffer.data(),
 			toRead - leadingPartSize);
 		readPointer = toRead - leadingPartSize;
 	}
