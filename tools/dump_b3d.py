@@ -9,12 +9,44 @@ def uint32(data):
 def dumpTEXS(data, depth):
 	name = data[0:data.find('\x00')]
 	print depth*' '+'Name', name
+	print depth*' '+data[len(name)+1:].encode('hex')
 
 def dumpBRUS(data, depth):
+	count = uint32(data[:4])
+	pos = 4
+	name = data[pos:data.find('\x00', pos)]
+	pos += len(name)+1
+	print depth*' '+'Name', name
+	print depth*' '+data[pos:pos+5*4].encode('hex')
+	pos += 5*4
+
+	print depth*' '+data[pos:].encode('hex')
+
+def dumpMESH(data, depth):
+	pass
+
+def dumpANIM(data, depth):
 	pass
 
 def dumpNODE(data, depth):
-	pass
+	name = data[0:data.find('\x00')]
+	print depth*' '+'Name', name
+	pos = len(name)+1
+	print depth*' '+data[pos:pos+10*4].encode('hex')
+	pos += 10*4
+	while pos + 8 < len(data):
+		tag = data[pos:pos+4]
+		size = uint32(data[pos+4:pos+8])
+		print depth*' '+tag, 'of size', size
+		if tag == 'MESH':
+			dumpMESH(data[pos+8:pos+8+size], depth+2)
+		elif tag == 'ANIM':
+			dumpANIM(data[pos+8:pos+8+size], depth+2)
+		elif tag == 'NODE':
+			dumpNODE(data[pos+8:pos+8+size], depth+2)
+		else:
+			print depth*' '+'Unknown tag'
+		pos += size + 8
 
 def dumpBB3D(data, depth):
 	version = uint32(data[0:4])
