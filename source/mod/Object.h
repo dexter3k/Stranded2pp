@@ -22,56 +22,56 @@ private:
 
 	std::string name;
 	
-	std::string iconName;
-	//Icon icon;
+	// std::string iconName;
+	// //Icon icon;
 	
 	std::string modelName;
-	//Model model;
-	math::Vector3f size;
-	gfx::Color color;
+	// //Model model;
+	// math::Vector3f size;
+	// gfx::Color color;
 
-	int fx;
-	int autofade;
-	float alpha;
-	float shininess;
+	// int fx;
+	// int autofade;
+	// float alpha;
+	// float shininess;
 
-	std::string detailTextureName;
+	// std::string detailTextureName;
 
-	int collisionMode;
-	int material;
+	// int collisionMode;
+	// int material;
 
-	float health;
-	float healthChange;
-	float swaySpeed;
-	float swayPower;
-	int maxweight;
-	int gt;
+	// float health;
+	// float healthChange;
+	// float swaySpeed;
+	// float swayPower;
+	// int maxweight;
+	// int gt;
 
-	float state1;
-	float state2;
-	float state3;
-	float state4;
+	// float state1;
+	// float state2;
+	// float state3;
+	// float state4;
 
-	float searchRatio;
+	// float searchRatio;
 
-	bool active;
-	std::string behaviour;
+	// bool active;
+	// std::string behaviour;
 
-	std::string spawn;
+	// std::string spawn;
 
-	std::string script;
-	std::string scriptOverride;
+	// std::string script;
+	// std::string scriptOverride;
 
-	int align;
-	int afc;
+	// int align;
+	// int afc;
 
-	std::string description;
+	// std::string description;
 
-	bool inEditor;
+	// bool inEditor;
 
-	int growtime;
+	// int growtime;
 
-	std::string group;
+	// std::string group;
 };
 
 } // namespace mod
