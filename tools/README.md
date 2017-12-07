@@ -15,7 +15,7 @@ Usage:
 This tool is for previewing Blitz3D models. Mostly used as a testbed for the graphics engine.
 Compile:
 ```
-g++ -std=c++14 -Wall -Wextra -Wpedantic -I../source/ ./b3dpreview.cpp ../source/common/ByteBuffer.cpp ../source/common/FileSystem.cpp ../source/common/RingBuffer.cpp -o b3dpreview -lsfml-system -lsfml-graphics -lsfml-window -lGL
+g++ -std=c++14 -Wall -Wextra -Wpedantic -I../source/ ./b3dpreview.cpp ../source/common/ByteBuffer.cpp ../source/common/FileSystem.cpp -o b3dpreview -lsfml-system -lsfml-graphics -lsfml-window -lGL
 ```
 Note: replace `-lGL` with `-framework OpenGL` on MacOS
 

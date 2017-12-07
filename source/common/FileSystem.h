@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "common/ByteBuffer.h"
-#include "common/RingBuffer.h"
 
 namespace fs
 {
@@ -15,5 +14,4 @@ namespace fs
 
 	std::size_t getFileSize(std::string const & pathToFile);
 	bool loadFile(std::string const & pathToFile, ByteBuffer & buffer);
-	bool loadFile(std::string const & pathToFile, RingBuffer & buffer);
 } // namespace fs

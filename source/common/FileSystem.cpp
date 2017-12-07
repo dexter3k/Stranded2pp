@@ -89,31 +89,4 @@ namespace fs
 
 		return true;
 	}
-
-	bool loadFile(std::string const & pathToFile, RingBuffer & buffer)
-	{
-		std::ifstream file(pathToFile, std::ios::in | std::ifstream::binary);
-		if (!file) {
-			std::cout << "Unable to open file: '" << pathToFile << "'" << std::endl;
-			return false;
-		}
-
-		file.seekg(0, std::ios::end);
-		std::streamsize size = file.tellg();
-		file.seekg(0, std::ios::beg);
-
-		// TODO
-		// For now just assertion
-		assert(buffer.getFreeSpace() >= static_cast<unsigned>(size));
-
-		std::vector<char> tempBuffer(size);
-		if (!file.read(tempBuffer.data(), size)) {
-			std::cout << "Unable to read file '" << pathToFile << "'" << std::endl;
-			return false;
-		}
-
-		buffer.write(tempBuffer.data(), tempBuffer.size());
-
-		return true;
-	}
 } // namespace fs

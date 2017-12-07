@@ -4,12 +4,13 @@
 
 #include "Engine.h"
 
+#include "common/ByteBuffer.h"
 #include "common/FileSystem.h"
-#include "common/RingBuffer.h"
 #include "math/Vector2.h"
 #include "math/Vector3.h"
 #include "graphics/Image.h"
 #include "graphics/Color.h"
+#include "utils/StringUtils.h"
 
 namespace save
 {
@@ -32,41 +33,36 @@ namespace save
 			std::vector<gfx::Color> colorMap;
 		};
 
-		bool readMainHeader(RingBuffer& buffer, MainHeader& mainHeader)
+		bool readMainHeader(ByteBuffer & buffer, MainHeader & mainHeader)
 		{
-			if (!buffer.readNewlineTerminatedString(
-				mainHeader.identificationString)) return false;
-
-			if (mainHeader.identificationString.substr(0, 15) !=
-				"### Stranded II")
+			mainHeader.identificationString = buffer.readLine();
+			if (!string::startsWith(
+					mainHeader.identificationString,
+					"### Stranded II"))
 			{
 				std::cout << "Wrong (corrupted?) header" << std::endl;
 
 				return false;
 			}
 
-			return (
-				buffer.readNewlineTerminatedString(mainHeader.gameVersion) &&
-				buffer.readNewlineTerminatedString(mainHeader.date) &&
-				buffer.readNewlineTerminatedString(mainHeader.time) &&
-				buffer.readNewlineTerminatedString(mainHeader.format) &&
-				buffer.readNewlineTerminatedString(mainHeader.mode));
+			mainHeader.gameVersion = buffer.readLine();
+			mainHeader.date = buffer.readLine();
+			mainHeader.time = buffer.readLine();
+			mainHeader.format = buffer.readLine();
+			mainHeader.mode = buffer.readLine();
+
+			return true;
 		}
 
-		bool readPreviewImage(RingBuffer& buffer, gfx::Image& image)
+		bool readPreviewImage(ByteBuffer & buffer, gfx::Image & image)
 		{
 			image.create(math::Vector2u(96, 72), gfx::Color(255, 255, 255));
 
-			for (unsigned x = 0; x < 96; ++x)
-			{
-				for (unsigned y = 0; y < 72; ++y)
-				{
-					uint8_t red, green, blue;
-					red = green = blue = 0;
-
-					if (!buffer.readUint8(red)) return false;
-					if (!buffer.readUint8(green)) return false;
-					if (!buffer.readUint8(blue)) return false;
+			for (unsigned x = 0; x < 96; ++x) {
+				for (unsigned y = 0; y < 72; ++y) {
+					uint8_t red = buffer.readUint8();
+					uint8_t green = buffer.readUint8();
+					uint8_t blue = buffer.readUint8();
 
 					image.setPixel(x, y, gfx::Color(red, green, blue));
 				}
@@ -75,36 +71,22 @@ namespace save
 			return true;
 		}
 
-		bool readColorMap(RingBuffer& buffer, ColorMapData& data)
+		bool readColorMap(ByteBuffer & buffer, ColorMapData & data)
 		{
-			unsigned colorMapSize = 0;
-			if (!buffer.readUint32(colorMapSize))
-			{
-				return false;
-			}
-			data.size = colorMapSize;
+			data.size = buffer.readUint32();
 
-			data.colorMap.resize(colorMapSize * colorMapSize,
-				gfx::Color(255, 255, 255));
+			data.colorMap.resize(data.size * data.size, gfx::Color(255, 255, 255));
 
 			gfx::Image debugImage;
-			debugImage.create(math::Vector2u(colorMapSize, colorMapSize),
-				gfx::Color(255, 255, 255));
+			debugImage.create(math::Vector2u(data.size, data.size), gfx::Color(255, 255, 255));
 
-			for (unsigned x = 0; x < colorMapSize; ++x)
-			{
-				for (unsigned y = 0; y < colorMapSize; ++y)
-				{
-					uint8_t red, green, blue;
-					red = green = blue = 0;
+			for (unsigned x = 0; x < data.size; ++x) {
+				for (unsigned y = 0; y < data.size; ++y) {
+					uint8_t red = buffer.readUint8();
+					uint8_t green = buffer.readUint8();
+					uint8_t blue = buffer.readUint8();
 
-					if (!buffer.readUint8(red)) return false;
-					if (!buffer.readUint8(green)) return false;
-					if (!buffer.readUint8(blue)) return false;
-
-					data.colorMap[x + y * colorMapSize] = gfx::Color(red, green,
-						blue);
-
+					data.colorMap[x + y * data.size] = gfx::Color(red, green, blue);
 					debugImage.setPixel(x, y, gfx::Color(red, green, blue));
 				}
 			}
@@ -117,23 +99,14 @@ namespace save
 
 	bool loadFromFile(const std::string& filename, Engine& engine)
 	{
-		if (!fs::checkFileExists(filename))
-		{
-			std::cout << "Unable to load map '" << filename << "': file not found"
-				<< std::endl;
+		if (!fs::checkFileExists(filename)) {
+			std::cout << "Unable to load map '" << filename
+				<< "': file not found" << std::endl;
 
 			return false;
 		}
 
-		size_t fileSize = fs::getFileSize(filename);
-		if (fileSize == 0)
-		{
-			std::cout << "Corrupted map '" << filename << "'" << std::endl;
-
-			return false;
-		}
-
-		RingBuffer buffer(fileSize);
+		ByteBuffer buffer(fs::getFileSize(filename));
 		if (!fs::loadFile(filename, buffer))
 		{
 			std::cout << "Unable to load '" << filename << "'" << std::endl;
@@ -164,21 +137,17 @@ namespace save
 			int item = 0;
 		} dataFormat;
 
-		std::string dataFormatString = "";
-		if (!buffer.readNewlineTerminatedString(dataFormatString)) return false;
+		std::string const dataFormatString = buffer.readLine();
 
-		if (dataFormatString != "")
-		{
+		if (dataFormatString != "") {
 			dataFormat.object = std::stoi(dataFormatString.substr(1, 1));
 			dataFormat.unit = std::stoi(dataFormatString.substr(2, 1));
 			dataFormat.item = std::stoi(dataFormatString.substr(3, 1));
 		}
 
 		// Skip reserved space
-		for (unsigned i = 0; i < 5; ++i)
-		{
-			std::string temporary;
-			if (!buffer.readNewlineTerminatedString(temporary)) return false;
+		for (unsigned i = 0; i < 5; ++i) {
+			buffer.readLine();
 		}
 
 		// Load 96 x 72 R8G8B8 raw image
@@ -187,38 +156,25 @@ namespace save
 			return false;
 		}
 
-		uint8_t passKey = 0;
-		std::string password = "";
+		bool passKey = buffer.readBool();
+		passKey = passKey;
+		std::string const password = buffer.readLine();
 
-		if (!buffer.readUint8(passKey)) return false;
-		if (!buffer.readNewlineTerminatedString(password)) return false;
-
-		uint32_t day = 0;
-		uint8_t hour = 0;
-		uint8_t minute = 0;
-		uint8_t freezeTime = 0; // bool?
-		std::string skybox = "";
-		uint8_t multiplayer = 0; // bool?
-		uint8_t climate = 0;
-		std::string music = "";
-		std::string brief = "";
-		uint8_t fog[4] = {0, 0, 0, 0};
-		uint8_t reservedByte = 0;
-
-		if (!buffer.readUint32(day)) return false;
-		if (!buffer.readUint8(hour)) return false;
-		if (!buffer.readUint8(minute)) return false;
-		if (!buffer.readUint8(freezeTime)) return false;
-		if (!buffer.readLengthPrefixedString(skybox)) return false;
-		if (!buffer.readUint8(multiplayer)) return false;
-		if (!buffer.readUint8(climate)) return false;
-		if (!buffer.readLengthPrefixedString(music)) return false;
-		if (!buffer.readLengthPrefixedString(brief)) return false;
-		if (!buffer.readUint8(fog[0])) return false;
-		if (!buffer.readUint8(fog[1])) return false;
-		if (!buffer.readUint8(fog[2])) return false;
-		if (!buffer.readUint8(fog[3])) return false;
-		if (!buffer.readUint8(reservedByte)) return false;
+		uint32_t day = buffer.readUint32();
+		uint8_t hour = buffer.readUint8();
+		uint8_t minute = buffer.readUint8();
+		uint8_t freezeTime = buffer.readUint8(); // might be bool
+		std::string skybox = buffer.readString(buffer.readUint32());
+		uint8_t multiplayer = buffer.readUint8(); // also might be bool
+		uint8_t climate = buffer.readUint8();
+		std::string music = buffer.readString(buffer.readUint32());
+		std::string brief = buffer.readString(buffer.readUint32());
+		uint8_t fog0 = buffer.readUint8();
+		uint8_t fog1 = buffer.readUint8();
+		uint8_t fog2 = buffer.readUint8();
+		uint8_t fog3 = buffer.readUint8();
+		fog0 = fog0; fog1 = fog1; fog2 = fog2; fog3 = fog3;
+		buffer.readUint8(); // reserved
 
 		engine.resetGame();
 		engine.setupGame(day, hour, minute, freezeTime, skybox, multiplayer,
@@ -226,24 +182,20 @@ namespace save
 
 		// Quickslots
 		std::vector<std::string> quickslots(10, "");
-		for (unsigned i = 0; i < 10; ++i)
-		{
-			if (!buffer.readLengthPrefixedString(quickslots[i])) return false;
+		for (unsigned i = 0; i < 10; ++i) {
+			quickslots[i] = buffer.readString(buffer.readUint32());
 		}
-
 		engine.setupQuickslots(quickslots);
 
 		// Color map
 		impl::ColorMapData colorMapData;
-		if (!impl::readColorMap(buffer, colorMapData))
-		{
+		if (!impl::readColorMap(buffer, colorMapData)) {
 			std::cout << "Unable to load color map" << std::endl;
 
 			return false;
 		}
 
-		uint32_t mapSize = 0;
-		if (!buffer.readUint32(mapSize)) return false;
+		uint32_t mapSize = buffer.readUint32();
 
 		std::cout << "Colormap size: " << colorMapData.size << std::endl;
 		std::cout << "Map size: " << mapSize << std::endl;
@@ -251,23 +203,18 @@ namespace save
 		uint32_t heightMapSize = mapSize + 1;
 
 		std::vector<float> heightMap(heightMapSize * heightMapSize, 0.0f);
-		for (unsigned x = 0; x < heightMapSize; ++x)
-		{
-			for (unsigned y = 0; y < heightMapSize; ++y)
-			{
-				if (!buffer.readFloat(heightMap[x + y * heightMapSize]))
-					return false;
+		for (unsigned x = 0; x < heightMapSize; ++x) {
+			for (unsigned y = 0; y < heightMapSize; ++y) {
+				heightMap[x + y * heightMapSize] = buffer.readFloat();
 			}
 		}
 
 		uint32_t grassMapSize = colorMapData.size + 1;
 
 		std::vector<uint8_t> grassMap(grassMapSize * grassMapSize, 0);
-		for (unsigned x = 0; x < grassMapSize; ++x)
-		{
-			for (unsigned y = 0; y < grassMapSize; ++y)
-			{
-				if (!buffer.readUint8(grassMap[x + y * grassMapSize])) return false;
+		for (unsigned x = 0; x < grassMapSize; ++x) {
+			for (unsigned y = 0; y < grassMapSize; ++y) {
+				grassMap[x + y * grassMapSize] = buffer.readUint8();
 			}
 		}
 
@@ -280,309 +227,181 @@ namespace save
 		// "Stuff"
 
 		// Objects
-		uint32_t objectCount = 0;
-		if (!buffer.readUint32(objectCount)) return false;
-
+		uint32_t objectCount = buffer.readUint32();
 		std::cout << "Object count: " << objectCount << std::endl;
-
-		for (unsigned i = 0; i < objectCount; ++i)
-		{
-			uint32_t objectId = 0;
-			if (!buffer.readUint32(objectId)) return false;
+		for (unsigned i = 0; i < objectCount; ++i) {
+			uint32_t objectId = buffer.readUint32();
 
 			uint16_t objectType = 0;
-			if (dataFormat.object != 0)
-			{
-				if (!buffer.readUint16(objectType)) return false;
+			if (dataFormat.object != 0) {
+				objectType = buffer.readUint16();
+			} else {
+				objectType = buffer.readUint8();
 			}
-			else
-			{
-				uint8_t type = 0;
-				if (!buffer.readUint8(type)) return false;
+			
+			float posX = buffer.readFloat();
+			float posZ = buffer.readFloat();
+			float yaw = buffer.readFloat();
+			float health = buffer.readFloat();
+			float maxHealth = buffer.readFloat();
+			uint32_t dayTimer = buffer.readUint32();
 
-				objectType = type & 0x00ff;
-			}
-
-			// Why define a struct for this? Damn...
-			struct
-			{
-				float x = 0.0f;
-				float z = 0.0f;
-			} position;
-
-			float yaw = 0.0f;
-			float health = 0.0f;
-			float maxHealth = 0.0f;
-			uint32_t dayTimer = 0.0f;
-
-			if (!buffer.readFloat(position.x)
-				|| !buffer.readFloat(position.z)
-				|| !buffer.readFloat(yaw)
-				|| !buffer.readFloat(health)
-				|| !buffer.readFloat(maxHealth)
-				|| !buffer.readUint32(dayTimer))
-			{
-				return false;
-			}
-
-			engine.placeObject(objectId, objectType, position.x, position.z, yaw, health, maxHealth, dayTimer);
+			engine.placeObject(objectId, objectType, posX, posZ, yaw, health, maxHealth, dayTimer);
 		}
 
 		// Units
-		uint32_t unitCount = 0;
-		if (!buffer.readUint32(unitCount)) return false;
-
+		uint32_t unitCount = buffer.readUint32();
 		std::cout << "Unit count: " << unitCount << std::endl;
-
-		for (unsigned i = 0; i < unitCount; ++i)
-		{
-			uint32_t unitId = 0;
-			if (!buffer.readUint32(unitId)) return false;
+		for (unsigned i = 0; i < unitCount; ++i) {
+			uint32_t unitId = buffer.readUint32();
 
 			uint16_t unitType = 0;
-			if (dataFormat.unit != 0)
-			{
-				if (!buffer.readUint16(unitType)) return false;
-			}
-			else
-			{
-				uint8_t type = 0;
-				if (!buffer.readUint8(type)) return false;
-
-				unitType = type & 0x00ff;
+			if (dataFormat.unit != 0) {
+				unitType = buffer.readUint16();
+			} else {
+				unitType = buffer.readUint8();
 			}
 
-			math::Vector3f position(0.0f, 0.0f, 0.0f);
+			float posX = buffer.readFloat();
+			float posY = buffer.readFloat();
+			float posZ = buffer.readFloat();
+			float yaw = buffer.readFloat();
+			float health = buffer.readFloat();
+			float maxHealth = buffer.readFloat();
+			float hunger = buffer.readFloat();
+			float thirst = buffer.readFloat();
+			float exhaustion = buffer.readFloat();
+			float aiX = buffer.readFloat();
+			float aiZ = buffer.readFloat();
 
-			float yaw = 0.0f;
-			float health = 0.0f;
-			float maxHealth = 0.0f;
-			float hunger = 0.0f;
-			float thirst = 0.0f;
-			float exhaustion = 0.0f;
-			struct
-			{
-				float x = 0.0f;
-				float z = 0.0f;
-			} aiCenter;
-
-			if (!buffer.readFloat(position.x)) return false;
-			if (!buffer.readFloat(position.y)) return false;
-			if (!buffer.readFloat(position.z)) return false;
-			if (!buffer.readFloat(yaw)) return false;
-			if (!buffer.readFloat(health)) return false;
-			if (!buffer.readFloat(maxHealth)) return false;
-			if (!buffer.readFloat(hunger)) return false;
-			if (!buffer.readFloat(thirst)) return false;
-			if (!buffer.readFloat(exhaustion)) return false;
-			if (!buffer.readFloat(aiCenter.x)) return false;
-			if (!buffer.readFloat(aiCenter.z)) return false;
-
-			// std::cout << "Unit " << i << " [" << unitId << "] t: " << unitType
-			// 	<< " x: " << position.x << " y: " << position.y << " z: " <<
-			// 	position.z << " yaw: " << yaw << " h: " << health << " mH: " <<
-			// 	maxHealth << std::endl;
-
-			engine.placeUnit(unitId, unitType, position.x, position.y, position.z, yaw,
-				health, maxHealth, hunger, thirst, exhaustion, aiCenter.x, aiCenter.z);
+			engine.placeUnit(unitId, unitType, posX, posY, posZ, yaw, health,
+				maxHealth, hunger, thirst, exhaustion, aiX, aiZ);
 		}
 
 		// Items
-		uint32_t itemCount = 0;
-		if (!buffer.readUint32(itemCount)) return false;
-
+		uint32_t itemCount = buffer.readUint32();
 		std::cout << "Item count: " << itemCount << std::endl;
-
-		for (unsigned i = 0; i < itemCount; ++i)
-		{
-			uint32_t itemId = 0;
-			if (!buffer.readUint32(itemId)) return false;
+		for (unsigned i = 0; i < itemCount; ++i) {
+			uint32_t itemId = buffer.readUint32();
 
 			uint16_t itemType = 0;
-			if (dataFormat.item != 0)
-			{
-				if (!buffer.readUint16(itemType)) return false;
-			}
-			else
-			{
-				uint8_t type = 0;
-				if (!buffer.readUint8(type)) return false;
-
-				itemType = type & 0x00ff;
+			if (dataFormat.item != 0) {
+				itemType = buffer.readUint16();
+			} else {
+				itemType = buffer.readUint8();
 			}
 
-			math::Vector3f position(0.0f, 0.0f, 0.0f);
+			float posX = buffer.readFloat();
+			float posY = buffer.readFloat();
+			float posZ = buffer.readFloat();
+			float yaw = buffer.readFloat();
+			float health = buffer.readFloat();
+			uint32_t count = buffer.readUint32();
+			uint8_t parentClass = buffer.readUint8();
+			uint8_t parentMode = buffer.readUint8();
+			uint32_t parentId = buffer.readUint32();
 
-			float yaw = 0.0f;
-			float health = 0.0f;
-			uint32_t count = 0;
-			uint8_t parentClass = 0;
-			uint8_t parentMode = 0;
-			uint32_t parentId = 0;
-
-			if (!buffer.readFloat(position.x)) return false;
-			if (!buffer.readFloat(position.y)) return false;
-			if (!buffer.readFloat(position.z)) return false;
-			if (!buffer.readFloat(yaw)) return false;
-			if (!buffer.readFloat(health)) return false;
-			if (!buffer.readUint32(count)) return false;
-			if (!buffer.readUint8(parentClass)) return false;
-			if (!buffer.readUint8(parentMode)) return false;
-			if (!buffer.readUint32(parentId)) return false;
-
-			// std::cout << "Item " << i << " [" << itemId << "] t: " << itemType
-			// 	<< " x: " << position.x << " y: " << position.y << " z: " <<
-			// 	position.z << " yaw: " << yaw << " h: " << health << " c: " << count
-			// 	<< " pC: " << static_cast<uint16_t>(parentClass) << " pM: " <<
-			// 	static_cast<uint16_t>(parentMode) << " pId: " << parentId <<
-			// 	std::endl;
-
-			engine.placeItem(itemId, itemType, position.x, position.y, position.z, yaw,
-				health, count, parentClass, parentMode, parentId);
+			engine.placeItem(itemId, itemType, posX, posY, posZ, yaw, health,
+				count, parentClass, parentMode, parentId);
 		}
 
 
 		// Infos
-		uint32_t infoCount = 0;
-		if (!buffer.readUint32(infoCount)) return false;
-
+		uint32_t infoCount = buffer.readUint32();
 		std::cout << "Info count: " << infoCount << std::endl;
+		for (unsigned i = 0; i < infoCount; ++i) {
+			uint32_t infoId = buffer.readUint32();
 
-		for (unsigned i = 0; i < infoCount; ++i)
-		{
-			uint32_t infoId = 0;
-			if (!buffer.readUint32(infoId)) return false;
+			uint8_t infoType = buffer.readUint8();
 
-			uint8_t infoType = 0;
-			if (!buffer.readUint8(infoType)) return false;
+			float posX = buffer.readFloat();
+			float posY = buffer.readFloat();
+			float posZ = buffer.readFloat();
+			float pitch = buffer.readFloat();
+			float yaw = buffer.readFloat();
+			std::string vars = buffer.readString(buffer.readUint32());
 
-			math::Vector3f position(0.0f, 0.0f, 0.0f);
-
-			float pitch = 0.0f;
-			float yaw = 0.0f;
-			std::string vars = "";
-
-			if (!buffer.readFloat(position.x)) return false;
-			if (!buffer.readFloat(position.y)) return false;
-			if (!buffer.readFloat(position.z)) return false;
-			if (!buffer.readFloat(pitch)) return false;
-			if (!buffer.readFloat(yaw)) return false;
-			if (!buffer.readLengthPrefixedString(vars)) return false;
-
-			// std::cout << "Info " << i << " [" << infoId << "] t: " <<
-			// 	static_cast<uint16_t>(infoType) << " x: " << position.x <<
-			// 	" y: " << position.y << " z: " << position.z << " pitch: " <<
-			// 	pitch << " yaw: " << yaw << " vars: " << vars << std::endl;
-
-			engine.placeInfo(infoId, infoType, position.x, position.y, position.z, pitch, yaw, vars);
+			engine.placeInfo(infoId, infoType, posX, posY, posZ, pitch, yaw, vars);
 		}
 
 		// States
-
-		uint32_t stateCount = 0;
-		if (!buffer.readUint32(stateCount)) return false;
-
+		uint32_t stateCount = buffer.readUint32();
 		std::cout << "State count: " << stateCount << std::endl;
-		for (unsigned i = 0; i < stateCount; ++i)
-		{
-			uint8_t type = 0;
-			if (!buffer.readUint8(type)) return false;
+		for (unsigned i = 0; i < stateCount; ++i) {
+			uint8_t type = buffer.readUint8();
 
-			uint8_t parentClass = 0;
-			if (!buffer.readUint8(parentClass)) return false;
-			uint32_t parentId = 0;
-			if (!buffer.readUint32(parentId)) return false;
+			uint8_t parentClass = buffer.readUint8();
+			uint32_t parentId = buffer.readUint32();
 
-			math::Vector3f position(0.0f, 0.0f, 0.0f);
-			math::Vector3f fposition(0.0f, 0.0f, 0.0f);
+			float posX = buffer.readFloat();
+			float posY = buffer.readFloat();
+			float posZ = buffer.readFloat();
+			float fposX = buffer.readFloat();
+			float fposY = buffer.readFloat();
+			float fposZ = buffer.readFloat();
 
-			if (!buffer.readFloat(position.x)) return false;
-			if (!buffer.readFloat(position.y)) return false;
-			if (!buffer.readFloat(position.z)) return false;
-			if (!buffer.readFloat(fposition.x)) return false;
-			if (!buffer.readFloat(fposition.y)) return false;
-			if (!buffer.readFloat(fposition.z)) return false;
+			uint32_t value = buffer.readUint32();
+			float fvalue = buffer.readFloat();
+			std::string strvalue = buffer.readString(buffer.readUint32());
 
-			uint32_t value = 0;
-			float fvalue = 0.0f;
-			std::string strvalue = "";
-
-			if (!buffer.readUint32(value)) return false;
-			if (!buffer.readFloat(fvalue)) return false;
-			if (!buffer.readLengthPrefixedString(strvalue)) return false;
-
-			//std::cout << "State " << i << std::endl;
+			type = type; parentClass = parentClass; parentId = parentId;
+			posX = posX; posY = posY; posZ = posZ;
+			fposX = fposX; fposY = fposY; fposZ = fposZ;
+			value = value; fvalue = fvalue; strvalue = strvalue;
 		}
 
 		// Extensions and vars
 
-		uint32_t extCount = 0;
-		if (!buffer.readUint32(extCount)) return false;
-
+		uint32_t extCount = buffer.readUint32();
 		std::cout << "Ext count: " << extCount << std::endl;
-		for (unsigned i = 0; i < extCount; ++i)
-		{
-			uint8_t type = 0;
-			if (!buffer.readUint8(type)) return false;
+		for (unsigned i = 0; i < extCount; ++i) {
+			uint8_t type = buffer.readUint8();
 
-			uint8_t parentClass = 0;
-			if (!buffer.readUint8(parentClass)) return false;
-			uint32_t parentId = 0;
-			if (!buffer.readUint32(parentId)) return false;
+			uint8_t parentClass = buffer.readUint8();
+			uint32_t parentId = buffer.readUint32();
+			uint32_t mode = buffer.readUint32();
 
-			uint32_t mode = 0;
-			if (!buffer.readUint32(mode)) return false;
+			std::string key = buffer.readString(buffer.readUint32());
+			std::string value = buffer.readString(buffer.readUint32());
+			std::string stuff = buffer.readString(buffer.readUint32());
 
-			std::string key = "";
-			std::string value = "";
-			std::string stuff = "";
-
-			if (!buffer.readLengthPrefixedString(key)) return false;
-			if (!buffer.readLengthPrefixedString(value)) return false;
-			if (!buffer.readLengthPrefixedString(stuff)) return false;
+			type = type; parentClass = parentClass; parentId = parentId; mode = mode;
+			key = key; value = value; stuff = stuff;
 		}
 
-		if (mainHeader.mode == "sav")
-		{
-			float cameraPitch = 0.0f;
-			float cameraYaw = 0.0f;
+		if (mainHeader.mode == "sav") {
+			float cameraPitch = buffer.readFloat();
+			float cameraYaw = buffer.readFloat();
 
-			if (!buffer.readFloat(cameraPitch)) return false;
-			if (!buffer.readFloat(cameraYaw)) return false;
+			cameraPitch = cameraPitch;
+			cameraYaw = cameraYaw;
 		}
 
-		std::string reservedAtEnd[2] = {"", ""};
-		for (unsigned i = 0; i < 2; ++i)
-		{
-			if (!buffer.readNewlineTerminatedString(reservedAtEnd[i])) return false;
-		}
+		// Skip reserved space
+		buffer.readLine();
+		buffer.readLine();
 
-		std::string endMark = "";
-		if (!buffer.readNewlineTerminatedString(endMark)) return false;
-		if (endMark != "www.unrealsoftware.de")
-		{
+		std::string endMark = buffer.readLine();
+		if (endMark != "www.unrealsoftware.de") {
 			std::cout << "Unable to load map '" << filename << "' completely." <<
 				"Errors might occur!" << std::endl;
-		}
-		else
-		{
+		} else {
 			// Load attachments
 
-			if (mainHeader.mode == "map")
-			{
-				while (buffer.getDataSize() > 0)
-				{
-					std::string atfile = "";
-					if (!buffer.readNewlineTerminatedString(atfile)) return false;
-					uint32_t atsize = 0;
-					if (!buffer.readUint32(atsize)) return false;
+			if (mainHeader.mode == "map") {
+				while (buffer.bytesLeftForReading() > 0) {
+					std::string atfile = buffer.readLine();
+					uint32_t atsize = buffer.readUint32();
 
-					std::cout << "Attachment is skipped!" << std::endl;
+					atfile = atfile;
+					atsize = atsize;
+
+					std::cout << "An attachment is skipped!" << std::endl;
 				}
 			}
 		}
 
-		std::cout << "Data remaining: " << buffer.getDataSize() << std::endl;
+		std::cout << "Data remaining: " << buffer.bytesLeftForReading() << std::endl;
 
 		return true;
 	}

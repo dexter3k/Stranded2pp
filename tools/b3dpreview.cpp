@@ -1,5 +1,5 @@
 // Build me:
-// g++ -std=c++14 -Wall -Wextra -Wpedantic -I../source/ ./b3dpreview.cpp ../source/common/ByteBuffer.cpp ../source/common/FileSystem.cpp ../source/common/RingBuffer.cpp -o b3dpreview -lsfml-system -lsfml-graphics -lsfml-window
+// g++ -std=c++14 -Wall -Wextra -Wpedantic -I../source/ ./b3dpreview.cpp ../source/common/ByteBuffer.cpp ../source/common/FileSystem.cpp -o b3dpreview -lsfml-system -lsfml-graphics -lsfml-window
 
 #include <cassert>
 #include <iostream>
