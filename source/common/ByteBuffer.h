@@ -30,6 +30,8 @@ public:
 	void read(void * buffer, std::size_t count, bool reverseByteOrder = false);
 	void write(void * buffer, std::size_t count, bool reverseByteOrder = false);
 
+	void skip(std::size_t count);
+
 	std::size_t bytesLeftForReading() const { return data.size() - readPosition; };
 	std::size_t bytesLeftForWriting() const { return data.size() - writePosition; };
 private:

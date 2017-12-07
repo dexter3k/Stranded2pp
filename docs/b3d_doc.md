@@ -109,7 +109,7 @@ repeated:
 	float x, y, z
 	float nx, ny, nz								// only when flags & 1
 	float red, green, blue, alpha					// only when flags & 2
-	float tex_coords[tex_coords][tex_coord_size]	// only when flags & 4
+	float tex_coords[tex_coords][tex_coord_size]
 }
 ```
 

@@ -79,7 +79,7 @@ def dumpVRTS(data, depth):
 	if bool(flags & 1):
 		verticeSize += 4*3
 	if bool(flags & 2):
-		verticeSize += 4*3
+		verticeSize += 4*4
 	if bool(flags & 4):
 		verticeSize += 4*texCoords*texCoordSize
 

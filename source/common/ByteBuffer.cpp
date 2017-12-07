@@ -82,6 +82,8 @@ std::string ByteBuffer::readCString()
 		value += static_cast<char>(data[i]);
 	}
 
+	readPosition += value.size() + 1;
+
 	return value;
 }
 
@@ -127,4 +129,16 @@ void ByteBuffer::write(void * buffer, std::size_t count, bool reverseByteOrder)
 	}
 
 	writePosition += count;
+}
+
+void ByteBuffer::skip(std::size_t count)
+{
+	if (count > bytesLeftForReading()) {
+		throw std::runtime_error(
+			std::string("Buffer underflow of ")
+			+ std::to_string(count - bytesLeftForReading())
+			+ " bytes");
+	}
+
+	readPosition += count;
 }
