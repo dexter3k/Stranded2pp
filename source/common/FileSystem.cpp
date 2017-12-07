@@ -52,22 +52,42 @@ namespace fs
 		return (error == 0) && ((status.st_mode & S_IFMT) == S_IFREG);
 	}
 
-	size_t getFileSize(std::string const & pathToFile)
+	std::size_t getFileSize(std::string const & pathToFile)
 	{
-		std::ifstream file(pathToFile, std::ios::in | std::ifstream::binary);
-		if (!file)
-		{
+		std::ifstream file(pathToFile, std::ios::binary | std::ios::ate);
+		if (!file) {
 			std::cout << "Unable to open file: '" << pathToFile << "'" << std::endl;
 			return false;
 		}
 
-		file.seekg(0, std::ios::end);
-		std::streamsize size = file.tellg();
+		auto size = file.tellg();
 		file.seekg(0, std::ios::beg);
 
-		file.close();
+		return static_cast<std::size_t>(size);
+	}
 
-		return static_cast<size_t>(size);
+	bool loadFile(std::string const & pathToFile, ByteBuffer & buffer)
+	{
+		std::ifstream file(pathToFile, std::ios::binary | std::ios::ate);
+		if (!file) {
+			std::cout << "Unable to open file: '" << pathToFile << "'" << std::endl;
+			return false;
+		}
+
+		std::size_t size = static_cast<std::size_t>(file.tellg());
+		file.seekg(0, std::ios::beg);
+
+		assert(buffer.bytesLeftForWriting() >= size);
+
+		std::vector<uint8_t> tempBuffer(size);
+		if (!file.read(reinterpret_cast<char *>(tempBuffer.data()), tempBuffer.size())) {
+			std::cout << "Unable to read file '" << pathToFile << "'" << std::endl;
+			return false;
+		}
+
+		buffer.write(tempBuffer.data(), tempBuffer.size());
+
+		return true;
 	}
 
 	bool loadFile(std::string const & pathToFile, RingBuffer & buffer)
@@ -87,10 +107,9 @@ namespace fs
 		assert(buffer.getFreeSpace() >= static_cast<unsigned>(size));
 
 		std::vector<char> tempBuffer(size);
-		if (!file.read(tempBuffer.data(), size))
-		{
-			std::cout << "Unable to read file '" << pathToFile << "'" <<
-				std::endl;
+		if (!file.read(tempBuffer.data(), size)) {
+			std::cout << "Unable to read file '" << pathToFile << "'" << std::endl;
+			return false;
 		}
 
 		buffer.write(tempBuffer.data(), tempBuffer.size());

@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "common/ByteBuffer.h"
 #include "common/RingBuffer.h"
 
 namespace fs
@@ -12,6 +13,7 @@ namespace fs
 	bool checkFolderExists(std::string const & pathToFolder);
 	bool checkFileExists(std::string const & pathToFile);
 
-	size_t getFileSize(std::string const & pathToFile);
+	std::size_t getFileSize(std::string const & pathToFile);
+	bool loadFile(std::string const & pathToFile, ByteBuffer & buffer);
 	bool loadFile(std::string const & pathToFile, RingBuffer & buffer);
 } // namespace fs
