@@ -359,11 +359,37 @@ void showModel(std::string const & modelName) {
 
 	sf::Clock clock;
 
+	float rotation = 0.0f;
+	float distance = -60.0f;
+	float height = 0.0f;
+	float pitch = 0.0f;
+
 	while (window.isOpen()) {
 		sf::Event event;
 		while (window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed) {
 				window.close();
+			} else if (event.type == sf::Event::KeyPressed) {
+				switch (event.key.code) {
+				case sf::Keyboard::A:
+					rotation -= 5.0f; break;
+				case sf::Keyboard::D:
+					rotation += 5.0f; break;
+				case sf::Keyboard::W:
+					distance -= 5.0f; break;
+				case sf::Keyboard::S:
+					distance += 5.0f; break;
+				case sf::Keyboard::L:
+					height += 5.0f; break;
+				case sf::Keyboard::J:
+					height -= 5.0f; break;
+				case sf::Keyboard::I:
+					pitch -= 5.0f; break;
+				case sf::Keyboard::K:
+					pitch += 5.0f; break;
+				default:
+					break;
+				}
 			}
 		}
 
@@ -377,10 +403,13 @@ void showModel(std::string const & modelName) {
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		glTranslatef(0.0f, -2.0f, -60.0f);
+		glTranslatef(0.0f, height, distance);
 		// glRotatef(clock.getElapsedTime().asSeconds() * 50.f, 1.f, 0.f, 0.f);
-		glRotatef(clock.getElapsedTime().asSeconds() * 30.f, 0.f, 1.f, 0.f);
+		// glRotatef(clock.getElapsedTime().asSeconds() * 30.f, 0.f, 1.f, 0.f);
 		// glRotatef(clock.getElapsedTime().asSeconds() * 90.f, 0.f, 0.f, 1.f);
+
+		glRotatef(pitch, 1.f, 0.f, 0.f);
+		glRotatef(rotation, 0.f, 1.f, 0.f);
 
 		glPolygonMode(GL_BACK, GL_LINE);
 
@@ -428,22 +457,6 @@ int main(int argc, char * argv[]) {
 	}
 
 	showModel(arguments[1]);
-
-	// auto const & root = model.getRoot();
-	// std::cout << root.mesh.flags << std::endl;
-	// std::cout << root.mesh.texCoords << std::endl;
-	// std::cout << root.mesh.texCoordSize << std::endl;
-	// for (unsigned i = 0; i < root.mesh.vertices.size(); ++i) {
-	// 	std::cout << root.mesh.vertices[i] << std::endl;
-	// }
-	// std::cout << std::endl;
-
-	// for (unsigned i = 0; i < root.mesh.triangleSets.size(); ++i) {
-	// 	for (unsigned j = 0; j < root.mesh.triangleSets[i].triangles.size(); ++j) {
-	// 		std::cout << root.mesh.triangleSets[i].triangles[j] << std::endl;
-	// 	}
-	// 	std::cout << std::endl;
-	// }
 
 	return 0;
 }
