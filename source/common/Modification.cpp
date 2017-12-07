@@ -1,21 +1,15 @@
 #include "Modification.h"
 
-#include <cassert>
 #include <iostream>
 #include <stdexcept>
-#include <vector>
 
 #include "common/ByteBuffer.h"
 #include "common/FileSystem.h"
-#include "common/RingBuffer.h"
 
 const std::string Modification::defaultModificationPath = "mods/";
 
-const size_t Modification::configurationBufferSize = 4096;
-
 const std::string Modification::controlsConfigPath = "sys/controls.cfg";
-const std::string Modification::scriptControlsConfigPath =
-	"sys/scriptcontrols.cfg";
+const std::string Modification::scriptControlsConfigPath = "sys/scriptcontrols.cfg";
 const std::string Modification::settingsConfigPath = "sys/settings.cfg";
 
 Modification::Modification(std::string const & modificationName) :
@@ -92,12 +86,11 @@ bool Modification::loadConfiguration()
 		&& loadSettings();
 }
 
-// TODO:
 bool Modification::loadControls()
 {
 	std::string const filename = getPath() + controlsConfigPath;
-	ByteBuffer buffer(fs::getFileSize(filename));
 
+	ByteBuffer buffer(fs::getFileSize(filename));
 	if (!fs::loadFile(filename, buffer)) {
 		return false;
 	}
@@ -122,21 +115,24 @@ bool Modification::loadControls()
 	return true;
 }
 
-// TODO:
 bool Modification::loadScriptControls()
 {
-	RingBuffer buffer(configurationBufferSize);
-
-	if (!fs::loadFile(getPath() + scriptControlsConfigPath, buffer)) {
+	std::string const filename = getPath() + scriptControlsConfigPath;
+	
+	ByteBuffer buffer(fs::getFileSize(filename));
+	if (!fs::loadFile(filename, buffer)) {
 		return false;
 	}
 
-	// First string with warnign
-	std::string tempString = "";
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	try {
+		buffer.readLine(); // Warning header
 
-	for (unsigned i = 0; i < 21; ++i) {
-		if (!buffer.readUint16(scriptControls.inputKeys[i])) return false;
+		for (unsigned i = 0; i < 21; ++i) {
+			scriptControls.inputKeys[i] = buffer.readUint16();
+		}
+	} catch (std::runtime_error &) {
+		throw std::runtime_error(
+			std::string("Unable to load ") + filename + ": data error");
 	}
 
 	std::cout << "'" << scriptControlsConfigPath << "' is loaded successfully" << std::endl;
@@ -146,81 +142,45 @@ bool Modification::loadScriptControls()
 
 bool Modification::loadSettings()
 {
-	RingBuffer buffer(configurationBufferSize);
+	std::string const filename = getPath() + settingsConfigPath;
 
-	if (!fs::loadFile(getPath() + settingsConfigPath, buffer)) {
+	ByteBuffer buffer(fs::getFileSize(filename));
+	if (!fs::loadFile(filename, buffer)) {
 		return false;
 	}
 
-	// First string with warnign
-	std::string tempString = "";
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	buffer.readLine(); // Warning header
 
-	// Screen width
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
-	settings.screen.width = std::stoi(tempString);
-	// Screen height
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
-	settings.screen.height = std::stoi(tempString);
-	// Bits per pixel
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
-	settings.screen.bitsPerPixel = std::stoi(tempString);
-
-	// View range
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
-	settings.viewRange = std::stoi(tempString);
-	// Terrain
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
-	settings.terrain = std::stoi(tempString);
-	// Water
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
-	settings.water = std::stoi(tempString);
-	// Sky
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
-	settings.sky = std::stoi(tempString);
-	// Effects
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
-	settings.effects = std::stoi(tempString);
-
-	// Music volume
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
-	settings.musicVolume = std::stoi(tempString);
-	// SFX volume
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
-	settings.sfxVolume = std::stoi(tempString);
-
-	// Grass
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
-	settings.grass = std::stoi(tempString);
-	// FX2D
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
-	settings.fx2d = std::stoi(tempString);
-	// FXLight
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
-	settings.fxlight = std::stoi(tempString);
-	// Windsway
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
-	settings.windsway = std::stoi(tempString);
-
-	// Character name
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
-	settings.playerName = tempString;
-	// Default port (for dedicated server?)
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
-	settings.serverPort = std::stoi(tempString);
-
-	// Fog
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
-	settings.fog = std::stoi(tempString);
-	// HWMultitexture
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
-	settings.hwmultitex = std::stoi(tempString);
-	// Motionblur
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
-	settings.motionBlur = std::stoi(tempString);
-	// Motionblur alpha
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
-	settings.motionBlurAplha = std::stoi(tempString);
+	try {
+		settings.screen.width = std::stoi(buffer.readLine());
+		settings.screen.height = std::stoi(buffer.readLine());
+		settings.screen.bitsPerPixel = std::stoi(buffer.readLine());
+	
+		settings.viewRange = std::stoi(buffer.readLine());
+		settings.terrain = std::stoi(buffer.readLine());
+		settings.water = std::stoi(buffer.readLine());
+		settings.sky = std::stoi(buffer.readLine());
+		settings.effects = std::stoi(buffer.readLine());
+	
+		settings.musicVolume = std::stoi(buffer.readLine());
+		settings.sfxVolume = std::stoi(buffer.readLine());
+	
+		settings.grass = std::stoi(buffer.readLine());
+		settings.fx2d = std::stoi(buffer.readLine());
+		settings.fxlight = std::stoi(buffer.readLine());
+		settings.windsway = std::stoi(buffer.readLine());
+	
+		settings.playerName = buffer.readLine();
+		settings.serverPort = std::stoi(buffer.readLine());
+	
+		settings.fog = std::stoi(buffer.readLine());
+		settings.hwmultitex = std::stoi(buffer.readLine());
+		settings.motionBlur = std::stoi(buffer.readLine());
+		settings.motionBlurAplha = std::stoi(buffer.readLine());
+	} catch (std::runtime_error &) {
+		throw std::runtime_error(
+			std::string("Unable to load ") + filename + ": data error");
+	}
 
 	std::cout << "'" << settingsConfigPath << "' is loaded successfully" << std::endl;
 
