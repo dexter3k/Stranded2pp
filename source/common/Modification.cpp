@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "common/ByteBuffer.h"
 #include "common/FileSystem.h"
 #include "common/RingBuffer.h"
 
@@ -94,28 +95,27 @@ bool Modification::loadConfiguration()
 // TODO:
 bool Modification::loadControls()
 {
-	RingBuffer buffer(configurationBufferSize);
+	std::string const filename = getPath() + controlsConfigPath;
+	ByteBuffer buffer(fs::getFileSize(filename));
 
-	if (!fs::loadFile(getPath() + controlsConfigPath, buffer)) {
+	if (!fs::loadFile(filename, buffer)) {
 		return false;
 	}
 
-	// First string with warnign
-	std::string tempString = "";
-	if (!buffer.readNewlineTerminatedString(tempString)) return false;
+	try {
+		buffer.readLine(); // Warning header
 
-	for (unsigned i = 0; i < 21; ++i) {
-		if (!buffer.readUint16(controls.inputKeys[i])) return false;
-		//std::cout << "i: " << i << " k: " << controls.inputKeys[i] << std::endl;
+		for (unsigned i = 0; i < 21; ++i) {
+			controls.inputKeys[i] = buffer.readUint16();
+		}
+
+		controls.mouse.sensitivity = buffer.readFloat();
+		controls.mouse.invertVertically = buffer.readBool();
+		controls.mouse.smooth = buffer.readBool();
+	} catch (std::runtime_error &) {
+		throw std::runtime_error(
+			std::string("Unable to load ") + filename + ": data error");
 	}
-
-	if (!buffer.readFloat(controls.mouse.sensitivity)) return false;
-	if (!buffer.readBool(controls.mouse.invertVertically)) return false;
-	if (!buffer.readBool(controls.mouse.smooth)) return false;
-
-	//std::cout << "f: " << 1 << " v: " << controls.mouse.sensitivity << std::endl;
-	//std::cout << "b: " << 1 << " v: " << controls.mouse.invertVertically << std::endl;
-	//std::cout << "b: " << 2 << " v: " << controls.mouse.smooth << std::endl;
 
 	std::cout << "'" << controlsConfigPath << "' is loaded successfully" << std::endl;
 

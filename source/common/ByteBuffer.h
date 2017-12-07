@@ -21,6 +21,7 @@ public:
 	int32_t readInt32() { return static_cast<int32_t>(readUint32()); };
 	int64_t readInt64() { return static_cast<int64_t>(readUint64()); };
 
+	bool readBool() { return readUint8() != 0; };
 	float readFloat();
 	double readDouble();
 

@@ -2,8 +2,6 @@
 
 #include <string>
 
-class RingBuffer;
-
 class Modification
 {
 public:
