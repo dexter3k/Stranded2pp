@@ -1,7 +1,7 @@
 #include "BmpFont.h"
 
 #include "common/FileSystem.h"
-#include "common/RingBuffer.h"
+#include "common/ByteBuffer.h"
 #include "graphics/device/Device.h"
 
 namespace gfx
@@ -44,47 +44,29 @@ void BmpFont::loadFontFile(std::string const & filename)
 			std::string("Unable to load ") + filename + ": file does not exist");
 	}
 
-	RingBuffer buffer(fs::getFileSize(filename));
+	ByteBuffer buffer(fs::getFileSize(filename));
 	if (!fs::loadFile(filename, buffer)) {
 		throw std::runtime_error(
 			std::string("Unable to load ") + filename + ": io error");
 	}
 
-	std::string header;
-	if (!buffer.readNewlineTerminatedString(header)) {
-		throw std::runtime_error(
-			std::string("Unable to load ") + filename + ": missing info header");
-	}
+	try {
+		buffer.readLine(); // skip header
 
-	uint16_t frames;
-	uint16_t framesx;
-	uint16_t framesy;
-	if (!buffer.readUint16(frames)
-		|| !buffer.readUint16(framesx)
-		|| !buffer.readUint16(framesy))
-	{
-		throw std::runtime_error(
-			std::string("Unable to load ") + filename + ": missing data header");
-	}
+		frameCount = buffer.readUint16();
+		frameWidth = buffer.readUint16();
+		frameHeight = buffer.readUint16();
 
-	for (uint16_t i = 0; i < frames; ++i) {
-		uint8_t character;
-		uint16_t width;
-		if (!buffer.readUint8(character)
-			|| !buffer.readUint16(width))
-		{
-			throw std::runtime_error(
-				std::string("Unable to load ") + filename + ": frame "
-				+ std::to_string(i) + " is corrupted");
+		for (uint16_t i = 0; i < frameCount; ++i) {
+			uint8_t character = buffer.readUint8();
+
+			indexes[character] = i;
+			charSizes[character] = buffer.readUint16();
 		}
-
-		indexes[character] = i;
-		charSizes[character] = width;
+	} catch (std::runtime_error & e) {
+		throw std::runtime_error(
+			std::string("Unable to load ") + filename + ": data error");
 	}
-
-	frameCount = frames;
-	frameWidth = framesx;
-	frameHeight = framesy;
 }
 
 } // namespace gfx

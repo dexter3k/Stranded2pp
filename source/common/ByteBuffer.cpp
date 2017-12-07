@@ -87,6 +87,38 @@ std::string ByteBuffer::readCString()
 	return value;
 }
 
+std::string ByteBuffer::readLine()
+{
+	std::string value;
+
+	uint8_t byte = 0;
+
+	for (std::size_t i = readPosition; ; ++i) {
+		byte = data[i];
+
+		if (byte == '\n') {
+			++readPosition;
+			break;
+		} else if (byte == '\r'
+			&& i+1 < data.size()
+			&& data[i+1] == '\n')
+		{
+			readPosition += 2;
+			break;
+		}
+
+		if (i >= data.size()) {
+			throw std::runtime_error("Reading line with no end");
+		}
+
+		value += static_cast<char>(data[i]);
+	}
+
+	readPosition += value.size();
+
+	return value;
+}
+
 void ByteBuffer::read(void * buffer, std::size_t count, bool reverseByteOrder)
 {
 	if (count > bytesLeftForReading()) {

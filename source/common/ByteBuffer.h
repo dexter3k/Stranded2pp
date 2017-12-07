@@ -26,6 +26,7 @@ public:
 
 	std::string readString(std::size_t size);
 	std::string readCString();
+	std::string readLine();
 
 	void read(void * buffer, std::size_t count, bool reverseByteOrder = false);
 	void write(void * buffer, std::size_t count, bool reverseByteOrder = false);

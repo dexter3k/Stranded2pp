@@ -3,7 +3,7 @@
 Some of the tools that are used in the development process.
 
 ## `dump_b3d.py`
-This tool is useful for dumping some of the *.b3d files.
+This tool is useful for dumping some of the `*.b3d` files.
 Usage:
 ```
 ./dump_b3d.py <model.b3d>
