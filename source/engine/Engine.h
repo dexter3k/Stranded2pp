@@ -59,6 +59,7 @@ public:
 	bool setupTerrain(unsigned terrainSize, std::vector<float> const & heightMap,
 		unsigned colorMapSize, std::vector<gfx::Color> const & colorMap,
 		std::vector<uint8_t> const & grassMap);
+	void onPreload();
 
 	void loadGame(std::string const & filename, controller::Type controller);
 
@@ -70,6 +71,12 @@ public:
 		float health, unsigned count, unsigned parentClass, unsigned parentMode, unsigned parentId);
 	void placeInfo(unsigned infoId, unsigned infoType, float x, float y, float z, float pitch, float yaw,
 		std::string const & vars);
+	void placeState(unsigned stateType, unsigned parentType, unsigned parentId,
+		float x, float y, float z, float fX, float fY, float fZ,
+		unsigned value, float fValue, std::string const & strValue);
+	void addExtension(unsigned type, unsigned parentClass, unsigned parentId, unsigned mode,
+		std::string const & key, std::string const & value, std::string const & stuff);
+	void setCameraRotation(float pitch, float yaw);
 private:
 	bool updateTime(double deltaTime);
 

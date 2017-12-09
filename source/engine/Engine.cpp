@@ -83,8 +83,6 @@ void Engine::setupGame(uint32_t day, uint8_t hour, uint8_t minute,
 	std::cout << briefScript << std::endl;
 
 	mapScript = script::compile(briefScript);
-	scheduleEvent("preload");
-	handleScheduledEvents("preload");
 }
 
 void Engine::setupQuickslots(std::vector<std::string> const &)
@@ -119,17 +117,22 @@ bool Engine::setupTerrain(unsigned terrainSize,
 	return true;
 }
 
+void Engine::onPreload()
+{
+	scheduleEvent("preload");
+	handleScheduledEvents("preload");
+}
+
 void Engine::loadGame(std::string const & filename, controller::Type controller)
 {
+	resetGame();
 	save::loadFromFile(modBaseDirectory + filename, *this);
 	switchController(controller);
 }
 
 void Engine::placeObject(unsigned, unsigned, float, float,
 	float, float, float, unsigned)
-{
-
-}
+{}
 
 void Engine::placeUnit(unsigned, unsigned, float, float, float, float,
 	float, float, float, float, float, float, float)
@@ -141,6 +144,18 @@ void Engine::placeItem(unsigned, unsigned, float, float, float, float,
 
 void Engine::placeInfo(unsigned, unsigned, float, float, float, float, float,
 	std::string const &)
+{}
+
+void Engine::placeState(unsigned, unsigned, unsigned,
+	float, float, float, float, float, float,
+	unsigned, float, std::string const &)
+{}
+
+void Engine::addExtension(unsigned, unsigned, unsigned, unsigned,
+	std::string const &, std::string const &, std::string const &)
+{}
+
+void Engine::setCameraRotation(float, float)
 {}
 
 bool Engine::updateTime(double deltaTime)

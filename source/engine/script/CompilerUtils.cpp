@@ -13,7 +13,7 @@ namespace script
 		}
 	} // namespace impl
 
-	std::list<script::Token> tokenize(std::string const& source)
+	std::list<script::Token> tokenize(std::string const & source)
 	{
 		std::list<script::Token> tokens;
 

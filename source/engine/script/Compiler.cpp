@@ -11,8 +11,7 @@ namespace script
 		Program program;
 
 		auto tokens = tokenize(source);
-		if (tokens.empty())
-		{
+		if (tokens.empty()) {
 			return program;
 		}
 
