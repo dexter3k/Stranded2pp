@@ -132,7 +132,8 @@ Graphics::Graphics(Modification const & modification) :
 	currentSkyboxNode(nullptr),
 	currentSkyboxName("sky"),
 	waterPlane(nullptr),
-	groundPlane(nullptr)
+	groundPlane(nullptr),
+	lightcycle(mod::loadLightcycle(modification.getPath()))
 {
 	basePath = modification.getPath();
 

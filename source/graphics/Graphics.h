@@ -6,9 +6,9 @@
 
 #include "LoadingScreen.h"
 #include "gui/Gui.h"
-#include "scene/Scene.h"
-
 #include "input/Event.h"
+#include "mod/Lightcycle.h"
+#include "scene/Scene.h"
 
 class Modification;
 
@@ -91,6 +91,8 @@ private:
 	scene::InfinitePlane * groundPlane;
 
 	LoadingScreen loadingScreen;
+
+	std::array<gfx::Color, 24> lightcycle;
 };
 
 } // namespace gfx

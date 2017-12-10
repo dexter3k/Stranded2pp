@@ -11,6 +11,7 @@
 #include "input/Event.h"
 #include "mod/GameConfig.h"
 #include "mod/Object.h"
+#include "mod/States.h"
 
 class Input;
 class Modification;
@@ -108,6 +109,7 @@ private:
 	engine::ObjectBuilder objectBuilder;
 
 	mod::GameConfig gameConfig;
+	std::vector<mod::State> gameStates;
 
 	// Game values
 
