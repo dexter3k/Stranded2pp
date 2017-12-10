@@ -9,6 +9,7 @@
 #include "engine/controller/Controller.h"
 #include "engine/script/Program.h"
 #include "input/Event.h"
+#include "mod/GameConfig.h"
 #include "mod/Object.h"
 
 class Input;
@@ -80,15 +81,12 @@ public:
 private:
 	bool updateTime(double deltaTime);
 
-	bool loadGameConfig();
-	bool parseGameConfig(std::string const & filename);
 	void switchController(controller::Type controller);
 
 	void scheduleEvent(std::string const & event, std::string const & info = "");
 	void handleScheduledEvents(std::string const & event, bool noskip = false);
 private:
 	static const unsigned msPerGameMinute;
-	static unsigned const objectPoolSize;
 private:
 	//Stranded & game;
 
@@ -99,8 +97,6 @@ private:
 	std::string modBaseDirectory;
 
 	// Script
-	std::string gameScriptSource;
-
 	script::Program mainScript;
 	script::Program mapScript;
 
@@ -110,6 +106,8 @@ private:
 	std::unique_ptr<controller::Controller> currentController;
 
 	engine::ObjectBuilder objectBuilder;
+
+	mod::GameConfig gameConfig;
 
 	// Game values
 

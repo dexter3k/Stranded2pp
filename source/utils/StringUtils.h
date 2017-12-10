@@ -1,9 +1,12 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace string
 {
+	std::vector<std::string> split(std::string const & string, char sep = ' ');
+
 	std::string& trimLeft(std::string& string);
 
 	std::string& trimRight(std::string& string);

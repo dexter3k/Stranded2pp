@@ -5,6 +5,22 @@
 
 namespace string
 {
+	std::vector<std::string> split(std::string const & string, char sep)
+	{
+		std::vector<std::string> slices;
+		std::size_t start = 0;
+		std::size_t end = 0;
+		while ((end = string.find(sep, start)) != std::string::npos) {
+			slices.push_back(string.substr(start, end - start));
+
+			start = end + 1;
+		}
+
+		slices.push_back(string.substr(start));
+
+		return slices;
+	}
+
 	std::string& trimLeft(std::string& string)
 	{
 		string.erase(
