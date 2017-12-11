@@ -1,7 +1,7 @@
 #pragma once
 
+#include <array>
 #include <string>
-#include <vector>
 
 #include "graphics/Color.h"
 #include "math/Vector3.h"
@@ -67,6 +67,6 @@ struct Object
 	std::string group;
 };
 
-std::vector<Object> loadObjects(std::string const & modPath);
+std::array<Object, 1024> loadObjects(std::string const & modPath);
 
 } // namespace mod
