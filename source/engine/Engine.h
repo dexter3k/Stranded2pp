@@ -4,13 +4,12 @@
 #include <vector>
 #include <memory>
 
-#include "engine/ObjectBuilder.h"
 #include "engine/Pool.h"
 #include "engine/controller/Controller.h"
 #include "engine/script/Program.h"
 #include "input/Event.h"
 #include "mod/GameConfig.h"
-#include "mod/Object.h"
+#include "mod/Objects.h"
 #include "mod/States.h"
 
 class Input;
@@ -105,8 +104,6 @@ private:
 
 	// Controller
 	std::unique_ptr<controller::Controller> currentController;
-
-	engine::ObjectBuilder objectBuilder;
 
 	mod::GameConfig gameConfig;
 	std::vector<mod::State> gameStates;

@@ -28,7 +28,6 @@ Engine::Engine(Stranded &, gfx::Graphics & graphics, Network &, Sound &, Modific
 	mapScript(),
 	scheduledTasks(),
 	currentController(nullptr),
-	objectBuilder(modBaseDirectory),
 	gameConfig(mod::loadGameConfig(modBaseDirectory)),
 	gameStates(mod::loadStates(modBaseDirectory)),
 	isTimePaused(false),

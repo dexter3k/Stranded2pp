@@ -3,7 +3,7 @@
 #include <string>
 #include <array>
 
-#include "mod/Object.h"
+// #include "mod/Object.h"
 
 namespace engine
 {
@@ -18,7 +18,7 @@ private:
 
 	static unsigned const objectTypeCount = 1024;
 
-	std::array<mod::Object, objectTypeCount> objects;
+	// std::array<mod::Object, objectTypeCount> objects;
 };
 
 } // namespace engine
