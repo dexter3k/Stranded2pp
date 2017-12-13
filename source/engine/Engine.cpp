@@ -30,6 +30,7 @@ Engine::Engine(Stranded &, gfx::Graphics & graphics, Network &, Sound &, Modific
 	currentController(nullptr),
 	gameConfig(mod::loadGameConfig(modBaseDirectory)),
 	gameStates(mod::loadStates(modBaseDirectory)),
+	gameObjects(mod::loadObjects(modBaseDirectory)),
 	isTimePaused(false),
 	timeCounter(0),
 	currentDay(0),

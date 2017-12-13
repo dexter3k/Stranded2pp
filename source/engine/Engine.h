@@ -107,6 +107,7 @@ private:
 
 	mod::GameConfig gameConfig;
 	std::vector<mod::State> gameStates;
+	mod::Objects gameObjects;
 
 	// Game values
 

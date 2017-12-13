@@ -11,7 +11,7 @@
 namespace
 {
 
-bool parseFile(std::string const & path, std::string const & filename, std::array<mod::Object, 1024> & objects)
+bool parseFile(std::string const & path, std::string const & filename, mod::Objects & objects)
 {
 	std::vector<parser::inf::Entry> entries;
 	if (!parser::inf::loadAndTokenize(path + filename, entries))
@@ -63,37 +63,41 @@ bool parseFile(std::string const & path, std::string const & filename, std::arra
 		} else if (entry.key == "color") {
 			// TODO
 		} else if (entry.key == "fx") {
-			// TODO
+			objects[currentId].fx = std::stoi(entry.value);
 		} else if (entry.key == "autofade") {
-			// TODO
+			objects[currentId].autofade = std::stoi(entry.value);
 		} else if (entry.key == "alpha") {
-			// TODO
+			objects[currentId].alpha = std::stof(entry.value);
 		} else if (entry.key == "shine") {
-			// TODO
+			objects[currentId].shininess = std::stof(entry.value);
 		} else if (entry.key == "detailtex") {
-			// TODO
+			objects[currentId].detailTextureName = entry.value;
+			string::trim(objects[currentId].detailTextureName);
 		} else if (entry.key == "col") {
-			// TODO
+			objects[currentId].collisionMode = std::stoi(entry.value);
 		} else if (entry.key == "mat") {
 			// TODO
 		} else if (entry.key == "health") {
-			// TODO
+			objects[currentId].health = std::stof(entry.value);
+			objects[currentId].healthChange = objects[currentId].health / 10.0f;
 		} else if (entry.key == "healthchange") {
-			// TODO
+			objects[currentId].healthChange = std::stof(entry.value);
 		} else if (entry.key == "swayspeed") {
-			// TODO
+			objects[currentId].swaySpeed = std::stof(entry.value);
+			objects[currentId].active = true;
 		} else if (entry.key == "swaypower") {
-			// TODO
+			objects[currentId].swayPower = std::stof(entry.value);
+			objects[currentId].active = true;
 		} else if (entry.key == "maxweight") {
-			// TODO
+			objects[currentId].maxWeight = std::stoi(entry.value);
 		} else if (entry.key == "state") {
 			// TODO
 		} else if (entry.key == "behaviour") {
-			// TODO
+			objects[currentId].behaviour = entry.value;
 		} else if (entry.key == "script") {
-			// TODO
+			objects[currentId].script += entry.value + '\xa6';
 		} else if (entry.key == "findratio") {
-			// TODO
+			objects[currentId].searchRatio = std::stof(entry.value);
 		} else if (entry.key == "find") {
 			// TODO
 		} else if (entry.key == "spawn") {
@@ -127,9 +131,9 @@ bool parseFile(std::string const & path, std::string const & filename, std::arra
 namespace mod
 {
 
-std::array<Object, 1024> loadObjects(std::string const & modPath)
+Objects loadObjects(std::string const & modPath)
 {
-	std::array<Object, 1024> objects;
+	Objects objects;
 
 	std::vector<std::string> entries;
 	fs::scanFolder(modPath + "sys/", entries);

@@ -20,32 +20,31 @@ struct Object
 	
 	std::string modelName;
 	// Model model;
-	math::Vector3f size;
-	gfx::Color color;
+	math::Vector3f size = {1, 1, 1};
+	gfx::Color color = {255, 255, 255};
 
 	int fx;
-	int autofade;
-	float alpha;
+	int autofade = 500;
+	float alpha = 1.0f;
 	float shininess;
 
 	std::string detailTextureName;
 
-	int collisionMode;
+	int collisionMode = 1;
 	int material;
 
-	float health;
+	float health = 500.0f;
 	float healthChange;
 	float swaySpeed;
-	float swayPower;
-	int maxweight;
-	int gt;
+	float swayPower = 1.0f;
+	int maxWeight = 100 * 1000;
 
 	float state1;
 	float state2;
 	float state3;
 	float state4;
 
-	float searchRatio;
+	float searchRatio = 30.0f;
 
 	bool active;
 	std::string behaviour;
@@ -60,13 +59,15 @@ struct Object
 
 	std::string description;
 
-	bool inEditor;
+	bool inEditor = true;
 
-	int growtime;
+	int growtime = 10;
 
 	std::string group;
 };
 
-std::array<Object, 1024> loadObjects(std::string const & modPath);
+using Objects = std::array<Object, 1024>;
+
+Objects loadObjects(std::string const & modPath);
 
 } // namespace mod
