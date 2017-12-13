@@ -1,5 +1,7 @@
 #include "Materials.h"
 
+#include <stdexcept>
+
 namespace mod
 {
 

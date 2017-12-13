@@ -1,5 +1,7 @@
 #include "Script.h"
 
+#include <algorithm>
+
 namespace script
 {
 
