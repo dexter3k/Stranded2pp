@@ -76,7 +76,7 @@ bool parseFile(std::string const & path, std::string const & filename, mod::Obje
 		} else if (entry.key == "col") {
 			objects[currentId].collisionMode = std::stoi(entry.value);
 		} else if (entry.key == "mat") {
-			// TODO
+			objects[currentId].material = mod::Material::fromString(entry.value);
 		} else if (entry.key == "health") {
 			objects[currentId].health = std::stof(entry.value);
 			objects[currentId].healthChange = objects[currentId].health / 10.0f;

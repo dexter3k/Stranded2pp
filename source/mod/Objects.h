@@ -5,6 +5,7 @@
 
 #include "graphics/Color.h"
 #include "math/Vector3.h"
+#include "mod/Materials.h"
 
 namespace mod
 {
@@ -31,7 +32,7 @@ struct Object
 	std::string detailTextureName;
 
 	int collisionMode = 1;
-	int material;
+	Material::Type material = Material::None;
 
 	float health = 500.0f;
 	float healthChange;
