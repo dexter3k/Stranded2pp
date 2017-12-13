@@ -95,7 +95,7 @@ bool parseFile(std::string const & path, std::string const & filename, mod::Obje
 		} else if (entry.key == "behaviour") {
 			objects[currentId].behaviour = entry.value;
 		} else if (entry.key == "script") {
-			objects[currentId].script += entry.value + '\xa6';
+			objects[currentId].script += entry.value + '\n';
 		} else if (entry.key == "findratio") {
 			objects[currentId].searchRatio = std::stof(entry.value);
 		} else if (entry.key == "find") {
@@ -103,7 +103,7 @@ bool parseFile(std::string const & path, std::string const & filename, mod::Obje
 		} else if (entry.key == "spawn") {
 			// TODO
 		} else if (entry.key == "description") {
-			// TODO
+			objects[currentId].description += entry.value + '\n';
 		} else if (entry.key == "editor") {
 			// TODO
 		} else if (entry.key == "param") {
