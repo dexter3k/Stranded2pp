@@ -26,6 +26,7 @@ Engine::Engine(Stranded &, gfx::Graphics & graphics, Network &, Sound &, Modific
 	modBaseDirectory(modification.getPath()),
 	mainScript(),
 	mapScript(),
+	// extensionScripts(),
 	scheduledTasks(),
 	currentController(nullptr),
 	gameConfig(mod::loadGameConfig(modBaseDirectory)),
@@ -125,7 +126,7 @@ bool Engine::setupTerrain(unsigned terrainSize,
 void Engine::onPreload()
 {
 	scheduleEvent("preload");
-	handleScheduledEvents("preload");
+	handleScheduledEvent("preload");
 }
 
 void Engine::loadGame(std::string const & filename, controller::Type controller)
@@ -137,7 +138,9 @@ void Engine::loadGame(std::string const & filename, controller::Type controller)
 
 void Engine::placeObject(unsigned, unsigned, float, float,
 	float, float, float, unsigned)
-{}
+{
+	
+}
 
 void Engine::placeUnit(unsigned, unsigned, float, float, float, float,
 	float, float, float, float, float, float, float)
@@ -214,9 +217,23 @@ void Engine::scheduleEvent(std::string const & event, std::string const & info)
 		scheduledTasks.emplace_back(0, 0, event, info, mapScript);
 	}
 
-	// Other scripts
+	// Extension scripts
+	// for (auto const & script : extensionScripts) {
+	// 	if (script.hasHandlerForEvent(event)) {
+	// 		scheduledTasks.emplace_back(, , event, info, script);
+	// 	}
+	// }
 
 	// Objects
+	// for (auto const & gameObject : gameObjects) {
+	// 	if (gameObject.script.hasHandlerForEvent(event)) {
+	// 		for (auto const & object : objects) {
+	// 			if (object.type == ) {
+	// 				scheduledTasks.emplace_back(, , event, info, gameObject.script);
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	// Units
 
@@ -225,10 +242,12 @@ void Engine::scheduleEvent(std::string const & event, std::string const & info)
 	// Infos
 }
 
-void Engine::handleScheduledEvents(std::string const &, bool)
+void Engine::handleScheduledEvent(std::string const &, bool)
 {
 	// for (auto const & task : scheduledTasks) {
-	// 	task.script.execute();
+	// 	if (task.event == event) {
+	// 		task.script.execute();
+	// 	}
 	// }
 
 	scheduledTasks.clear();

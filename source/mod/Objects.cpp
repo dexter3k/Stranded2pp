@@ -37,7 +37,7 @@ bool parseFile(std::string const & path, std::string const & filename, mod::Obje
 					+ objects[currentId].name));
 			}
 
-			objects[currentId].id = currentId;
+			objects[currentId].id = currentId+1;
 		} else if (entry.key == "const") {
 			// TODO
 		} else if (entry.key == "name") {

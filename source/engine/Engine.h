@@ -84,7 +84,7 @@ private:
 	void switchController(controller::Type controller);
 
 	void scheduleEvent(std::string const & event, std::string const & info = "");
-	void handleScheduledEvents(std::string const & event, bool noskip = false);
+	void handleScheduledEvent(std::string const & event, bool noskip = false);
 private:
 	static const unsigned msPerGameMinute;
 private:
@@ -99,6 +99,8 @@ private:
 	// Script
 	script::Program mainScript;
 	script::Program mapScript;
+
+	// std::vector<script::Script> extensionScripts;
 
 	std::vector<ScheduledTask> scheduledTasks;
 
