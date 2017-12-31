@@ -17,10 +17,10 @@ class Scene;
 class Node
 {
 public:
-	Node(Node* parent, Scene* scene, int id = -1,
-		const math::Vector3f& position = math::Vector3f(0.0f),
-		const math::Vector3f& rotation = math::Vector3f(0.0f),
-		const math::Vector3f& scale = math::Vector3f(1.0f));
+	Node(Node * parent, Scene * scene, int id = -1,
+		math::Vector3f position = math::Vector3f(0.0f),
+		math::Vector3f rotation = math::Vector3f(0.0f),
+		math::Vector3f scale = math::Vector3f(1.0f));
 	virtual ~Node();
 
 	virtual void onRegisterNode();

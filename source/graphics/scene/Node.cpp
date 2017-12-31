@@ -10,8 +10,8 @@ namespace gfx
 namespace scene
 {
 
-Node::Node(Node* parent, Scene* scene, int id, const math::Vector3f& position,
-		const math::Vector3f& rotation, const math::Vector3f& scale) :
+Node::Node(Node* parent, Scene* scene, int id, math::Vector3f position,
+		math::Vector3f rotation, math::Vector3f scale) :
 	parent(nullptr),
 	children(),
 	scene(scene),
