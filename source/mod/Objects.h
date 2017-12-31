@@ -67,7 +67,7 @@ struct Object
 	std::string group;
 };
 
-using Objects = std::array<Object, 1024>;
+using Objects = std::array<Object, 1024+1>;
 
 Objects loadObjects(std::string const & modPath);
 

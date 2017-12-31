@@ -33,9 +33,6 @@ InfinitePlane::InfinitePlane(Texture* texture, Node* parent, Scene* scene,
 	material.textureLayers[0].texture = texture;
 }
 
-InfinitePlane::~InfinitePlane()
-{}
-
 void InfinitePlane::setColor(const Color& color)
 {
 	this->color = color;
