@@ -8,7 +8,7 @@ namespace scene
 
 Entity::Entity(Scene & scene, Node * parent, Model *,
 		math::Vector3f position, math::Vector3f rotation, math::Vector3f scale) :
-	super(parent, &scene, -1, position, rotation, scale)
+	super(scene, parent, position, rotation, scale)
 {}
 
 } // namespace scene

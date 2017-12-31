@@ -21,7 +21,7 @@ namespace scene
 {
 
 Scene::Scene(device::Device & device, Modification const & modification) :
-	RootNode(nullptr, this),
+	RootNode(*this),
 	device(device),
 	activeCamera(nullptr),
 	cameraWorldPosition(0.0f, 0.0f, 0.0f),
@@ -45,13 +45,12 @@ void Scene::drawAll()
 	device.setMaterial(Material());
 	device.resetTransforms();
 
-	float animationDeltaTime = animationDeltaTimer.restart();
+	float const animationDeltaTime = animationDeltaTimer.restart();
 
 	RootNode::onAnimate(animationDeltaTime);
 
 	cameraWorldPosition = math::Vector3f(0.0f, 0.0f, 0.0f);
-	if (activeCamera != nullptr)
-	{
+	if (activeCamera != nullptr) {
 		activeCamera->render();
 		cameraWorldPosition = activeCamera->getAbsolutePosition();
 	}
@@ -62,8 +61,7 @@ void Scene::drawAll()
 	{
 		currentRenderPass = RenderPassSkybox;
 
-		for (auto&& skybox : skyboxes)
-		{
+		for (auto & skybox : skyboxes) {
 			skybox->render();
 		}
 
@@ -74,8 +72,7 @@ void Scene::drawAll()
 	{
 		currentRenderPass = RenderPassSolid;
 
-		for (auto&& object : solidObjects)
-		{
+		for (auto & object : solidObjects) {
 			object->render();
 		}
 
@@ -147,7 +144,7 @@ Terrain * Scene::addTerrain(unsigned terrainSize, const std::vector<float>& heig
 	return terrain;
 }
 
-InfinitePlane* Scene::addInfinitePlane(Texture* texture,
+InfinitePlane * Scene::addInfinitePlane(Texture * texture,
 	const Color& planeColor, float textureScale,
 	const math::Vector3f& position, Node* parent, int id)
 {
@@ -164,14 +161,13 @@ InfinitePlane* Scene::addInfinitePlane(Texture* texture,
 	return plane;
 }
 
-Node* Scene::addEmptyNode(Node* parent, int id)
+Node * Scene::addEmptyNode(Node * parent, int)
 {
-	if (parent == nullptr)
-	{
+	if (parent == nullptr) {
 		parent = this;
 	}
 
-	Node* emptyNode = new Node(parent, this, id);
+	Node* emptyNode = new Node(*this, parent);
 
 	sceneNodes.push_back(emptyNode);
 
@@ -230,8 +226,7 @@ bool Scene::registerNodeForRendering(Node* node, SceneNodeRenderPass pass)
 
 void Scene::clearScene()
 {
-	for (auto&& node : sceneNodes)
-	{
+	for (auto & node : sceneNodes) {
 		delete node;
 	}
 

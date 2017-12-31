@@ -1,6 +1,7 @@
 #include "Node.h"
 
 #include <cassert>
+#include <iostream>
 
 #include "Scene.h"
 
@@ -10,39 +11,36 @@ namespace gfx
 namespace scene
 {
 
-Node::Node(Node* parent, Scene* scene, int id, math::Vector3f position,
+Node::Node(Scene & scene, Node * parent, math::Vector3f position,
 		math::Vector3f rotation, math::Vector3f scale) :
 	parent(nullptr),
 	children(),
-	scene(scene),
-	id(id),
-	name(""),
-	isVisible(true),
 	absoluteTransformation(),
 	position(position),
 	rotation(rotation),
-	scale(scale)
+	scale(scale),
+	isVisible(true),
+	scene(scene)
 {
-	assert(scene != nullptr);
-
 	setParent(parent);
+	updateAbsoluteTransformation();
 }
 
 Node::~Node()
 {
-	while (!children.empty())
-		scene->removeNode(children.front());
+	while (!children.empty()) {
+		scene.removeNode(children.front());
+	}
 
-	if (parent != nullptr)
+	if (parent != nullptr) {
 		parent->removeChild(this);
+	}
 }
 
 void Node::onRegisterNode()
 {
-	if (isVisible)
-	{
-		for (auto&& node : children)
-		{
+	if (isVisible) {
+		for (auto node : children) {
 			node->onRegisterNode();
 		}
 	}
@@ -50,46 +48,38 @@ void Node::onRegisterNode()
 
 void Node::onAnimate(float deltaTime)
 {
-	if (isVisible)
-	{
+	if (isVisible) {
 		updateAbsoluteTransformation();
 
-		for (auto& node : children)
-		{
+		for (auto node : children) {
 			node->onAnimate(deltaTime);
 		}
 	}
 }
 
-void Node::addChild(Node* child)
+void Node::addChild(Node * child)
 {
 	assert(child != nullptr);
 
-	if (child->parent != nullptr)
+	if (child->parent != nullptr) {
 		child->parent->removeChild(child);
+	}
 
 	child->parent = this;
 
 	children.push_back(child);
 }
 
-const std::list<Node*>& Node::getChildren() const
-{
-	return children;
-}
-
-bool Node::removeChild(Node* childToRemove)
+bool Node::removeChild(Node * childToRemove)
 {
 	assert(childToRemove != nullptr);
 
-	auto end = children.end();
-	for (auto it = children.begin(); it != end; ++it)
-	{
-		if ((*it) == childToRemove)
-		{
+	auto const end = children.end();
+	for (auto it = children.begin(); it != end; ++it) {
+		if ((*it) == childToRemove) {
 			assert((*it)->parent == this);
-			(*it)->parent = nullptr;
 
+			(*it)->parent = nullptr;
 			children.erase(it);
 
 			return true;
@@ -97,31 +87,6 @@ bool Node::removeChild(Node* childToRemove)
 	}
 
 	return false;
-}
-
-int Node::getId() const
-{
-	return id;
-}
-
-void Node::setId(int newId)
-{
-	id = newId;
-}
-
-const std::string& Node::getName() const
-{
-	return name;
-}
-
-void Node::setName(const std::string& newName)
-{
-	name = newName;
-}
-
-Node* Node::getParent() const
-{
-	return parent;
 }
 
 void Node::setParent(Node * newParent)
@@ -139,54 +104,13 @@ void Node::setParent(Node * newParent)
 	}
 }
 
-bool Node::getVisible() const
-{
-	return isVisible;
-}
-
-void Node::setVisible(bool isVisible)
-{
-	this->isVisible = isVisible;
-}
-
 bool Node::getTrulyVisible() const
 {
-	if (parent != nullptr)
-	{
+	if (parent != nullptr) {
 		return getVisible() && parent->getTrulyVisible();
 	}
 
 	return getVisible();
-}
-
-const math::Vector3f& Node::getPosition() const
-{
-	return position;
-}
-
-void Node::setPosition(const math::Vector3f& position)
-{
-	this->position = position;
-}
-
-const math::Vector3f& Node::getRotation() const
-{
-	return rotation;
-}
-
-void Node::setRotation(const math::Vector3f& rotation)
-{
-	this->rotation = rotation;
-}
-
-const math::Vector3f& Node::getScale() const
-{
-	return scale;
-}
-
-void Node::setScale(const math::Vector3f& scale)
-{
-	this->scale = scale;
 }
 
 math::Matrix4 Node::getTransformation() const
@@ -195,8 +119,7 @@ math::Matrix4 Node::getTransformation() const
 	transformationMatrix.setRotationDegrees(rotation);
 	transformationMatrix.setTranslation(position);
 
-	if (!scale.isEqualToRelative(math::Vector3f(1.0f, 1.0f, 1.0f)))
-	{
+	if (!scale.isEqualToRelative(math::Vector3f(1.0f, 1.0f, 1.0f))) {
 		math::Matrix4 scaleMatrix;
 		scaleMatrix.setScale(scale);
 
@@ -206,31 +129,14 @@ math::Matrix4 Node::getTransformation() const
 	return transformationMatrix;
 }
 
-math::Matrix4 Node::getAbsoluteTransformation() const
-{
-	return absoluteTransformation;
-}
-
-math::Vector3f Node::getAbsolutePosition() const
-{
-	return absoluteTransformation.getTranslation();
-}
-
 void Node::updateAbsoluteTransformation()
 {
-	if (parent != nullptr)
-	{
-		absoluteTransformation = parent->getAbsoluteTransformation() *
-			getTransformation();
-	}
-	else
-	{
-		absoluteTransformation = getTransformation();
+	absoluteTransformation = getTransformation();
+
+	if (parent != nullptr) {
+		absoluteTransformation *= parent->getAbsoluteTransformation();
 	}
 }
-
-void Node::render()
-{}
 
 } // namespace scene
 

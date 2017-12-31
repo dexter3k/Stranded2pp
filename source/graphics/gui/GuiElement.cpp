@@ -1,7 +1,5 @@
 #include "GuiElement.h"
 
-#include <iostream>
-
 #include "Gui.h"
 
 namespace gfx
@@ -19,36 +17,39 @@ GuiElement::GuiElement(Gui & gui, GuiElement * parent, math::Vector2i position) 
 	gui(gui)
 {
 	setParent(parent);
-
-	if (parent != nullptr)
-		absolutePosition = parent->getAbsolutePosition() + position;
+	updateAbsolutePosition();
 }
 
 GuiElement::~GuiElement()
 {
-	while (!children.empty())
+	while (!children.empty()) {
 		gui.deleteGuiElement(children.front());
+	}
 
-	if (parent != nullptr)
+	if (parent != nullptr) {
 		parent->removeChild(this);
+	}
 }
 
 void GuiElement::animate(double deltaTime)
 {
-	if (hidden)
+	if (hidden) {
 		return;
+	}
 	
 	updateAbsolutePosition();
 
-	for (auto child : children)
+	for (auto child : children) {
 		child->animate(deltaTime);
+	}
 }
 
 void GuiElement::draw()
 {
 	if (!hidden) {
-		for (auto child : children)
+		for (auto child : children) {
 			child->draw();
+		}
 	}
 }
 
@@ -56,8 +57,9 @@ bool GuiElement::onMouseButtonPressed(uint8_t button, int x, int y)
 {
 	if (!hidden) {
 		for (auto child : children) {
-			if (child->onMouseButtonPressed(button, x, y))
+			if (child->onMouseButtonPressed(button, x, y)) {
 				return true;
+			}
 		}
 	}
 
@@ -99,8 +101,9 @@ void GuiElement::addChild(GuiElement * child)
 {
 	assert(child != nullptr);
 
-	if (child->parent != nullptr)
+	if (child->parent != nullptr) {
 		child->parent->removeChild(child);
+	}
 
 	child->parent = this;
 
@@ -111,13 +114,12 @@ bool GuiElement::removeChild(GuiElement * childToRemove)
 {
 	assert(childToRemove != nullptr);
 
-	auto end = children.end();
+	auto const end = children.end();
 	for (auto it = children.begin(); it != end; ++it) {
 		if ((*it) == childToRemove) {
 			assert((*it)->parent == this);
 
 			(*it)->parent = nullptr;
-
 			children.erase(it);
 
 			return true;
@@ -129,30 +131,35 @@ bool GuiElement::removeChild(GuiElement * childToRemove)
 
 void GuiElement::setParent(GuiElement * newParent)
 {
-	if (parent == newParent)
+	if (parent == newParent) {
 		return;
+	}
 
-	if (parent != nullptr)
+	if (parent != nullptr) {
 		parent->removeChild(this);
+	}
 	
-	if (newParent != nullptr)
+	if (newParent != nullptr) {
 		newParent->addChild(this);
+	}
 }
 
 bool GuiElement::isTrulyVisible() const
 {
-	if (isVisible())
-		return parent->isTrulyVisible();
-	else
-		return false;
+	if (parent != nullptr) {
+		return isVisible() && parent->isTrulyVisible();
+	}
+
+	return isVisible();
 }
 
 void GuiElement::updateAbsolutePosition()
 {
 	absolutePosition = getPosition();
 
-	if (parent != nullptr)
+	if (parent != nullptr) {
 		absolutePosition += parent->getAbsolutePosition();
+	}
 }
 
 } // namespace gui

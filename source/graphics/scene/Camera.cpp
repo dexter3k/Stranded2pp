@@ -14,9 +14,9 @@ namespace gfx
 namespace scene
 {
 
-Camera::Camera(Node* parent, Scene* scene, int id,
+Camera::Camera(Node* parent, Scene* scene, int,
 		const math::Vector3f& position, const math::Vector3f& rotation) :
-	super(parent, scene, id, position, rotation),
+	super(*scene, parent, position, rotation),
 	near(0.1f),
 	far(100.0f),
 	fieldOfView(75.0f),
@@ -44,7 +44,7 @@ void Camera::render()
 {
 	updateMatrices();
 
-	device::Device* device = scene->getDevice();
+	device::Device* device = scene.getDevice();
 	if (device != nullptr)
 	{
 		auto renderTargetSize = device->getRenderTargetSize();

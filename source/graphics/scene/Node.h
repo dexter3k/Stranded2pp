@@ -17,67 +17,54 @@ class Scene;
 class Node
 {
 public:
-	Node(Node * parent, Scene * scene, int id = -1,
+	Node(Scene & scene, Node * parent,
 		math::Vector3f position = math::Vector3f(0.0f),
 		math::Vector3f rotation = math::Vector3f(0.0f),
 		math::Vector3f scale = math::Vector3f(1.0f));
 	virtual ~Node();
 
 	virtual void onRegisterNode();
-
 	virtual void onAnimate(float deltaTime);
+	virtual void render() {};
 
-	virtual void addChild(Node* child);
-	virtual const std::list<Node*>& getChildren() const;
-	virtual bool removeChild(Node* child);
+	void addChild(Node * child);
+	bool removeChild(Node * child);
+	std::list<Node *> const & getChildren() const { return children; };
 
-	virtual int getId() const;
-	virtual void setId(int newId);
+	Node * getParent() const { return parent; };
+	void setParent(Node * newParent);
 
-	virtual const std::string& getName() const;
-	virtual void setName(const std::string& newName);
+	bool getVisible() const { return isVisible; };
+	void setVisible(bool isVisible) { this->isVisible = isVisible; };
 
-	virtual Node* getParent() const;
-	virtual void setParent(Node* newParent);
+	bool getTrulyVisible() const;
 
-	virtual bool getVisible() const;
-	virtual void setVisible(bool isVisible);
+	math::Vector3f getPosition() const { return position; };
+	void setPosition(math::Vector3f position) { this->position = position; };
 
-	virtual bool getTrulyVisible() const;
+	math::Vector3f getRotation() const { return rotation; };
+	void setRotation(math::Vector3f rotation) { this->rotation = rotation; };
 
-	virtual const math::Vector3f& getPosition() const;
-	virtual void setPosition(const math::Vector3f& position);
+	math::Vector3f getScale() const { return scale; };
+	void setScale(math::Vector3f scale) { this->scale = scale; };
 
-	virtual const math::Vector3f& getRotation() const;
-	virtual void setRotation(const math::Vector3f& rotation);
+	math::Matrix4 getTransformation() const;
 
-	virtual const math::Vector3f& getScale() const;
-	virtual void setScale(const math::Vector3f& scale);
-
-	virtual math::Matrix4 getTransformation() const;
-
-	virtual math::Matrix4 getAbsoluteTransformation() const;
-	virtual math::Vector3f getAbsolutePosition() const;
-
-	virtual void updateAbsoluteTransformation();
-
-	virtual void render();
-protected:
-	Node* parent;
-	std::list<Node*> children;
-
-	Scene* scene;
-
-	int id;
-	std::string name;
-
-	bool isVisible;
+	math::Matrix4 const & getAbsoluteTransformation() const { return absoluteTransformation; };
+	math::Vector3f getAbsolutePosition() const { return absoluteTransformation.getTranslation(); };
+	void updateAbsoluteTransformation();
+private:
+	Node * parent;
+	std::list<Node *> children;
 
 	math::Matrix4 absoluteTransformation;
-
 	math::Vector3f position;
 	math::Vector3f rotation;
 	math::Vector3f scale;
+
+	bool isVisible;
+protected:
+	Scene & scene;
 };
 
 } // namespace scene

@@ -21,8 +21,8 @@ namespace scene
 
 InfinitePlane::InfinitePlane(Texture* texture, Node* parent, Scene* scene,
 		const Color& planeColor, float textureScale,
-		const math::Vector3f& position, int id) :
-	super(parent, scene, id, position),
+		const math::Vector3f& position, int) :
+	super(*scene, parent, position),
 	indices{0, 2, 1, 0, 3, 2},
 	vertices(),
 	material(),
@@ -50,10 +50,10 @@ void InfinitePlane::drawAsSkybox(bool value)
 
 void InfinitePlane::onRegisterNode()
 {
-	if (isVisible)
+	if (getVisible())
 	{
 		// Rendered at the same time as skyboxes
-		scene->registerNodeForRendering(this,
+		scene.registerNodeForRendering(this,
 			drawnAsSkybox ? Scene::RenderPassSkybox : Scene::RenderPassSolid);
 	}
 
@@ -62,8 +62,8 @@ void InfinitePlane::onRegisterNode()
 
 void InfinitePlane::render()
 {
-	device::Device* device = scene->getDevice();
-	Camera* camera = scene->getActiveCamera();
+	device::Device* device = scene.getDevice();
+	Camera* camera = scene.getActiveCamera();
 	if (camera == nullptr || device == nullptr)
 	{
 		return;
@@ -75,7 +75,7 @@ void InfinitePlane::render()
 	}
 
 	math::Matrix4 transform;
-	transform.setTranslation(position);
+	transform.setTranslation(getPosition());
 	device->setTransform(device::Device::Model, transform);
 
 	device->setMaterial(material);
@@ -85,8 +85,8 @@ void InfinitePlane::render()
 
 bool InfinitePlane::buildVertices()
 {
-	device::Device* device = scene->getDevice();
-	Camera* camera = scene->getActiveCamera();
+	device::Device* device = scene.getDevice();
+	Camera* camera = scene.getActiveCamera();
 	if (camera == nullptr || device == nullptr)
 	{
 		return false;
@@ -95,7 +95,7 @@ bool InfinitePlane::buildVertices()
 	const math::Frustum& frustum = camera->getViewFrustum();
 
 	math::Vector3f eye = frustum.getPoint(math::Frustum::Eye);
-	eye -= position;
+	eye -= getPosition();
 	if (eye.y <= 0.0f)
 	{
 		// We are below plane - no rendering needed
@@ -103,10 +103,10 @@ bool InfinitePlane::buildVertices()
 	}
 
 	math::Vector3f in_verts[4] = {
-		frustum.getPoint(math::Frustum::FarTopLeft) - position,
-		frustum.getPoint(math::Frustum::FarTopRight) - position,
-		frustum.getPoint(math::Frustum::FarBottomRight) - position,
-		frustum.getPoint(math::Frustum::FarBottomLeft) - position
+		frustum.getPoint(math::Frustum::FarTopLeft) - getPosition(),
+		frustum.getPoint(math::Frustum::FarTopRight) - getPosition(),
+		frustum.getPoint(math::Frustum::FarBottomRight) - getPosition(),
+		frustum.getPoint(math::Frustum::FarBottomLeft) - getPosition()
 	};
 
 	math::Vector3f out_verts[5];

@@ -26,15 +26,14 @@ public:
 		unsigned colorMapSize, const std::vector<gfx::Color>& colorMap,
 		Node* parent, Scene* scene, int id = -1,
 		const math::Vector2f& scale = math::Vector2f(0.0f, 0.0f));
-	~Terrain();
+	~Terrain() override;
 
 	void onRegisterNode() override;
-
 	void render() override;
 private:
-	void createTerrain(const std::vector<float>& heightMap);
+	void createTerrain(std::vector<float> const & heightMap);
 	void createColorMapTexture(unsigned colorMapSize,
-		const std::vector<gfx::Color>& colorMap);
+		std::vector<gfx::Color> const & colorMap);
 	void createDetailTexture();
 
 	void preRenderIndicesRecalculation();
