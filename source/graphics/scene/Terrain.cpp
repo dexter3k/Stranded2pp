@@ -17,8 +17,8 @@ namespace scene
 
 Terrain::Terrain(unsigned terrainSize, const std::vector<float>& heightMap,
 		unsigned colorMapSize, const std::vector<gfx::Color>& colorMap,
-		Node* parent, Scene* scene, int id, math::Vector2f const &) :
-	super(parent, scene, id, math::Vector3f(0.0f, 0.0f, 0.0f),
+		Node* parent, Scene* scene, int, math::Vector2f const &) :
+	super(*scene, parent, math::Vector3f(0.0f, 0.0f, 0.0f),
 		math::Vector3f(0.0f, 0.0f, 0.0f), math::Vector3f(0.0f, 0.0f, 0.0f)),
 	terrainSize(terrainSize),
 	colorMapTexture(nullptr),
@@ -44,8 +44,7 @@ Terrain::Terrain(unsigned terrainSize, const std::vector<float>& heightMap,
 	terrainMaterial.materialType = Material::DetailMap;
 	terrainMaterial.textureLayers[0].texture = colorMapTexture;
 	terrainMaterial.textureLayers[0].bilinearFilter = true;
-	terrainMaterial.textureLayers[1].texture =
-		device->grabTexture(scene->getModPath() + "sys/gfx/terraindirt.bmp");
+	terrainMaterial.textureLayers[1].texture = device->grabTexture(scene->getModPath() + "sys/gfx/terraindirt.bmp");
 	terrainMaterial.textureLayers[1].bilinearFilter = true;
 	terrainMaterial.lighting = false;
 	terrainMaterial.wireframe = false;
@@ -53,7 +52,7 @@ Terrain::Terrain(unsigned terrainSize, const std::vector<float>& heightMap,
 
 Terrain::~Terrain()
 {
-	device::Device* device = scene->getDevice();
+	device::Device * device = scene.getDevice();
 	if (device != nullptr)
 	{
 		if (colorMapTexture != nullptr)
@@ -62,15 +61,14 @@ Terrain::~Terrain()
 			colorMapTexture = nullptr;	
 		}
 
-		device->releaseTexture(scene->getModPath() + "sys/gfx/terraindirt.bmp");
+		device->releaseTexture(scene.getModPath() + "sys/gfx/terraindirt.bmp");
 	}
 }
 
 void Terrain::onRegisterNode()
 {
-	if (isVisible)
-	{
-		scene->registerNodeForRendering(this, Scene::RenderPassSolid);
+	if (getVisible()) {
+		scene.registerNodeForRendering(this, Scene::RenderPassSolid);
 	}
 
 	super::onRegisterNode();
@@ -78,11 +76,10 @@ void Terrain::onRegisterNode()
 
 void Terrain::render()
 {
-	device::Device* device = scene->getDevice();
-	Camera* camera = scene->getActiveCamera();
+	device::Device * device = scene.getDevice();
+	Camera * camera = scene.getActiveCamera();
 
-	if (camera == nullptr || device == nullptr)
-	{
+	if (camera == nullptr || device == nullptr) {
 		return;
 	}
 
@@ -102,12 +99,10 @@ void Terrain::render()
 
 void Terrain::createTerrain(const std::vector<float>& heightMap)
 {
-	assert(heightMap.size() == ((terrainSize + 1) * (terrainSize + 1)));
-
-	unsigned heightMapSize = terrainSize + 1;
+	unsigned const heightMapSize = terrainSize + 1;
 	assert(heightMap.size() == heightMapSize * heightMapSize);
 
-	unsigned dataSize = heightMapSize * heightMapSize;
+	unsigned const dataSize = heightMapSize * heightMapSize;
 	dataBuffer.getVertexBuffer().setUsed(dataSize);
 
 	float tdSize = 1.0f / static_cast<float>(terrainSize);
@@ -119,17 +114,14 @@ void Terrain::createTerrain(const std::vector<float>& heightMap)
 
 	auto dataBufferVertices =
 		static_cast<Vertex3D2TCoords*>(dataBuffer.getVertices());
-	for (unsigned x = 0; x < heightMapSize; ++x)
-	{
+	for (unsigned x = 0; x < heightMapSize; ++x) {
 		fz = 0.0f;
 		fz2 = 0.0f;
-		for (unsigned z = 0; z < heightMapSize; ++z)
-		{
+		for (unsigned z = 0; z < heightMapSize; ++z) {
 			Vertex3D2TCoords& vertex = dataBufferVertices[index++];
 			vertex.normal = math::Vector3f(0.0f, 1.0f, 0.0f);
 			vertex.color = Color(255, 255, 255);
-			vertex.position =
-				math::Vector3f(fx, heightMap[x + heightMapSize * z], fz);
+			vertex.position = math::Vector3f(fx, heightMap[x + heightMapSize * z], fz);
 
 			vertex.textureCoords = math::Vector2f(fx2, 1 - fz2);
 			vertex.textureCoords2 = math::Vector2f(fx / 2.0f, fz / 2.0f);
@@ -145,10 +137,8 @@ void Terrain::createTerrain(const std::vector<float>& heightMap)
 	renderBuffer.getMaterial() = terrainMaterial;
 	renderBuffer.getVertexBuffer().setUsed(dataSize);
 
-	auto renderBufferVertices =
-		static_cast<Vertex3D2TCoords*>(renderBuffer.getVertices());
-	for (unsigned i = 0; i < dataSize; ++i)
-	{
+	auto renderBufferVertices = static_cast<Vertex3D2TCoords*>(renderBuffer.getVertices());
+	for (unsigned i = 0; i < dataSize; ++i) {
 		renderBufferVertices[i] = dataBufferVertices[i];
 	}
 }
@@ -158,19 +148,16 @@ void Terrain::createColorMapTexture(unsigned colorMapSize,
 {
 	assert(colorMap.size() == colorMapSize * colorMapSize);
 
-	device::Device* device = scene->getDevice();
-	if (device == nullptr)
-	{
+	device::Device* device = scene.getDevice();
+	if (device == nullptr) {
 		return;
 	}
 
 	Image image;
 	image.create(math::Vector2u(colorMapSize, colorMapSize));
 
-	for (unsigned x = 0; x < colorMapSize; ++x)
-	{
-		for (unsigned y = 0; y < colorMapSize; ++y)
-		{
+	for (unsigned x = 0; x < colorMapSize; ++x) {
+		for (unsigned y = 0; y < colorMapSize; ++y) {
 			image.setPixel(x, y, colorMap[x + y * colorMapSize]);
 		}
 	}
@@ -180,9 +167,8 @@ void Terrain::createColorMapTexture(unsigned colorMapSize,
 
 void Terrain::createDetailTexture()
 {
-	device::Device* device = scene->getDevice();
-	if (device != nullptr)
-	{
+	device::Device * device = scene.getDevice();
+	if (device != nullptr) {
 		return;
 	}
 

@@ -1,13 +1,16 @@
 #pragma once
 
+#include "math/Vector3.h"
+
 namespace gfx
 {
 
 // Lightweight handle/adapter of gfx API for Engine
-class Object
+class EntityHandle
 {
 public:
-	Object() = default;
+	EntityHandle();
+private:
 };
 
 } // namespace gfx

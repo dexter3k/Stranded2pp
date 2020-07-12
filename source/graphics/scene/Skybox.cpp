@@ -18,8 +18,8 @@ namespace scene
 {
 
 Skybox::Skybox(Texture* top, Texture* bottom, Texture* left, Texture* right,
-		Texture* front, Texture* back, Node* parent, Scene* scene, int id) :
-	super(parent, scene, id),
+		Texture* front, Texture* back, Node* parent, Scene* scene, int) :
+	super(*scene, parent),
 	indices{0, 1, 2, 0, 2, 3},
 	vertices(),
 	materials()
@@ -114,9 +114,9 @@ Skybox::~Skybox()
 
 void Skybox::onRegisterNode()
 {
-	if (isVisible)
+	if (getVisible())
 	{
-		scene->registerNodeForRendering(this, Scene::RenderPassSkybox);
+		scene.registerNodeForRendering(this, Scene::RenderPassSkybox);
 	}
 
 	super::onRegisterNode();
@@ -124,8 +124,8 @@ void Skybox::onRegisterNode()
 
 void Skybox::render()
 {
-	device::Device* device = scene->getDevice();
-	Camera* camera = scene->getActiveCamera();
+	device::Device* device = scene.getDevice();
+	Camera* camera = scene.getActiveCamera();
 
 	if (camera == nullptr || device == nullptr)
 	{

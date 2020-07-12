@@ -24,7 +24,6 @@ public:
 		const Color& planeColor = Color(255, 255, 255),
 		float textureScale = 1.0f,
 		const math::Vector3f& position = math::Vector3f(0.0f), int id = -1);
-	~InfinitePlane();
 
 	void setColor(const Color& color);
 

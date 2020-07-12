@@ -27,9 +27,6 @@ bool parseFile(std::string const & path, std::string const & filename, mod::Obje
 					+ std::to_string(1024) + "]. Got: "
 					+ std::to_string(currentId));
 			}
-
-			currentId = currentId - 1; // Start with 0, not 1
-
 			if (objects[currentId].name != "") {
 				throw std::runtime_error(
 					std::string("ID " + std::to_string(currentId+1)

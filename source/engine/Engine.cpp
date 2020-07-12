@@ -136,10 +136,10 @@ void Engine::loadGame(std::string const & filename, controller::Type controller)
 	switchController(controller);
 }
 
-void Engine::placeObject(unsigned, unsigned, float, float,
+void Engine::placeObject(unsigned, unsigned objectType, float, float,
 	float, float, float, unsigned)
 {
-	
+	std::cout << gameObjects[objectType].modelName << std::endl;
 }
 
 void Engine::placeUnit(unsigned, unsigned, float, float, float, float,

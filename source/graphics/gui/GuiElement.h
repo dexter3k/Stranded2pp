@@ -45,11 +45,9 @@ public:
 	void setPosition(math::Vector2i position) { this->position = position; };
 
 	math::Vector2i getAbsolutePosition() const { return absolutePosition; };
-
 	void updateAbsolutePosition();
 private:
 	GuiElement * parent;
-
 	std::list<GuiElement *> children;
 
 	math::Vector2i position;

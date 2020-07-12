@@ -1,8 +1,6 @@
-#include "Object.h"
+#pragma once
 
 namespace gfx
 {
-
-
 
 } // namespace gfx
