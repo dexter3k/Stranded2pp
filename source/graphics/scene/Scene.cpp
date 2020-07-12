@@ -21,7 +21,7 @@ namespace scene
 {
 
 Scene::Scene(device::Device & device, Modification const & modification) :
-	RootNode(*this),
+	RootNode(*this, nullptr),
 	device(device),
 	activeCamera(nullptr),
 	cameraWorldPosition(0.0f, 0.0f, 0.0f),
@@ -31,7 +31,9 @@ Scene::Scene(device::Device & device, Modification const & modification) :
 	skyboxes(),
 	solidObjects(),
 	modPath(modification.getPath())
-{}
+{
+	std::cout << "Constructor of Scene" << std::endl;
+}
 
 Scene::~Scene()
 {
@@ -124,6 +126,8 @@ Skybox* Scene::addSkybox(Texture* top, Texture* bottom, Texture* left,
 	{
 		parent = this;
 	}
+
+	std::cout << "Add Skybox" << std::endl;
 
 	Skybox* skybox = new Skybox(top, bottom, left, right, front, back, parent,
 		this, id);

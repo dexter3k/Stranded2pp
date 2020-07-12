@@ -18,8 +18,9 @@ Modification::Modification(std::string const & modificationName) :
 	scriptControls(),
 	settings()
 {
-	if (!init())
+	if (!init()) {
 		throw std::runtime_error("Unable to initialize Modification");
+	}
 }
 
 bool Modification::init()

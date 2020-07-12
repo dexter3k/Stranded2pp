@@ -55,8 +55,9 @@ void Stranded::run()
 		}
 
 		// Manage state logic
-		if (!currentStates.empty())
+		if (!currentStates.empty()) {
 			currentStates.top()->update(deltaTime);
+		}
 
 		// Update current engine stage's logic
 		engine.update(deltaTime);
@@ -75,8 +76,9 @@ void Stranded::run()
 		deltaTime = deltaTimer.restart();
 	}
 
-	while (!currentStates.empty())
+	while (!currentStates.empty()) {
 		popState();
+	}
 }
 
 void Stranded::stopLoop()

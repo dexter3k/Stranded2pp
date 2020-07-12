@@ -78,15 +78,16 @@ void Engine::setupGame(uint32_t day, uint8_t hour, uint8_t minute,
 	bool, std::string const & skybox, bool multiplayerMap,
 	uint8_t, std::string const &, std::string const & briefScript)
 {
-	if (multiplayerMap)
+	if (multiplayerMap) {
 		std::cout << "Warning: loading multiplayer map in singleplayer" << std::endl;
+	}
 
 	currentDay = day;
 	dayTime = (hour < 24 ? hour : 0) * 60 + (minute < 60 ? minute : 0);
 
 	graphics.setSkybox(skybox);
 
-	std::cout << briefScript << std::endl;
+	std::cout << "Brief script: " << briefScript << std::endl;
 
 	mapScript = script::compile(briefScript);
 }
@@ -139,7 +140,12 @@ void Engine::loadGame(std::string const & filename, controller::Type controller)
 void Engine::placeObject(unsigned, unsigned objectType, float, float,
 	float, float, float, unsigned)
 {
-	std::cout << gameObjects[objectType].modelName << std::endl;
+	if (gameObjects[objectType].id != objectType + 1) {
+		std::cout << "Unknown object id: " << objectType << std::endl;
+		return ;
+	}
+
+	// std::cout << gameObjects[objectType].modelName << std::endl;
 }
 
 void Engine::placeUnit(unsigned, unsigned, float, float, float, float,

@@ -12,8 +12,9 @@ Window::Window(bool forceWindowedMode, Modification const & modification) :
 	window(),
 	input(nullptr)
 {
-	if (!init(forceWindowedMode, modification))
+	if (!init(forceWindowedMode, modification)) {
 		throw std::runtime_error("Unable to initialize Window");
+	}
 }
 
 bool Window::init(bool forceWindowedMode, const Modification& modification)

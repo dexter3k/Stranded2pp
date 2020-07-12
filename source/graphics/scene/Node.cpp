@@ -22,8 +22,10 @@ Node::Node(Scene & scene, Node * parent, math::Vector3f position,
 	isVisible(true),
 	scene(scene)
 {
-	setParent(parent);
-	updateAbsoluteTransformation();
+	if (isVisible) {
+		setParent(parent);
+		updateAbsoluteTransformation();
+	}
 }
 
 Node::~Node()
@@ -85,6 +87,8 @@ bool Node::removeChild(Node * childToRemove)
 			return true;
 		}
 	}
+
+	assert(false);
 
 	return false;
 }

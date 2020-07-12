@@ -1,5 +1,7 @@
 #include "Graphics.h"
 
+#include <iostream>
+
 #include "device/Device.h"
 #include "device/OpenGLDevice.h"
 #include "scene/Camera.h"
@@ -137,8 +139,9 @@ Graphics::Graphics(Modification const & modification) :
 {
 	basePath = modification.getPath();
 
-	if (!init())
+	if (!init()) {
 		throw std::runtime_error("Unable to init Graphics");
+	}
 }
 
 Graphics::~Graphics()
@@ -217,7 +220,7 @@ void Graphics::update(double deltaTime)
 	if (camera != nullptr)
 	{
 		auto rotation = camera->getRotation();
-		//rotation.y -= 1.0f;
+		// rotation.y -= 1.0f;
 		camera->setRotation(rotation);
 	}
 
@@ -236,6 +239,8 @@ void Graphics::drawAll()
 
 void Graphics::setSkybox(std::string const & name)
 {
+	std::cout << "Setting skybox" << std::endl;
+
 	if (currentSkyboxNode != nullptr) {
 		if (groundPlane != nullptr)
 			groundPlane->setParent(nullptr);
@@ -268,8 +273,9 @@ void Graphics::setSkybox(std::string const & name)
 		currentSkyboxTextures[4],
 		currentSkyboxTextures[5]);
 
-	if (groundPlane != nullptr)
+	if (groundPlane != nullptr) {
 		groundPlane->setParent(currentSkyboxNode);
+	}
 }
 
 void Graphics::setTerrain(unsigned terrainSize, std::vector<float> const & heightMap,
@@ -290,20 +296,23 @@ void Graphics::setTerrain(unsigned terrainSize, std::vector<float> const & heigh
 
 void Graphics::setWaterLevel(float level)
 {
-	if (waterPlane != nullptr)
+	if (waterPlane != nullptr) {
 		waterPlane->setPosition(math::Vector3f(0.0f, level, 0.0f));
+	}
 }
 
 void Graphics::setGroundLevel(float level)
 {
-	if (groundPlane != nullptr)
+	if (groundPlane != nullptr) {
 		groundPlane->setPosition(math::Vector3f(0.0f, level, 0.0f));
+	}
 }
 
 void Graphics::setGroundColor(const Color& color)
 {
-	if (groundPlane != nullptr)
+	if (groundPlane != nullptr) {
 		groundPlane->setColor(color);
+	}
 }
 
 bool Graphics::preloadTextures()
