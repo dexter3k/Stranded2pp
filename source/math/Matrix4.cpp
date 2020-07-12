@@ -54,13 +54,6 @@ const float& Matrix4::operator[](unsigned index) const
 	return matrix[index];
 }
 
-// Matrix4& Matrix4::operator=(const Matrix4& other)
-// {
-// 	memcpy(matrix, other.matrix, 16 * sizeof(float));
-
-// 	return *this;
-// }
-
 const float* Matrix4::pointer() const
 {
 	return matrix;
