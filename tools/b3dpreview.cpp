@@ -63,7 +63,7 @@ public:
 
 		uint32_t blend, fx;
 
-		std::vector<unsigned> textures;
+		std::vector<int> textures;
 	};
 
 	struct TriangleSet
@@ -199,6 +199,7 @@ private:
 			}
 
 			brushes.push_back(brush);
+			std::cout << brushes.size() << std::endl;
 		}
 	}
 
@@ -317,7 +318,11 @@ private:
 };
 
 void showModel(std::string const & modelName) {
+	std::cout << "Showing model " << modelName << std::endl;
+
 	Model model(modelName);
+
+	std::cout << "Loaded" << std::endl;
 
 	sf::ContextSettings contextSettings;
 	contextSettings.depthBits = 24;
@@ -393,8 +398,10 @@ void showModel(std::string const & modelName) {
 			}
 		}
 
+
 		window.pushGLStates();
-		window.clear(sf::Color(255, 255, 255));
+		// window.clear(sf::Color(255, 255, 255));
+		window.clear(sf::Color(255, 0, 255));
 		window.popGLStates();
 
 		window.setActive(true);
@@ -411,7 +418,10 @@ void showModel(std::string const & modelName) {
 		glRotatef(pitch, 1.f, 0.f, 0.f);
 		glRotatef(rotation, 0.f, 1.f, 0.f);
 
-		glPolygonMode(GL_BACK, GL_LINE);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		// glPolygonMode(GL_BACK, GL_LINE);
 
 		for (unsigned i = 0; i < model.getRoot().mesh.triangleSets.size(); ++i) {
 			int brush = model.getRoot().mesh.triangleSets[i].brushId;
@@ -419,13 +429,19 @@ void showModel(std::string const & modelName) {
 				brush = model.getRoot().mesh.brushId;
 			}
 			if (brush != -1) {
-				if (model.brushes[brush].textures.size() != 0) {
+				auto const textures = model.brushes[brush].textures;
+
+				if (textures.size() != 0 && textures[0] >= 0) {
 					sf::Texture::bind(&(model.textures[model.brushes[brush].textures[0]].texture));
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 					glColor4fv(model.brushes[brush].color);
+				} else {
+					sf::Texture::bind(nullptr);
+					glColor4fv(model.brushes[brush].color);
+					// std::cout << "apply just color" << std::endl;
 				}
 			} else {
 				sf::Texture::bind(nullptr);
