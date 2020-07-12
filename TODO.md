@@ -13,6 +13,9 @@ Just after High priority tasks
 
 * Improve text rendering by drawing whole string in a single OpenGL call. Currently makes a call per character.
 * Write COMPILING.md
+* Look into compilation under Windows.
+    - with custom SFML compilation for MinGW or MSVC (preferably)
+    - possibly common/FileSystem should be heavily ported or relied on something else
 
 ## Low priority
 Lower priority tasks
