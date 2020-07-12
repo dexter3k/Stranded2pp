@@ -163,19 +163,19 @@ bool loadFromFile(std::string const & filename, Engine & engine)
 	buffer.readBool();
 	buffer.readLine();
 
-	uint32_t day = buffer.readUint32();
-	uint8_t hour = buffer.readUint8();
-	uint8_t minute = buffer.readUint8();
+	uint32_t const day = buffer.readUint32();
+	uint8_t const hour = buffer.readUint8();
+	uint8_t const minute = buffer.readUint8();
 	uint8_t freezeTime = buffer.readUint8(); // might be bool
 	std::string skybox = buffer.readString(buffer.readUint32());
 	uint8_t multiplayer = buffer.readUint8(); // also might be bool
 	uint8_t climate = buffer.readUint8();
 	std::string music = buffer.readString(buffer.readUint32());
 	std::string brief = buffer.readString(buffer.readUint32());
-	/* uint8_t fog0 = */ buffer.readUint8();
-	/* uint8_t fog1 = */ buffer.readUint8();
-	/* uint8_t fog2 = */ buffer.readUint8();
-	/* uint8_t fog3 = */ buffer.readUint8();
+	/* uint8_t fogR = */ buffer.readUint8();
+	/* uint8_t fogG = */ buffer.readUint8();
+	/* uint8_t fogB = */ buffer.readUint8();
+	/* uint8_t fogMode = */ buffer.readUint8();
 	buffer.readUint8(); // reserved
 
 	engine.setupGame(day, hour, minute, freezeTime, skybox, multiplayer,

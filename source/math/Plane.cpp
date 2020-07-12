@@ -22,14 +22,6 @@ Plane::Plane(float a, float b, float c, float d) :
 	d(d)
 {}
 
-Plane& Plane::operator=(const Plane& other)
-{
-	n = other.n;
-	d = other.d;
-
-	return *this;
-}
-
 Plane& Plane::normalize()
 {
 	float scale = 1.0f / n.getLength();

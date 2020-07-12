@@ -22,7 +22,7 @@ public:
 	float& operator[](unsigned index);
 	const float& operator[](unsigned index) const;
 
-	Matrix4& operator=(const Matrix4& other);
+	// Matrix4& operator=(const Matrix4& other);
 
 	const float* pointer() const;
 	float* pointer();
