@@ -1,11 +1,13 @@
 #include "Scene.h"
 
+#include "Entity.h"
 #include "Camera.h"
 #include "InfinitePlane.h"
 #include "Skybox.h"
 #include "Terrain.h"
 
 #include "../Color.h"
+#include "../Model.h"
 #include "../Material.h"
 #include "../device/Device.h"
 
@@ -98,6 +100,21 @@ void Scene::removeNode(Node* node)
 
 		sceneNodes.erase(it);
 	}
+}
+
+Entity* Scene::addEntity(Model * model, Node* parent, const math::Vector3f& position,
+	const math::Vector3f& rotation, const math::Vector3f& scale)
+{
+	if (parent == nullptr) {
+		parent = this;
+	}
+
+	Entity * entity = new Entity(*this, parent, model, position, rotation, scale);
+	sceneNodes.push_back(entity);
+
+	std::cout << "adding entity" << std::endl;
+
+	return entity;
 }
 
 Camera* Scene::addCamera(Node* parent, const math::Vector3f& position,
@@ -221,6 +238,7 @@ bool Scene::registerNodeForRendering(Node* node, SceneNodeRenderPass pass)
 		}
 		default:
 		{
+			assert(false && pass);
 			break;
 		}
 	}

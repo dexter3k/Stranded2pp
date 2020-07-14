@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <map>
 
 #include "LoadingScreen.h"
 #include "gui/Gui.h"
@@ -11,11 +12,13 @@
 #include "scene/Scene.h"
 
 class Modification;
+class Object;
 
 namespace gfx
 {
 
 	class Color;
+	class Model;
 
 namespace device
 {
@@ -27,7 +30,9 @@ namespace scene
 	class InfinitePlane;
 	class Skybox;
 	class Terrain;
+	class Entity;
 }
+
 
 class Texture;
 
@@ -49,6 +54,9 @@ public:
 	void setTerrain(unsigned terrainSize, std::vector<float> const & heightMap,
 		unsigned colorMapSize, std::vector<gfx::Color> const & colorMap,
 		std::vector<uint8_t> const & grassMap);
+
+	scene::Entity * loadObjectModelAndAddToScene(Object * object);
+	Model * loadObjectModel(std::string const & name);
 private:
 	bool init();
 
@@ -93,6 +101,9 @@ private:
 	LoadingScreen loadingScreen;
 
 	std::array<gfx::Color, 24> lightcycle;
+
+	std::map<std::string, Model *>      models;
+	std::map<unsigned, scene::Entity *> entities;
 };
 
 } // namespace gfx

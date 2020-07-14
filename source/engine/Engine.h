@@ -12,6 +12,8 @@
 #include "mod/Objects.h"
 #include "mod/States.h"
 
+#include "Object.h"
+
 class Input;
 class Modification;
 class Network;
@@ -110,6 +112,9 @@ private:
 	mod::GameConfig gameConfig;
 	std::vector<mod::State> gameStates;
 	mod::Objects gameObjects;
+
+	// Current objects and units in the world
+	std::vector<std::unique_ptr<Object>> objects;
 
 	// Game values
 

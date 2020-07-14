@@ -32,6 +32,7 @@ Engine::Engine(Stranded &, gfx::Graphics & graphics, Network &, Sound &, Modific
 	gameConfig(mod::loadGameConfig(modBaseDirectory)),
 	gameStates(mod::loadStates(modBaseDirectory)),
 	gameObjects(mod::loadObjects(modBaseDirectory)),
+	objects(),
 	isTimePaused(false),
 	timeCounter(0),
 	currentDay(0),
@@ -137,15 +138,24 @@ void Engine::loadGame(std::string const & filename, controller::Type controller)
 	switchController(controller);
 }
 
-void Engine::placeObject(unsigned, unsigned objectType, float, float,
+void Engine::placeObject(unsigned, unsigned objectType, float x, float z,
 	float, float, float, unsigned)
 {
-	if (gameObjects[objectType].id != objectType + 1) {
+	auto & go = gameObjects[objectType];
+	if (go.id != objectType + 1) {
 		std::cout << "Unknown object id: " << objectType << std::endl;
 		return ;
 	}
+	std::cout << gameObjects[objectType].modelName << std::endl;
 
-	// std::cout << gameObjects[objectType].modelName << std::endl;
+	auto obj = std::make_unique<Object>(go);
+
+	auto entity = graphics.loadObjectModelAndAddToScene(obj.get());
+	entity->setPosition(math::Vector3f(x, 100.0, z));
+
+	objects.push_back(std::move(obj));
+
+	std::cout << objects.size() << std::endl;
 }
 
 void Engine::placeUnit(unsigned, unsigned, float, float, float, float,

@@ -10,6 +10,7 @@
 #include "scene/Terrain.h"
 
 #include "common/Modification.h"
+#include "engine/Object.h"
 
 namespace gfx
 {
@@ -331,6 +332,20 @@ bool Graphics::preloadTextures()
 	}
 
 	return true;
+}
+
+scene::Entity * Graphics::loadObjectModelAndAddToScene(Object * obj) {
+	assert(obj != nullptr);
+	if (obj->config.model == nullptr) {
+		obj->config.model = loadObjectModel(obj->config.modelName);
+	}
+
+	return scene.addEntity(nullptr);
+}
+
+Model * Graphics::loadObjectModel(std::string const & name) {
+	std::cout << "Asked to load " << name << std::endl;
+	return nullptr;
 }
 
 } // namespace gfx

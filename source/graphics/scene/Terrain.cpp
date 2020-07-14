@@ -83,6 +83,7 @@ void Terrain::render()
 		return;
 	}
 
+	// todo: this? every frame? oh please!
 	preRenderIndicesRecalculation();
 
 	math::Matrix4 transform;

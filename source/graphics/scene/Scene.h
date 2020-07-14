@@ -18,6 +18,7 @@ namespace gfx
 class Graphics;
 class Mesh;
 class Texture;
+class Model;
 
 namespace device
 {
@@ -27,6 +28,7 @@ namespace device
 namespace scene
 {
 
+class Entity;
 class Camera;
 class InfinitePlane;
 class Skybox;
@@ -75,6 +77,11 @@ public:
 	void clearScene();
 
 	void removeNode(Node* node);
+
+	Entity* addEntity(Model * model, Node* parent = nullptr,
+		const math::Vector3f& position = math::Vector3f(0.0f, 0.0f, 0.0f),
+		const math::Vector3f& rotation = math::Vector3f(0.0f, 0.0f, 0.0f),
+		const math::Vector3f& scale = math::Vector3f(1.0f, 1.0f, 1.0f));
 
 	Camera* addCamera(Node* parent = nullptr,
 		const math::Vector3f& position = math::Vector3f(0.0f, 0.0f, 0.0f),

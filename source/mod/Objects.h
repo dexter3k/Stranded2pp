@@ -7,6 +7,12 @@
 #include "math/Vector3.h"
 #include "mod/Materials.h"
 
+namespace gfx {
+
+class Model;
+
+}
+
 namespace mod
 {
 
@@ -20,7 +26,8 @@ struct Object
 	// Icon icon;
 	
 	std::string modelName;
-	// Model model;
+	gfx::Model * model; // nullptr is not loaded
+
 	math::Vector3f size = {1, 1, 1};
 	gfx::Color color = {255, 255, 255};
 
