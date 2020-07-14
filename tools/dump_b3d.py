@@ -52,6 +52,7 @@ def dumpBRUS(data, depth):
 		blend = int32(data[i+20:i+24])
 		fx = int32(data[i+24:i+28])
 		textures = []
+		# max 8 textures
 		if texsCount > 0:
 			textures = list(struct.unpack('i'*texsCount, data[i+28:i+28+texsCount*4]))
 

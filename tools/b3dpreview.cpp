@@ -182,6 +182,8 @@ private:
 		std::size_t const end = buffer.bytesLeftForReading() - size;
 
 		int32_t textureCount = buffer.readInt32();
+		assert(textureCount >= 0);
+		assert(textureCount <= 8);
 
 		while (buffer.bytesLeftForReading() != end) {
 			Brush brush;
@@ -196,6 +198,9 @@ private:
 			brush.textures.resize(textureCount);
 			for (int i = 0; i < textureCount; ++i) {
 				brush.textures[i] = buffer.readInt32();
+				if (brush.textures[i] < -1) {
+					brush.textures[i] = -1;
+				}
 			}
 
 			brushes.push_back(brush);
@@ -420,6 +425,9 @@ void showModel(std::string const & modelName) {
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.9);
 
 		// glPolygonMode(GL_BACK, GL_LINE);
 
