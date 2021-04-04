@@ -1,5 +1,7 @@
 #include "BmpFont.h"
 
+#include <stdexcept>
+
 #include "common/FileSystem.h"
 #include "common/ByteBuffer.h"
 #include "graphics/device/Device.h"
