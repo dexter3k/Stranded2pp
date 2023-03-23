@@ -6,3 +6,11 @@ build/
 
 # OS specific
 .DS_Store
+
+# VS Code
+.vscode
+.cache
+
+# Stranded II folder
+stranded2_en.zip
+stranded2_en
