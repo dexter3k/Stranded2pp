@@ -129,9 +129,13 @@ void Stranded::printWelcomeMessage()
 	std::cout << std::string(80, '*');
 	std::cout << "\n";
 	std::cout << "Welcome to Stranded2++\n";
-	std::cout << "Web: www.github.com/SMemsky/Stranded2pp\n";
+	std::cout << "Made by dexter3k:\n";
+	std::cout << "Web: https://github.com/dexter3k/Stranded2pp\n";
 	std::cout << "Mail: schooldev3000@gmail.com\n";
 	std::cout << "Original game: www.stranded.unrealsoftware.de\n";
+	std::cout << "\n";
+	std::cout << "Contributors:\n";
+	std::cout << "Alepacho (https://github.com/Alepacho)\n";
 	std::cout << std::string(80, '*');
 	std::cout << "\n" << std::endl;
 }

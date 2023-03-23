@@ -3,6 +3,9 @@
 #include <cstdint>
 #include <map>
 
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION 1
+#endif // __APPLE__
 #include <SFML/OpenGL.hpp>
 
 #include "Device.h"
